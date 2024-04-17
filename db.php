@@ -95,10 +95,10 @@ class Database {
     }
 
     private function updateBlockedFolders(): void {
-        $sql = "select * from router_blockedfolders";
+        $sql = "select * from router_blocked_folders";
         $blockedFolders = $this->fetchRows($this->executeQuery($sql));
         foreach ($blockedFolders as $folder) {
-            $sql = "update router_blockedfolders set folderExists = ? where id = ?";
+            $sql = "update router_blocked_folders set folderExists = ? where id = ?";
             if(is_dir($folder["name"])) {
                 $params = [1, $folder["id"]];
             } else {

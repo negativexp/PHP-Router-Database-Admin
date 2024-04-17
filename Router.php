@@ -19,14 +19,14 @@ class Router {
     {
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $this->checkBlockedFolders($parsedURL);
-        $this->checkAllowedFileTypes($this->fileExtensions, $this->fileMimeTypes, $parsedURL);
+        $this->checkAllowedFileTypes($parsedURL);
     }
 
     private function checkBlockedFolders($parsedURL): void
     {
         include_once("db.php");
         $db = new Database();
-        $sql = "select * from router_blockedfolders";
+        $sql = "select * from router_blocked_folders";
         $blockedFolders = $db->fetchRows($db->executeQuery($sql));
         foreach ($blockedFolders as $blockedFolder) {
             if(str_contains($parsedURL, $blockedFolder["name"])) {
@@ -34,8 +34,19 @@ class Router {
             }
         }
     }
-    private function checkAllowedFileTypes($fileExtensions, $fileMimeTypes, $parsedURL): void
+    private function checkAllowedFileTypes($parsedURL): void
     {
+        include_once("db.php");
+        $db = new Database();
+        $sql = "select * from router_allowed_file_types";
+        $results = $db->fetchRows($db->executeQuery($sql));
+        $fileExtensions = [];
+        $fileMimeTypes = [];
+        foreach ($results as $result) {
+            $fileExtensions[] = $result["filetype"];
+            $fileMimeTypes[] = $result["mimetype"];
+        }
+
         if (in_array(pathinfo($parsedURL, PATHINFO_EXTENSION), $fileExtensions)) {
             $filepath = ".".$parsedURL;
             if (file_exists($filepath)) {
@@ -202,9 +213,15 @@ foreach($routes as $route) {
         }
     }
 }
+//default admin routes
 $router->get("/admin", "views/admin/admin.php");
+$router->get("/admin/login", "views/admin/adminLogin.php");
+$router->post("/admin/auth", "actions/admin/login.php");
+$router->get("/admin/logout", "actions/admin/logout.php");
 $router->post("/admin/addRoute", "actions/admin/addRoute.php");
 $router->post("/admin/removeRoute", "actions/admin/removeRoute.php");
 $router->post("/admin/addBlockedFolder", "actions/admin/addBlockedFolder.php");
 $router->post("/admin/removeBlockedFolder", "actions/admin/removeBlockedFolder.php");
+$router->post("/admin/addAllowedFileType", "actions/admin/addAllowedFileType.php");
+$router->post("/admin/removeAllowedFileType", "actions/admin/removeAllowedFileType.php");
 $router->not_found();

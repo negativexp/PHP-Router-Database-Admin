@@ -1,7 +1,12 @@
 <?php
+session_start();
+if(!isset($_SESSION["admin"])) {
+    header("location: /admin/login");
+}
     $db = new Database();
     $db->update();
 ?>
+<a href="/admin/logout">odhlasit se</a>
 <h1>Router</h1>
 <h2>Routes</h2>
 <?php
@@ -52,7 +57,7 @@
 </form>
 <h2>Zablokovane slozky</h2>
 <?php
-    $sql = "select * from router_blockedfolders";
+    $sql = "select * from router_blocked_folders";
     $blockedFolders = $db->fetchRows($db->executeQuery($sql));
     echo "<table border='1'>";
     echo "<tr><th>Id</th><th>Name</th><th>Folder exists?</th><th>Options</th></tr>";
@@ -76,6 +81,39 @@
     <label>
         <span>Name: </span>
         <input type="text" name="name" required>
+    </label>
+    <input type="submit">
+</form>
+<h2>povolene typy souboru</h2>
+<?php
+$sql = "select * from router_allowed_file_types";
+$allowedFiles = $db->fetchRows($db->executeQuery($sql));
+echo "<table border='1'>";
+echo "<tr><th>Id</th><th>file type</th><th>mime type</th><th>Options</th></tr>";
+foreach ($allowedFiles as $folder) {
+    echo "<tr>";
+    echo "<td>{$folder['id']}</td>";
+    echo "<td>{$folder['filetype']}</td>";
+    echo "<td>{$folder['mimetype']}</td>";
+    echo "<td>
+                <form method='post' action='/admin/removeAllowedFileType'>
+                    <input type='hidden' name='id' value='{$folder["id"]}'>
+                    <input type='submit' value='Delete'>
+                </form>
+              </td>";
+    echo "</tr>";
+}
+echo "</table>";
+?>
+<h2>pridat povolenej typ souboru</h2>
+<form method="post" action="/admin/addAllowedFileType">
+    <label>
+        <span>File type: </span>
+        <input type="text" name="filetype" required>
+    </label>
+    <label>
+        <span>File mime type: </span>
+        <input type="text" name="mimetype" required>
     </label>
     <input type="submit">
 </form>
