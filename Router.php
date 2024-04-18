@@ -1,20 +1,5 @@
 <?php
 class Router {
-    private array $fileExtensions = ["svg", "css", "js", "png", "jpeg", "jpg", "webp", "gif", "mp4", "ico", "json", "txt"];
-    private array $fileMimeTypes = [
-    "svg" => "image/svg+xml",
-    "css" => "text/css",
-    "js" => "text/javascript",
-    "png" => "image/png",
-    "jpeg" => "image/jpeg",
-    "jpg" => "image/jpeg",
-    "webp" => "image/webp",
-    "gif" => "image/gif",
-    "mp4" => "video/mp4",
-    "ico" => "image/x-icon",
-    "json" => "application/json",
-    "txt" => "text/plain",
-    ];
     public function __construct()
     {
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
@@ -175,6 +160,13 @@ class Router {
         http_response_code(404);
         die();
     }
+
+    public function adminMiddleware(): void {
+        session_start();
+        if(!isset($_SESSION["admin"])) {
+            header("location: /admin/login");
+        }
+    }
 }
 include_once("db.php");
 $router = new Router();
@@ -214,14 +206,17 @@ foreach($routes as $route) {
     }
 }
 //default admin routes
-$router->get("/admin", "views/admin/admin.php");
 $router->get("/admin/login", "views/admin/adminLogin.php");
+$router->adminMiddleware();
+$router->get("/admin", "views/admin/admin.php");
 $router->post("/admin/auth", "actions/admin/login.php");
 $router->get("/admin/logout", "actions/admin/logout.php");
-$router->post("/admin/addRoute", "actions/admin/addRoute.php");
-$router->post("/admin/removeRoute", "actions/admin/removeRoute.php");
-$router->post("/admin/addBlockedFolder", "actions/admin/addBlockedFolder.php");
-$router->post("/admin/removeBlockedFolder", "actions/admin/removeBlockedFolder.php");
-$router->post("/admin/addAllowedFileType", "actions/admin/addAllowedFileType.php");
-$router->post("/admin/removeAllowedFileType", "actions/admin/removeAllowedFileType.php");
+$router->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
+$router->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
+$router->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
+$router->post("/admin/router/removeBlockedFolder", "actions/admin/router/removeBlockedFolder.php");
+$router->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllowedFileType.php");
+$router->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
+$router->get("/admin/router", "views/admin/router.php");
+$router->get("/admin/database", "views/admin/database.php");
 $router->not_found();

@@ -107,6 +107,18 @@ class Database {
             $this->executeQuery($sql, $params, false);
         }
     }
+
+    private function fetchSingleColumn($result): array {
+        $rows = [];
+        while ($row = $result->fetch_array(MYSQLI_NUM)) {
+            $rows[] = $row[0];
+        }
+        return $rows;
+    }
+    public function getTables(): array {
+        $sql = "SHOW TABLES";
+        return $this->fetchSingleColumn($this->executeQuery($sql));
+    }
 }
 
 $db = new Database();
