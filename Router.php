@@ -25,22 +25,19 @@ class Router {
         $db = new Database();
         $sql = "select * from router_allowed_file_types";
         $results = $db->fetchRows($db->executeQuery($sql));
-        $fileExtensions = [];
-        $fileMimeTypes = [];
+        $allowedFileTypes = [];
         foreach ($results as $result) {
-            $fileExtensions[] = $result["filetype"];
-            $fileMimeTypes[] = $result["mimetype"];
+            $allowedFileTypes[$result["filetype"]] = $result["mimetype"];
         }
-
-        if (in_array(pathinfo($parsedURL, PATHINFO_EXTENSION), $fileExtensions)) {
-            $filepath = ".".$parsedURL;
+        if (array_key_exists(pathinfo($parsedURL, PATHINFO_EXTENSION), $allowedFileTypes)) {
+            $filepath = "." . $parsedURL;
             if (file_exists($filepath)) {
-                header("Content-Type: " . $fileMimeTypes[pathinfo($filepath, PATHINFO_EXTENSION)]);
+                header("Content-Type: " . $allowedFileTypes[pathinfo($filepath, PATHINFO_EXTENSION)]);
                 readfile($filepath);
+                exit();
             } else {
                 $this->not_found();
             }
-            exit();
         }
     }
     public function get($route, $path_to_include): void
@@ -219,4 +216,5 @@ $router->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllow
 $router->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
 $router->get("/admin/router", "views/admin/router.php");
 $router->get("/admin/database", "views/admin/database.php");
+$router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
 $router->not_found();

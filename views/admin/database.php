@@ -7,4 +7,5 @@ $db->update();
 <h1>Databáze</h1>
 <h2>tabulky</h2>
 <?php require_once("components/database/tables.php"); ?>
-
+<h2>Přidat tabulku</h2>
+<?php require_once("components/database/addTable.php"); ?>
