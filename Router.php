@@ -216,5 +216,7 @@ $router->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllow
 $router->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
 $router->get("/admin/router", "views/admin/router.php");
 $router->get("/admin/database", "views/admin/database.php");
+$router->get('/admin/database/table/$name', "views/admin/components/getDatabase.php");
 $router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
+$router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
 $router->not_found();

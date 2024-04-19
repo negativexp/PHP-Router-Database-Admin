@@ -7,8 +7,11 @@ if(isset($db)) {
         echo "<tr>";
         echo "<td>{$table}</td>";
         echo "<td>
-                <a>Upravit</a>
-                <a>smazat</a>
+                <a href='/admin/database/table/{$table}'>upravit</a>
+                <form method='post' action='/admin/database/removeTable'>
+                    <input type='hidden' name='name' value='{$table}' '>
+                    <input type='submit' value='Smazat'>
+                </form>
               </td>";
         echo "</tr>";
     }

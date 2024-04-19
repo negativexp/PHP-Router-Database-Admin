@@ -14,6 +14,7 @@
                 <select name="type[]">
                     <option value="TEXT">text</option>
                     <option value="INT">int</option>
+                    <option value="BOOL">bool</option>
                 </select>
             </label>
             <label>
@@ -53,6 +54,7 @@
                 <select name="type[]">
                     <option value="TEXT">text</option>
                     <option value="INT">int</option>
+                    <option value="BOOL">bool</option>
                 </select>
             </label>
             <label>
