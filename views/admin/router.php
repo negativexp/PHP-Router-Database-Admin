@@ -3,17 +3,66 @@
     $db = new Database();
     $db->update();
 ?>
-<a href="/admin">Zpátky</a>
-<h1>Router</h1>
-<h2>Routes</h2>
-<?php require_once("components/router/routes.php"); ?>
-<h2>Přidat route</h2>
-<?php require_once("components/router/addRoute.php"); ?>
-<h2>Zablokované složky</h2>
-<?php require_once("components/router/blockedFolders.php"); ?>
-<h2>Přidat zablokovanou složku</h2>
-<?php require_once("components/router/addBlockedFolder.php"); ?>
-<h2>Povolené souborové typy</h2>
-<?php require_once("components/router/allowedFileTypes.php"); ?>
-<h2>Přidat povolenej souborovej typ</h2>
-<?php require_once("components/router/addAllowedFileType.php"); ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../adminStyle.css">
+    <script defer src="../adminScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<div id="alert">
+    <form>
+        <label>
+            <span>Route</span>
+            <input type="text" name="route" required>
+        </label>
+        <label>
+            <span>Type</span>
+            <select name="type" required>
+                <option>get</option>
+                <option>post</option>
+                <option>getpost</option>
+                <option>put</option>
+                <option>patch</option>
+                <option>delete</option>
+                <option>any</option>
+            </select>
+        </label>
+        <label>
+            <span>Path</span>
+            <input type="text" name="path" required>
+        </label>
+        <div class="options">
+            <input type="submit">
+            <a class="button" onclick="hideAlert()">Zavřít</a>
+        </div>
+    </form>
+</div>
+<?php include_once("components/sidepanel.php"); ?>
+
+<main>
+    <header>
+        <h1 class="big">Router</h1>
+    </header>
+    <div class="wrapper">
+        <div class="tableOptions">
+            <a class="button" onclick="displayAlert()">Přidat</a>
+        </div>
+        <section>
+            <article class="w100">
+                <h2>Routy</h2>
+                <?php require_once("components/router/routes.php") ?>
+            </article>
+        </section>
+    </div>
+</main>
+</body>
+
+</html>

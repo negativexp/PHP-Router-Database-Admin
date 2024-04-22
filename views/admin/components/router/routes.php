@@ -2,8 +2,16 @@
 if(isset($db)) {
     $sql = "select * from router_routes";
     $routes = $db->fetchRows($db->executeQuery($sql));
-    echo "<table border='1'>";
-    echo "<tr><th>Id</th><th>Route</th><th>Type</th><th>Path</th><th>File exists?</th><th>Options</th></tr>";
+    echo "<table class='products'>";
+    echo "<thead>";
+    echo "<tr>
+<td class='medium'>Id</td>
+<td class='medium'>Route</td>
+<td class='medium'>Type</td>
+<td class='medium'>Path</td>
+<td class='medium'>File exists?</td>
+<td class='medium'>Options</td></tr>";
+    echo "</thead>";
     foreach ($routes as $route) {
         echo "<tr>";
         echo "<td>{$route['id']}</td>";
@@ -21,3 +29,4 @@ if(isset($db)) {
     }
     echo "</table>";
 }
+?>
