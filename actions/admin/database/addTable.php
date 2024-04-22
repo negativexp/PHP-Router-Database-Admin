@@ -38,4 +38,4 @@ $db = new Database();
 $db->executeQuery($sql, [], false);
 
 // Ensure no output is sent before this point
-header("location: /admin/database");
+header("location: /admin/database/tables");

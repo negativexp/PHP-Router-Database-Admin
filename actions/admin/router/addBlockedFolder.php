@@ -5,5 +5,5 @@ if(isset($_POST["name"])) {
     $params = [$_POST["name"]];
     if(is_dir($_POST["name"])) $params[] = 1; else $params[] = 0;
     $db->executeQuery($sql, $params, false);
-    header("location: /admin/router");
+    header("location: /admin/router/blockedFolders");
 }

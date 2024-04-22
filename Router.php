@@ -208,14 +208,18 @@ $router->adminMiddleware();
 $router->get("/admin", "views/admin/admin.php");
 $router->post("/admin/auth", "actions/admin/login.php");
 $router->get("/admin/logout", "actions/admin/logout.php");
+
 $router->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
 $router->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
 $router->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
 $router->post("/admin/router/removeBlockedFolder", "actions/admin/router/removeBlockedFolder.php");
 $router->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllowedFileType.php");
 $router->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
-$router->get("/admin/router", "views/admin/router.php");
-$router->get("/admin/database", "views/admin/database.php");
+$router->get("/admin/router/routes", "views/admin/router/routes.php");
+$router->get("/admin/router/allowedFiles", "views/admin/router/allowedFiles.php");
+$router->get("/admin/router/blockedFolders", "views/admin/router/blockedFolders.php");
+
+$router->get("/admin/database/tables", "views/admin/database/tables.php");
 $router->get('/admin/database/table/$name', "views/admin/components/getDatabase.php");
 $router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
 $router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");

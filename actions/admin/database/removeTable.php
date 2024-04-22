@@ -4,5 +4,5 @@ if(isset($_POST["name"])) {
     $db = new Database();
     $sql = "drop table {$_POST["name"]}";
     $db->executeQuery($sql, [], false);
-    header("location: /admin/database");
+    header("location: /admin/database/tables");
 }

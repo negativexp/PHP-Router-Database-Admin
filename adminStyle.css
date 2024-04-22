@@ -38,9 +38,15 @@ input[type="checkbox"] {
 #alert form label, #alert form input, #alert form select, #alert form label span, #alert option {
     color: black !important;
 }
-#alert form label {
-    width: 300px;
+#alert form {
+    width: 400px;
+    display: flex;
+    flex-flow: column;
+    padding: 10px;
     background: white;
+}
+#alert form {
+    width: 400px;
 }
 #alert p {
     color: black;
@@ -53,10 +59,16 @@ input[type="checkbox"] {
 }
 #alert .options {
     padding: var(--padding2);
-    width: 400px;
     display: flex;
     background-color: white;
     gap: var(--gap);
+}
+.formOptions {
+    display: flex;
+    gap: 10px;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
 }
 body {
     overflow-y: hidden;
@@ -89,10 +101,8 @@ canvas {
 a {
     text-decoration: none;
 }
-a:hover {
-    cursor: pointer;
-}
-a.button {
+a.button, input[type="submit"] {
+    border: none;
     flex: 1;
     border-radius: var(--radius);
     background-color: #ebecec;
@@ -102,8 +112,9 @@ a.button {
     justify-content: center;
     padding: 10px;
 }
-a.button:hover {
+a.button:hover, input[type="submit"]:hover {
     background-color: #a5a5a5;
+    cursor: pointer;
 }
 .sidepanel {
     background-color: #343a40;
@@ -264,6 +275,11 @@ table tbody tr:not(:last-child) {
 table tbody td:not(:last-child), table thead td:not(:last-child) {
     border-right: 1px dashed gray;
 }
+table tbody tr td:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .tableOptions {
     display: flex;
     gap: var(--gap);
@@ -305,9 +321,6 @@ article {
 }
 article h2 {
     padding-bottom: 10px;
-}
-article a.button {
-    margin-top: 20px;
 }
 article.w10 {
     width: calc(10% - var(--padding));

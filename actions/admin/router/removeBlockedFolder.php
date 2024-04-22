@@ -4,5 +4,5 @@ if(isset($_POST["id"])) {
     $sql = "delete from router_blocked_folders where id = ?";
     $params = [$_POST["id"]];
     $db->executeQuery($sql, $params, false);
-    header("location: /admin/router");
+    header("location: /admin/router/blockedFolders");
 }
