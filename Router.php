@@ -220,7 +220,7 @@ $router->get("/admin/router/allowedFiles", "views/admin/router/allowedFiles.php"
 $router->get("/admin/router/blockedFolders", "views/admin/router/blockedFolders.php");
 
 $router->get("/admin/database/tables", "views/admin/database/tables.php");
-$router->get('/admin/database/table/$name', "views/admin/components/getDatabase.php");
+$router->get('/admin/database/table/$name', "views/admin/database/getTable.php");
 $router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
 $router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
 $router->not_found();
