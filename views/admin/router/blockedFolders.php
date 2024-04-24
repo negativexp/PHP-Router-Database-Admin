@@ -19,13 +19,14 @@ $db->update();
 <body>
 <div id="alert">
     <form method="post" action="/admin/router/addBlockedFolder">
+        <h2>Přidat složku</h2>
         <label>
             <span>Name: </span>
             <input type="text" name="name" required>
         </label>
         <div class="options">
-            <input type="submit">
-            <a class="button" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <input class="small" type="submit">
         </div>
     </form>
 </div>

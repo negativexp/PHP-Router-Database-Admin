@@ -19,6 +19,7 @@
 <body>
 <div id="alert">
     <form method="post" action="/admin/router/addRoute">
+        <h2>Přidat route</h2>
         <label>
             <span>Route</span>
             <input type="text" name="route" required>
@@ -40,8 +41,8 @@
             <input type="text" name="path" required>
         </label>
         <div class="options">
-            <input type="submit">
-            <a class="button" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <input class="small" type="submit">
         </div>
     </form>
 </div>

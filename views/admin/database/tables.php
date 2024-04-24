@@ -17,19 +17,19 @@ $db->update();
 
 <body>
 <div id="alert">
-    <form method="post" action="/admin/database/addTable">
+    <form class="w800" method="post" action="/admin/database/addTable">
         <label>
-            <span>Table name:</span>
-            <input type="text" name="tableName">
+            <span>Jméno tabulky:</span>
+            <input type="text" name="tableName" required>
         </label>
         <div id="rowContainer">
             <div class="row">
                 <label>
-                    <span>Column name:</span>
+                    <span>Sloupec:</span>
                     <input type="text" name="name[]" required>
                 </label>
                 <label>
-                    <span>Data type:</span>
+                    <span>Datovej typ:</span>
                     <select name="type[]">
                         <option value="TEXT">text</option>
                         <option value="INT">int</option>
@@ -48,14 +48,13 @@ $db->update();
                     <span>Auto Increment:</span>
                     <input type="checkbox" name="autoIncrement[0]" value="true">
                 </label>
-                <button type="button" onclick="removeRow(this)">Remove</button>
+                <a onclick="removeRow(this)">Smazat</a>
             </div>
-            <div id="newRow"></div>
         </div>
         <div class="options">
-            <input type="submit">
-            <a class="button" onclick="hideAlert()">Zavřít</a>
-            <a class="button" onclick="addRow()">Add Another Row</a>
+            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="addRow()">Přidat sloupec</a>
+            <input class="small" type="submit">
         </div>
     </form>
 
@@ -67,33 +66,33 @@ $db->update();
             var newRow = document.createElement('div');
             newRow.className = 'row';
             newRow.innerHTML = `
-            <label>
-                <span>Column name:</span>
-                <input type="text" name="name[]" required>
-            </label>
-            <label>
-                <span>Data type:</span>
-                <select name="type[]">
-                    <option value="TEXT">text</option>
-                    <option value="INT">int</option>
-                    <option value="BOOL">bool</option>
-                </select>
-            </label>
-            <label>
-                <span>Not null:</span>
-                <input type="radio" name="isNull[${rowCount}]" value="true">
-            </label>
-            <label>
-                <span>Null:</span>
-                <input type="radio" name="isNull[${rowCount}]" value="false" checked>
-            </label>
-            <label>
-                <span>Auto Increment:</span>
-                <input type="checkbox" name="autoIncrement[${rowCount}]" value="true">
-            </label>
-            <button type="button" onclick="removeRow(this)">Remove</button>
-        `;
-            document.getElementById('newRow').appendChild(newRow);
+        <label>
+            <span>Sloupec:</span>
+            <input type="text" name="name[]" required>
+        </label>
+        <label>
+            <span>Datovej typ:</span>
+            <select name="type[]">
+                <option value="TEXT">text</option>
+                <option value="INT">int</option>
+                <option value="BOOL">bool</option>
+            </select>
+        </label>
+        <label>
+            <span>Not null:</span>
+            <input type="radio" name="isNull[${rowCount}]" value="true">
+        </label>
+        <label>
+            <span>Null:</span>
+            <input type="radio" name="isNull[${rowCount}]" value="false" checked>
+        </label>
+        <label>
+            <span>Auto Increment:</span>
+            <input type="checkbox" name="autoIncrement[${rowCount}]" value="true">
+        </label>
+        <a onclick="removeRow(this)">Smazat</a>
+    `;
+            document.getElementById('rowContainer').appendChild(newRow);
         }
 
         function removeRow(button) {

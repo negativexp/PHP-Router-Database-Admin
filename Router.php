@@ -1,4 +1,5 @@
 <?php
+include_once("config.php");
 class Router {
     public function __construct()
     {
@@ -11,7 +12,7 @@ class Router {
     {
         include_once("db.php");
         $db = new Database();
-        $sql = "select * from router_blocked_folders";
+        $sql = "select * from ".DB_PREFIX."_blocked_folders";
         $blockedFolders = $db->fetchRows($db->executeQuery($sql));
         foreach ($blockedFolders as $blockedFolder) {
             if(str_contains($parsedURL, $blockedFolder["name"])) {
@@ -23,7 +24,7 @@ class Router {
     {
         include_once("db.php");
         $db = new Database();
-        $sql = "select * from router_allowed_file_types";
+        $sql = "select * from ".DB_PREFIX."_allowed_file_types";
         $results = $db->fetchRows($db->executeQuery($sql));
         $allowedFileTypes = [];
         foreach ($results as $result) {
@@ -168,7 +169,7 @@ class Router {
 include_once("db.php");
 $router = new Router();
 $db = new Database();
-$sql = "select * from router_routes";
+$sql = "select * from ".DB_PREFIX."_routes";
 $routes = $db->fetchRows($db->executeQuery($sql));
 foreach($routes as $route) {
     switch ($route["type"]) {

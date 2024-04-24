@@ -35,18 +35,42 @@ input[type="checkbox"] {
     align-items: center;
     justify-content: center;
 }
-#alert form label, #alert form input, #alert form select, #alert form label span, #alert option {
-    color: black !important;
+a:hover {
+    cursor: pointer;
 }
-#alert form {
-    width: 400px;
+#rowContainer {
     display: flex;
     flex-flow: column;
-    padding: 10px;
+    gap: 10px;
+}
+#rowContainer .row {
+    display: flex;
+    gap: 20px;
+}
+#rowContainer .row a {
+    text-decoration: underline;
+}
+input[type="checkbox"] {
+    height: 15px;
+}
+#alert form label, #alert form input, #alert form select, #alert form label span, #alert option, #alert form h2, #alert form a {
+    color: black !important;
+}
+#alert form h2 {
+    padding-bottom: 10px;
+}
+#alert form {
+    display: flex;
+    gap: 10px;
+    flex-flow: column;
+    padding: var(--padding2);
     background: white;
 }
 #alert form {
     width: 400px;
+}
+#alert form .button, #alert form input[type="submit"] {
+    flex: 1;
 }
 #alert p {
     color: black;
@@ -58,7 +82,7 @@ input[type="checkbox"] {
     background-color: white;
 }
 #alert .options {
-    padding: var(--padding2);
+    padding: var(--padding2) 0 0 0;
     display: flex;
     background-color: white;
     gap: var(--gap);
@@ -103,7 +127,6 @@ a {
 }
 a.button, input[type="submit"] {
     border: none;
-    flex: 1;
     border-radius: var(--radius);
     background-color: #ebecec;
     color: black;
@@ -245,6 +268,14 @@ ul.tags li {
 }
 table {
     border-collapse: collapse;
+    table-layout: auto;
+    width: 100%;
+}
+table thead td {
+
+}
+table thead td:last-child {
+    width: 200px;
 }
 table td {
     padding: var(--padding);
@@ -275,18 +306,12 @@ table tbody tr:not(:last-child) {
 table tbody td:not(:last-child), table thead td:not(:last-child) {
     border-right: 1px dashed gray;
 }
-table tbody tr td:last-child {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 .tableOptions {
     display: flex;
     gap: var(--gap);
     border-radius: var(--radius);
     background-color: white;
     padding: var(--padding);
-    width: fit-content;
 }
 
 header {
@@ -318,6 +343,9 @@ article {
     gap: 5px;
     flex-flow: column;
     position: relative;
+}
+.w800 {
+    width: 900px !important;
 }
 article h2 {
     padding-bottom: 10px;

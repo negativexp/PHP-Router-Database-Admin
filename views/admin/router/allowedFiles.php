@@ -19,6 +19,7 @@ $db->update();
 <body>
 <div id="alert">
     <form method="post" action="/admin/router/addAllowedFileType">
+        <h2>Přidat soubor</h2>
         <label>
             <span>File type: </span>
             <input type="text" name="filetype" required>
@@ -28,8 +29,8 @@ $db->update();
             <input type="text" name="mimetype" required>
         </label>
         <div class="options">
-            <input type="submit">
-            <a class="button" onclick="hideAlert()">Zavřít</a>
+            <a class="small button" onclick="hideAlert()">Zavřít</a>
+            <input class="small" type="submit">
         </div>
     </form>
 </div>

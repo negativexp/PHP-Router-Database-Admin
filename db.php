@@ -124,6 +124,17 @@ class Database {
         $sql = "SHOW TABLES";
         return $this->fetchSingleColumn($this->executeQuery($sql));
     }
+
+    public function executeMultipleQueries($sql) {
+        $queries = explode(';', $sql);
+
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (!empty($query)) {
+                $this->executeQuery($query, [], false);
+            }
+        }
+    }
 }
 
 $db = new Database();
