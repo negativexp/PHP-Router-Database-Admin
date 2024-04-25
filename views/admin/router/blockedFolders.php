@@ -1,4 +1,5 @@
 <?php
+include_once("config.php");
 include_once("db.php");
 $db = new Database();
 $db->update();
@@ -45,7 +46,7 @@ $db->update();
             <article class="w100">
                 <?php
 if(isset($db)) {
-    $sql = "select * from router_blocked_folders";
+    $sql = "select * from ".DB_PREFIX."_blocked_folders";
     $blockedFolders = $db->fetchRows($db->executeQuery($sql));
     echo "<table>";
     echo "<thead>";

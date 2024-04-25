@@ -3,7 +3,7 @@ class Database {
     private $servername = "localhost";
     private $dbusername = "root";
     private $dbpassword = "password";
-    private $database = "routerdatabaseadmin";
+    public $database = "routerdatabaseadmin";
     private $conn;
     public function __construct() {
         $this->connect();
@@ -86,10 +86,10 @@ class Database {
     }
 
     private function updateRoutes(): void {
-        $sql = "select * from router_routes";
+        $sql = "select * from ".DB_PREFIX."_routes";
         $routes = $this->fetchRows($this->executeQuery($sql));
         foreach ($routes as $route) {
-            $sql = "update router_routes set fileExists = ? where id = ?";
+            $sql = "update ".DB_PREFIX."_routes set fileExists = ? where id = ?";
             if(file_exists($route["path"])) {
                 $params = [1, $route["id"]];
             } else {
@@ -100,10 +100,10 @@ class Database {
     }
 
     private function updateBlockedFolders(): void {
-        $sql = "select * from router_blocked_folders";
+        $sql = "select * from ".DB_PREFIX."_blocked_folders";
         $blockedFolders = $this->fetchRows($this->executeQuery($sql));
         foreach ($blockedFolders as $folder) {
-            $sql = "update router_blocked_folders set folderExists = ? where id = ?";
+            $sql = "update ".DB_PREFIX."_blocked_folders set folderExists = ? where id = ?";
             if(is_dir($folder["name"])) {
                 $params = [1, $folder["id"]];
             } else {

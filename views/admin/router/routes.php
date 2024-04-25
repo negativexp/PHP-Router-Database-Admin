@@ -1,4 +1,5 @@
 <?php
+    include_once("config.php");
     include_once("db.php");
     $db = new Database();
     $db->update();
@@ -60,7 +61,7 @@
             <article class="w100">
                 <?php
                 if(isset($db)) {
-                    $sql = "select * from router_routes";
+                    $sql = "select * from ".DB_PREFIX."_routes";
                     $routes = $db->fetchRows($db->executeQuery($sql));
                     echo "<table>";
                     echo "<thead>";

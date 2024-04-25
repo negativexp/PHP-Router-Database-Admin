@@ -3,9 +3,20 @@ include_once("config.php");
 class Router {
     public function __construct()
     {
+        $this->checkIfdatabaseHasTables();
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $this->checkBlockedFolders($parsedURL);
         $this->checkAllowedFileTypes($parsedURL);
+    }
+    private function checkIfdatabaseHasTables(): void {
+        include_once("db.php");
+        $db = new Database();
+        $sql = "SELECT COUNT(DISTINCT `table_name`) FROM `information_schema`.`columns` WHERE `table_schema` = ?";
+        $params = [$db->database];
+        if($db->fetchSingleRow($db->executeQuery($sql, $params))["COUNT(DISTINCT `table_name`)"] == 0) {
+            include_once("dbTemplate.php");
+            exit();
+        }
     }
 
     private function checkBlockedFolders($parsedURL): void
@@ -205,9 +216,9 @@ foreach($routes as $route) {
 }
 //default admin routes
 $router->get("/admin/login", "views/admin/adminLogin.php");
+$router->post("/admin/auth", "actions/admin/login.php");
 $router->adminMiddleware();
 $router->get("/admin", "views/admin/admin.php");
-$router->post("/admin/auth", "actions/admin/login.php");
 $router->get("/admin/logout", "actions/admin/logout.php");
 
 $router->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
@@ -224,4 +235,6 @@ $router->get("/admin/database/tables", "views/admin/database/tables.php");
 $router->get('/admin/database/table/$name', "views/admin/database/getTable.php");
 $router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
 $router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
+$router->post("/admin/database/addRow", "actions/admin/database/addRow.php");
+$router->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
 $router->not_found();

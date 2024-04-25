@@ -38,6 +38,7 @@ input[type="checkbox"] {
 a:hover {
     cursor: pointer;
 }
+
 #rowContainer {
     display: flex;
     flex-flow: column;
@@ -53,11 +54,14 @@ a:hover {
 input[type="checkbox"] {
     height: 15px;
 }
-#alert form label, #alert form input, #alert form select, #alert form label span, #alert option, #alert form h2, #alert form a {
+#alert form label, #alert form input, #alert form select, #alert form label span, #alert option, #alert form h2, #alert form a, #alert table td {
     color: black !important;
 }
 #alert form h2 {
     padding-bottom: 10px;
+}
+#alert table input {
+    width: 100%;
 }
 #alert form {
     display: flex;

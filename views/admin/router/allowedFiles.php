@@ -1,4 +1,5 @@
 <?php
+include_once("config.php");
 include_once("db.php");
 $db = new Database();
 $db->update();
@@ -48,7 +49,7 @@ $db->update();
             <article class="w100">
                 <?php
 if(isset($db)) {
-    $sql = "select * from router_allowed_file_types";
+    $sql = "select * from ".DB_PREFIX."_allowed_file_types";
     $allowedFiles = $db->fetchRows($db->executeQuery($sql));
     echo "<table>";
     echo "<thead>";
