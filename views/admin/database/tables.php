@@ -10,8 +10,8 @@ $db->update();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../../adminStyle.css">
-    <script defer src="../../adminScript.js"></script>
+    <link rel="stylesheet" href="../../resources/admin/adminStyle.css">
+    <script defer src="../../resources/admin/adminScript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
