@@ -11,7 +11,7 @@ CREATE TABLE " . DB_PREFIX . "_logs (id INT AUTO_INCREMENT, route TEXT, getArr T
 INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('css', 'text/css');
 INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('js', 'text/javascript');
 INSERT INTO " . DB_PREFIX . "_routes (route, type, path, fileExists) VALUES ('/', 'get', 'views/index.php', 0);
-INSERT INTO " . DB_PREFIX . "_users (username, password) VALUES ('root', 'password');
+INSERT INTO " . DB_PREFIX . "_users (username, password) VALUES ('root', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
 ";
 $db->executeMultipleQueries($sql);
 echo "<p>Tables created!</p>";
