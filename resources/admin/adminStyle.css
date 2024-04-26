@@ -344,7 +344,6 @@ section {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    justify-content: space-around;
 }
 article {
     border-radius: var(--radius);
@@ -406,7 +405,7 @@ article.w90 {
 }
 
 article.w100 {
-    width: calc(100% - var(--padding));
+    width: calc(100%);
 }
 
 @media screen and (max-width: 1000px) {
