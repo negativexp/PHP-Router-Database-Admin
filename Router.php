@@ -221,6 +221,8 @@ $router->adminMiddleware();
 $router->get("/admin", "views/admin/admin.php");
 $router->get("/admin/logout", "actions/admin/logout.php");
 
+$router->get("/admin/logs", "views/admin/logs.php");
+
 $router->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
 $router->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
 $router->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
@@ -233,8 +235,10 @@ $router->get("/admin/router/blockedFolders", "views/admin/router/blockedFolders.
 
 $router->get("/admin/database/tables", "views/admin/database/tables.php");
 $router->get('/admin/database/table/$name', "views/admin/database/getTable.php");
+$router->get('/admin/database/customSql', "views/admin/database/customSql.php");
 $router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
 $router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
 $router->post("/admin/database/addRow", "actions/admin/database/addRow.php");
 $router->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
+$router->post("/admin/database/customSql", "actions/admin/database/customSql.php");
 $router->not_found();

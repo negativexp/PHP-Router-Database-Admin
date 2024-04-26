@@ -1,4 +1,5 @@
 <?php
+include_once("actions/admin/logger.php");
 include_once("config.php");
 if(isset($_POST["filetype"]) && isset($_POST["mimetype"])) {
     $db = new Database();

@@ -1,4 +1,5 @@
 <?php
+include_once("actions/admin/logger.php");
 $tableName = str_replace(" ", "", $_POST["tableName"]); // Assuming this is sanitized and validated
 $columns = $_POST['name'];
 $types = $_POST['type'];

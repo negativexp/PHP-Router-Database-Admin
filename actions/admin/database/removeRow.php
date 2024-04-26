@@ -1,4 +1,5 @@
 <?php
+include_once("actions/admin/logger.php");
 if(isset($_POST["tableName"]) && isset($_POST["id"])) {
     $tableName = $_POST["tableName"];
     $id = $_POST["id"];

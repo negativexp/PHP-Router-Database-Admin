@@ -1,4 +1,5 @@
 <?php
+include_once("actions/admin/logger.php");
 include_once("config.php");
 if(isset($_POST["route"]) && isset($_POST["type"]) && isset($_POST["path"])) {
     $db = new Database();

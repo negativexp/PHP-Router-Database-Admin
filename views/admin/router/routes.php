@@ -7,16 +7,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../../resources/admin/adminStyle.css">
-    <script defer src="../../resources/admin/adminScript.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
+<?php include_once("views/admin/components/head.php"); ?>
 <body>
 <div id="alert">
     <form method="post" action="/admin/router/addRoute">
@@ -67,12 +58,12 @@
                     echo "<table>";
                     echo "<thead>";
                     echo "<tr>
-<td class='medium'>Id</td>
-<td class='medium'>Route</td>
-<td class='medium'>Type</td>
-<td class='medium'>Path</td>
-<td class='medium'>File exists?</td>
-<td class='medium'>Options</td></tr>";
+<td>Id</td>
+<td>Route</td>
+<td>Type</td>
+<td>Path</td>
+<td>File exists?</td>
+<td>Options</td></tr>";
                     echo "</thead>";
                     foreach ($routes as $route) {
                         echo "<tr>";

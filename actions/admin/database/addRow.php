@@ -1,4 +1,5 @@
 <?php
+include_once("actions/admin/logger.php");
 if(isset($_POST["tableName"])) {
     $tableName = $_POST["tableName"];
     $params = array_values($_POST);

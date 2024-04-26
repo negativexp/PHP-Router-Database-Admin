@@ -18,6 +18,7 @@
     --blue: #2196F2;
     --orange: #FFAF00;
     --yellow: #FFD700;
+    --color1: #f1f1f1;
 }
 input[type="checkbox"] {
     width: 25px;
@@ -62,6 +63,9 @@ input[type="checkbox"] {
 }
 #alert table input {
     width: 100%;
+}
+form textarea {
+    min-width: 100%;
 }
 #alert form {
     display: flex;
@@ -132,7 +136,7 @@ a {
 a.button, input[type="submit"] {
     border: none;
     border-radius: var(--radius);
-    background-color: #ebecec;
+    background-color: #e3e3e3;
     color: black;
     display: flex;
     align-items: center;
@@ -142,6 +146,9 @@ a.button, input[type="submit"] {
 a.button:hover, input[type="submit"]:hover {
     background-color: #a5a5a5;
     cursor: pointer;
+}
+.fit {
+    width: fit-content;
 }
 .sidepanel {
     background-color: #343a40;
@@ -220,7 +227,7 @@ nav a:not(.active, .button):hover {
 }
 
 main {
-    background-color: #F8F8FA;
+    background-color: #e5e5e5;
     flex: 1;
     overflow-y: scroll;
 }
@@ -295,7 +302,7 @@ table.products tbody td:nth-child(3) {
     justify-content: center;
 }
 table tbody tr:nth-child(even) {
-    background-color: #F8F8FA;
+    background-color: var(--color1);
 }
 table tbody td:nth-child(7) {
     white-space: nowrap;

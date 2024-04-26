@@ -22,7 +22,9 @@
         <a class="small <?= str_contains($parsedURL, "/admin/database") ? "active" : "" ?>" onclick="subnav('sub-nav2')">Databáze</a>
         <div class="sub-nav <?= str_contains($parsedURL, "/admin/database") ? "subnavopen" : "" ?>" id="sub-nav2">
             <a class="small <?= active("/admin/database/tables", $parsedURL) ?>" href="/admin/database/tables">Tabulky</a>
+            <a class="small <?= active("/admin/database/customSql", $parsedURL) ?>" href="/admin/database/customSql">Vlastní SQL</a>
         </div>
+        <a class="small <?= active("/admin/logs", $parsedURL) ?>" href="/admin/logs">Logs</a>
         <a class="logout small button">Odhlásit se</a>
     </nav>
     <div class="profile">

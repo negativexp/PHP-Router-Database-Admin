@@ -7,16 +7,7 @@ $db->update();
 
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../../resources/admin/adminStyle.css">
-    <script defer src="../../resources/admin/adminScript.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
+<?php include_once("views/admin/components/head.php"); ?>
 <body>
 <div id="alert">
     <form method="post" action="/admin/router/addAllowedFileType">
@@ -54,10 +45,10 @@ if(isset($db)) {
     echo "<table>";
     echo "<thead>";
     echo "<tr>
-<td class='medium'>Id</td>
-<td class='medium'>file type</td>
-<td class='medium'>mime type</td>
-<td class='medium'>Options</td></tr>";
+<td>Id</td>
+<td>file type</td>
+<td>mime type</td>
+<td>Options</td></tr>";
     echo "</thead>";
 
     foreach ($allowedFiles as $folder) {
