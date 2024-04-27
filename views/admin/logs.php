@@ -40,7 +40,13 @@
                     echo "</thead>";
                     echo "<tbody>";
                     foreach($columnNames as $name) {
-                        echo "<td>{$postArr[$name]}</td>";
+                        if(is_array($postArr[$name])) {
+                            echo "<td>";
+                            foreach($postArr[$name] as $item) {
+                                echo "$item, ";
+                            }
+                            echo "</td>";
+                        } else echo "<td>{$postArr[$name]}</td>";
                     }
                     echo "</tbody>";
                     echo "</table>";
