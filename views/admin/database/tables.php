@@ -1,7 +1,5 @@
 <?php
-include_once("db.php");
 $db = new Database();
-$db->update();
 ?>
 <!DOCTYPE html>
 <html lang="en">

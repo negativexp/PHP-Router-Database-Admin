@@ -1,12 +1,5 @@
 <?php
-include_once("db.php");
 $db = new Database();
-$db->update();
-if(isset($name)) {
-    $db = new Database();
-    $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$name}'";
-    $columns = $db->fetchRows($db->executeQuery($sql));
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,6 +11,8 @@ if(isset($name)) {
         <h2>Přidat řádek</h2>
         <input type="hidden" name="tableName" value="<?= isset($name) ? $name : "..."?>">
         <?php
+        $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$name}'";
+        $columns = $db->fetchRows($db->executeQuery($sql));
         echo "<table>";
         echo "<thead>";
         echo "<tr>";

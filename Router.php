@@ -1,30 +1,84 @@
 <?php
+include_once("db.php");
 include_once("config.php");
 class Router {
+    private $db;
     public function __construct()
     {
-        $this->checkIfdatabaseHasTables();
+        $this->db = new Database();
+        $this->db->checkTables();
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $this->checkBlockedFolders($parsedURL);
         $this->checkAllowedFileTypes($parsedURL);
+        $this->checkNormalRoutes();
+        $this->checkAdminRoutes();
+        $this->not_found();
     }
-    private function checkIfdatabaseHasTables(): void {
-        include_once("db.php");
-        $db = new Database();
-        $sql = "SELECT COUNT(DISTINCT `table_name`) FROM `information_schema`.`columns` WHERE `table_schema` = ?";
-        $params = [$db->database];
-        if($db->fetchSingleRow($db->executeQuery($sql, $params))["COUNT(DISTINCT `table_name`)"] == 0) {
-            include_once("dbTemplate.php");
-            exit();
+    private function checkAdminRoutes(): void {
+        $this->get("/admin/login", "views/admin/adminLogin.php");
+        $this->post("/admin/auth", "actions/admin/login.php");
+        $this->adminMiddleware();
+        $this->get("/admin", "views/admin/admin.php");
+        $this->get("/admin/logout", "actions/admin/logout.php");
+        $this->get("/admin/logs", "views/admin/logs.php");
+        $this->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
+        $this->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
+        $this->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
+        $this->post("/admin/router/removeBlockedFolder", "actions/admin/router/removeBlockedFolder.php");
+        $this->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllowedFileType.php");
+        $this->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
+        $this->get("/admin/router/routes", "views/admin/router/routes.php");
+        $this->get("/admin/router/allowedFiles", "views/admin/router/allowedFiles.php");
+        $this->get("/admin/router/blockedFolders", "views/admin/router/blockedFolders.php");
+        $this->get("/admin/database/tables", "views/admin/database/tables.php");
+        $this->get('/admin/database/table/$name', "views/admin/database/getTable.php");
+        $this->get('/admin/database/customSql', "views/admin/database/customSql.php");
+        $this->post("/admin/database/addTable", "actions/admin/database/addTable.php");
+        $this->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
+        $this->post("/admin/database/addRow", "actions/admin/database/addRow.php");
+        $this->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
+        $this->post("/admin/database/customSql", "actions/admin/database/customSql.php");
+    }
+    private function checkNormalRoutes(): void {
+        $sql = "select * from ".DB_PREFIX."_routes";
+        $routes = $this->db->fetchRows($this->db->executeQuery($sql));
+        foreach($routes as $route) {
+            switch ($route["type"]) {
+                case "get": {
+                    $this->get($route["route"], $route["path"]);
+                    break;
+                }
+                case "post": {
+                    $this->post($route["route"], $route["path"]);
+                    break;
+                }
+                case "getpost": {
+                    $this->getpost($route["route"], $route["path"]);
+                    break;
+                }
+                case "patch": {
+                    $this->patch($route["route"], $route["path"]);
+                    break;
+                }
+                case "put": {
+                    $this->put($route["route"], $route["path"]);
+                    break;
+                }
+                case "delete": {
+                    $this->delete($route["route"], $route["path"]);
+                    break;
+                }
+                case "any": {
+                    $this->any($route["route"], $route["path"]);
+                    break;
+                }
+            }
         }
     }
-
     private function checkBlockedFolders($parsedURL): void
     {
-        include_once("db.php");
-        $db = new Database();
         $sql = "select * from ".DB_PREFIX."_blocked_folders";
-        $blockedFolders = $db->fetchRows($db->executeQuery($sql));
+        $blockedFolders = $this->db->fetchRows($this->db->executeQuery($sql));
         foreach ($blockedFolders as $blockedFolder) {
             if(str_contains($parsedURL, $blockedFolder["name"])) {
                 $this->not_found();
@@ -33,10 +87,8 @@ class Router {
     }
     private function checkAllowedFileTypes($parsedURL): void
     {
-        include_once("db.php");
-        $db = new Database();
         $sql = "select * from ".DB_PREFIX."_allowed_file_types";
-        $results = $db->fetchRows($db->executeQuery($sql));
+        $results = $this->db->fetchRows($this->db->executeQuery($sql));
         $allowedFileTypes = [];
         foreach ($results as $result) {
             $allowedFileTypes[$result["filetype"]] = $result["mimetype"];
@@ -52,43 +104,43 @@ class Router {
             }
         }
     }
-    public function get($route, $path_to_include): void
+    private function get($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $this->route($route, $path_to_include);
         }
     }
-    public function post($route, $path_to_include): void
+    private function post($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $this->route($route, $path_to_include);
         }
     }
-    public function getpost($route, $path_to_include): void
+    private function getpost($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD'] == 'GET') {
             $this->route($route, $path_to_include);
         }
     }
-    public function put($route, $path_to_include): void
+    private function put($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
             $this->route($route, $path_to_include);
         }
     }
-    public function patch($route, $path_to_include): void
+    private function patch($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'PATCH') {
             $this->route($route, $path_to_include);
         }
     }
-    public function delete($route, $path_to_include): void
+    private function delete($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
             $this->route($route, $path_to_include);
         }
     }
-    public function any($route, $path_to_include): void
+    private function any($route, $path_to_include): void
     {
         $this->route($route, $path_to_include);
     }
@@ -142,11 +194,11 @@ class Router {
         include_once __DIR__ . "/$path_to_include";
         exit();
     }
-    public function out($text): void
+    private function out($text): void
     {
         echo htmlspecialchars($text);
     }
-    public function set_csrf(): void
+    private function set_csrf(): void
     {
         session_start();
         if (!isset($_SESSION["csrf"])) {
@@ -154,7 +206,7 @@ class Router {
         }
         echo '<input type="hidden" name="csrf" value="' . $_SESSION["csrf"] . '">';
     }
-    public function is_csrf_valid(): bool
+    private function is_csrf_valid(): bool
     {
         session_start();
         if (!isset($_SESSION['csrf']) || !isset($_POST['csrf'])) {
@@ -165,80 +217,15 @@ class Router {
         }
         return true;
     }
-    public function not_found(): void {
+    private function not_found(): void {
         http_response_code(404);
         die();
     }
-
-    public function adminMiddleware(): void {
+    private function adminMiddleware(): void {
         session_start();
         if(!isset($_SESSION["admin"])) {
             header("location: /admin/login");
         }
     }
 }
-include_once("db.php");
 $router = new Router();
-$db = new Database();
-$sql = "select * from ".DB_PREFIX."_routes";
-$routes = $db->fetchRows($db->executeQuery($sql));
-foreach($routes as $route) {
-    switch ($route["type"]) {
-        case "get": {
-            $router->get($route["route"], $route["path"]);
-            break;
-        }
-        case "post": {
-            $router->post($route["route"], $route["path"]);
-            break;
-        }
-        case "getpost": {
-            $router->getpost($route["route"], $route["path"]);
-            break;
-        }
-        case "patch": {
-            $router->patch($route["route"], $route["path"]);
-            break;
-        }
-        case "put": {
-            $router->put($route["route"], $route["path"]);
-            break;
-        }
-        case "delete": {
-            $router->delete($route["route"], $route["path"]);
-            break;
-        }
-        case "any": {
-            $router->any($route["route"], $route["path"]);
-            break;
-        }
-    }
-}
-//default admin routes
-$router->get("/admin/login", "views/admin/adminLogin.php");
-$router->post("/admin/auth", "actions/admin/login.php");
-$router->adminMiddleware();
-$router->get("/admin", "views/admin/admin.php");
-$router->get("/admin/logout", "actions/admin/logout.php");
-
-$router->get("/admin/logs", "views/admin/logs.php");
-
-$router->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
-$router->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
-$router->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
-$router->post("/admin/router/removeBlockedFolder", "actions/admin/router/removeBlockedFolder.php");
-$router->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllowedFileType.php");
-$router->post("/admin/router/removeAllowedFileType", "actions/admin/router/removeAllowedFileType.php");
-$router->get("/admin/router/routes", "views/admin/router/routes.php");
-$router->get("/admin/router/allowedFiles", "views/admin/router/allowedFiles.php");
-$router->get("/admin/router/blockedFolders", "views/admin/router/blockedFolders.php");
-
-$router->get("/admin/database/tables", "views/admin/database/tables.php");
-$router->get('/admin/database/table/$name', "views/admin/database/getTable.php");
-$router->get('/admin/database/customSql', "views/admin/database/customSql.php");
-$router->post("/admin/database/addTable", "actions/admin/database/addTable.php");
-$router->post("/admin/database/removeTable", "actions/admin/database/removeTable.php");
-$router->post("/admin/database/addRow", "actions/admin/database/addRow.php");
-$router->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
-$router->post("/admin/database/customSql", "actions/admin/database/customSql.php");
-$router->not_found();

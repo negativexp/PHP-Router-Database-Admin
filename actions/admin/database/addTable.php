@@ -1,14 +1,12 @@
 <?php
-include_once("actions/admin/logger.php");
-$tableName = str_replace(" ", "", $_POST["tableName"]); // Assuming this is sanitized and validated
+$db = new Database();
+$tableName = str_replace(" ", "", $_POST["tableName"]);
 $columns = $_POST['name'];
 $types = $_POST['type'];
-$isNull = isset($_POST['isNull']) ? $_POST['isNull'] : array(); // Adjusting for isset() check
+$isNull = isset($_POST['isNull']) ? $_POST['isNull'] : array();
 $autoIncrement = isset($_POST['autoIncrement']) ? $_POST['autoIncrement'] : array();
 
-// Construct SQL query
-$sql = "CREATE TABLE `$tableName` ("; // Escape table name with backticks
-
+$sql = "CREATE TABLE `$tableName` (";
 for ($i = 0; $i < count($columns); $i++) {
     $sql .= $columns[$i] . " " . $types[$i];
 
@@ -31,12 +29,8 @@ for ($i = 0; $i < count($columns); $i++) {
         $sql .= ", ";
     }
 }
-
 $sql .= ");";
-
-include_once("db.php");
-$db = new Database();
 $db->executeQuery($sql, [], false);
-
-// Ensure no output is sent before this point
+include_once("actions/admin/logger.php");
 header("location: /admin/database/tables");
+exit();

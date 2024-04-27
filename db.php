@@ -3,7 +3,7 @@ class Database {
     private $servername = "localhost";
     private $dbusername = "root";
     private $dbpassword = "password";
-    public $database = "routerdatabaseadmin";
+    private $database = "routerdatabaseadmin";
     private $conn;
     public function __construct() {
         $this->connect();
@@ -14,20 +14,33 @@ class Database {
             die("Connection failed: " . $this->conn->connect_error);
         }
     }
+    public function checkTables() {
+        $sql = "SELECT COUNT(DISTINCT `table_name`) FROM `information_schema`.`columns` WHERE `table_schema` = ?";
+        $params = [$this->database];
+        if($this->fetchSingleRow($this->executeQuery($sql, $params))["COUNT(DISTINCT `table_name`)"] == 0) {
+            $sql = "
+            CREATE TABLE " . DB_PREFIX . "_allowed_file_types (id INT AUTO_INCREMENT, filetype TEXT, mimetype TEXT, PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_blocked_folders (id INT AUTO_INCREMENT, name TEXT, folderExists TINYINT(1), PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_routes (id INT AUTO_INCREMENT, route TEXT, type TEXT, path TEXT, fileExists TINYINT(1), PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_users (id INT AUTO_INCREMENT, username TEXT, password TEXT, PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_logs (id INT AUTO_INCREMENT, route TEXT, getArr TEXT, postArr TEXT, PRIMARY KEY (id));
+            INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('css', 'text/css');
+            INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('js', 'text/javascript');
+            INSERT INTO " . DB_PREFIX . "_routes (route, type, path, fileExists) VALUES ('/', 'get', 'views/index.php', 0);
+            INSERT INTO " . DB_PREFIX . "_users (username, password) VALUES ('root', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
+            ";
+            $this->executeMultipleQueries($sql);
+            echo "tables created... Refresh for change...";
+            exit();
+        }
+    }
     private function disconnect() {
         $this->conn->close();
     }
-    public function getLastInsertedId() {
-        return $this->conn->insert_id;
-    }
-
     // for non-select queries, set returnResult to false on call.
     public function executeQuery($sql, $params = [], $returnResult = true) {
         try {
             $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                throw new Exception("SQL error: " . $this->conn->error);
-            }
             if (!empty($params)) {
                 $types = '';
                 $bindParams = [&$types];
@@ -47,12 +60,12 @@ class Database {
             }
             $stmt->execute();
             if ($stmt->error) {
-                die("Error in execute statement: " . $stmt->error);
+                throw new Exception("Error in execute statement: " . $stmt->error);
             }
             if ($returnResult) {
                 $result = $stmt->get_result();
                 if ($result === false) {
-                    die("Error in getting result: " . $stmt->error);
+                    throw new Exception("Error in getting result: " . $stmt->error);
                 }
                 return $result;
             }
@@ -62,7 +75,6 @@ class Database {
             return $success;
         } catch (mysqli_sql_exception $e) {
             echo "<p><b>mysqli_sql_exception</b>: {$e->getMessage()}</p>";
-            die();
         }
     }
     public function fetchRows($result) {
@@ -79,12 +91,10 @@ class Database {
             return null;
         }
     }
-
-    public function update(): void {
+    public function updateRouter(): void {
         $this->updateRoutes();
         $this->updateBlockedFolders();
     }
-
     private function updateRoutes(): void {
         $sql = "select * from ".DB_PREFIX."_routes";
         $routes = $this->fetchRows($this->executeQuery($sql));
@@ -98,7 +108,6 @@ class Database {
             $this->executeQuery($sql, $params, false);
         }
     }
-
     private function updateBlockedFolders(): void {
         $sql = "select * from ".DB_PREFIX."_blocked_folders";
         $blockedFolders = $this->fetchRows($this->executeQuery($sql));
@@ -112,7 +121,6 @@ class Database {
             $this->executeQuery($sql, $params, false);
         }
     }
-
     private function fetchSingleColumn($result): array {
         $rows = [];
         while ($row = $result->fetch_array(MYSQLI_NUM)) {
@@ -124,7 +132,6 @@ class Database {
         $sql = "SHOW TABLES";
         return $this->fetchSingleColumn($this->executeQuery($sql));
     }
-
     public function executeMultipleQueries($sql) {
         $queries = explode(';', $sql);
 
@@ -136,5 +143,3 @@ class Database {
         }
     }
 }
-
-$db = new Database();

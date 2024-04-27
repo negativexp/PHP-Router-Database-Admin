@@ -1,17 +1,15 @@
 <?php
-include_once("actions/admin/logger.php");
 if(isset($_POST["sql"])) {
+    $db = new Database();
     $getResult = isset($_POST["getResult"]);
     $sql = $_POST["sql"];
-    include_once("db.php");
-    $db = new Database();
     if($getResult) {
         $result = urlencode(serialize($db->fetchRows($db->executeQuery($sql))));
         header("location: /admin/database/customSql?success=".$result);
-        die();
     } else {
-        $db->executeQuery($sql, [], true);
+        $db->executeQuery($sql, [], false);
         header("location: /admin/database/customSql");
-        die();
     }
+    include_once("actions/admin/logger.php");
+    exit();
 }

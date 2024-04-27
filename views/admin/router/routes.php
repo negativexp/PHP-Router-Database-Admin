@@ -1,8 +1,6 @@
 <?php
-    include_once("config.php");
-    include_once("db.php");
     $db = new Database();
-    $db->update();
+    $db->updateRouter();
 ?>
 
 <!DOCTYPE html>
