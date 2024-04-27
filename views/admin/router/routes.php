@@ -28,7 +28,26 @@
         </label>
         <label>
             <span>Path</span>
-            <input type="text" name="path" required>
+            <select name="path" required>
+                <?php
+                $path = "views";
+                $files = scandir($path);
+                foreach ($files as $file) {
+                    if ($file != '.' && $file != '..' && $file != "admin") {
+                        if (is_dir($path . '/' . $file)) {
+                            $subfiles = scandir($path . '/' . $file);
+                            foreach ($subfiles as $subfile) {
+                                if ($subfile != '.' && $subfile != '..') {
+                                    echo '<option value="' . $file . '/' . $subfile . '">' . $file . '/' . $subfile . '</option>';
+                                }
+                            }
+                        } else {
+                            echo '<option value="' . $file . '">' . $file . '</option>';
+                        }
+                    }
+                }
+                ?>
+            </select>
         </label>
         <div class="options">
             <a class="button small" onclick="hideAlert()">Zavřít</a>
@@ -55,13 +74,7 @@
                     $routes = $db->fetchRows($db->executeQuery($sql));
                     echo "<table>";
                     echo "<thead>";
-                    echo "<tr>
-<td>Id</td>
-<td>Route</td>
-<td>Type</td>
-<td>Path</td>
-<td>File exists?</td>
-<td>Options</td></tr>";
+                    echo "<tr><td>Id</td><td>Route</td><td>Type</td><td>Path</td><td>File exists?</td><td>Options</td></tr>";
                     echo "</thead>";
                     foreach ($routes as $route) {
                         echo "<tr>";
@@ -69,13 +82,8 @@
                         echo "<td>{$route['route']}</td>";
                         echo "<td>{$route['type']}</td>";
                         echo "<td>{$route['path']}</td>";
-                        echo "<td>" . ($route['fileExists'] == 1 ? "true" : "false") . "</td>";
-                        echo "<td>
-                <form method='post' action='/admin/router/removeRoute'>
-                    <input type='hidden' name='id' value='{$route["id"]}'>
-                    <input type='submit' value='Delete'>
-                </form>
-              </td>";
+                        echo "<td>" . ($route['fileExists'] == 1 ? "True" : "False") . "</td>";
+                        echo "<td><form method='post' action='/admin/router/removeRoute'><input type='hidden' name='id' value='{$route["id"]}'><input type='submit' value='Delete'></form></td>";
                         echo "</tr>";
                     }
                     echo "</table>";
