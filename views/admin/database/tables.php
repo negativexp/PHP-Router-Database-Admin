@@ -5,7 +5,7 @@ $db = new Database();
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="alert">
+<div id="popupForm">
     <form class="w800" method="post" action="/admin/database/addTable">
         <label>
             <span>Jméno tabulky:</span>
@@ -41,7 +41,7 @@ $db = new Database();
             </div>
         </div>
         <div class="options">
-            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
             <a class="button small" onclick="addRow()">Přidat sloupec</a>
             <input class="small" type="submit">
         </div>
@@ -97,7 +97,7 @@ $db = new Database();
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayAlert()">Přidat</a>
+            <a class="button" onclick="displayPopupForm()">Přidat</a>
         </div>
         <section>
             <article class="w100">
@@ -106,7 +106,7 @@ if(isset($db)) {
     $tables = $db->getTables();
     echo "<table>";
     echo "<thead>";
-    echo "<tr><td>Database</td><td>Options</td></tr>";
+    echo "<tr><td>Database</td><td class='fit'>Options</td></tr>";
     echo "</thead>";
     foreach ($tables as $table) {
         echo "<tr>";

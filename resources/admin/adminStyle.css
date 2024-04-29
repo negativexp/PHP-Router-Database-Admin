@@ -24,7 +24,7 @@ input[type="checkbox"] {
     width: 25px;
     height: 25px;
 }
-#alert {
+#popupForm {
     z-index: -1;
     width: 100%;
     height: 100%;
@@ -55,41 +55,46 @@ a:hover {
 input[type="checkbox"] {
     height: 15px;
 }
-#alert form label, #alert form input, #alert form select, #alert form label span, #alert option, #alert form h2, #alert form a, #alert table td {
+#popupForm form label, #popupForm form input, #popupForm form select, #popupForm form label span, #popupForm option, #popupForm form h2, #popupForm form a, #popupForm table td {
     color: black !important;
 }
-#alert form h2 {
+#popupForm form h2 {
     padding-bottom: 10px;
 }
-#alert table input {
+#popupForm table input {
     width: 100%;
 }
 form textarea {
     min-width: 100%;
 }
-#alert form {
+#popupForm form {
     display: flex;
     gap: 10px;
     flex-flow: column;
     padding: var(--padding2);
     background: white;
 }
-#alert form {
+form {
+    display: flex;
+    flex-flow: column;
+    gap: var(--gap);
+}
+#popupForm form {
     width: 400px;
 }
-#alert form .button, #alert form input[type="submit"] {
+#popupForm form .button, #popupForm form input[type="submit"] {
     flex: 1;
 }
-#alert p {
+#popupForm p {
     color: black;
 }
-#alert .message {
+#popupForm .message {
     text-align: center;
     padding: var(--padding2);
     width: 400px;
     background-color: white;
 }
-#alert .options {
+#popupForm .options {
     padding: var(--padding2) 0 0 0;
     display: flex;
     background-color: white;
@@ -251,42 +256,18 @@ ul li {
     display: flex;
     gap: var(--gap);
 }
-.products .id {
-    width: 75px;
-}
-.products .image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.products img {
-    background-color: red;
-    width: 50px;
-    height: 50px;
-}
-.products li .price {
-    text-align: right;
-    flex: 1;
-}
-
-ul.tags {
-    display: flex;
-    flex-flow: row;
-}
-ul.tags li {
-    border: 1px solid black;
-    border-radius: var(--radius);
+table a {
+    color: purple;
+    text-decoration: underline;
 }
 table {
     border-collapse: collapse;
     table-layout: auto;
     width: 100%;
 }
-table thead td {
-
-}
-table thead td:last-child {
-    width: 200px;
+table .fit {
+    width: 1%;
+    white-space: nowrap;
 }
 table td {
     padding: var(--padding);
@@ -296,20 +277,11 @@ table thead td {
     text-align: center;
     border-bottom: 1px solid black;
 }
-table.products tbody td:nth-child(3) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 table tbody tr:nth-child(even) {
     background-color: var(--color1);
 }
 table tbody td:nth-child(7) {
     white-space: nowrap;
-    width: 0%;
-}
-.products thead td:nth-child(1), .products thead td:nth-child(2), .products thead td:nth-child(3) {
-    width: 0%;
 }
 table tbody tr:not(:last-child) {
     border-bottom: 1px dashed gray;
@@ -324,7 +296,6 @@ table tbody td:not(:last-child), table thead td:not(:last-child) {
     background-color: white;
     padding: var(--padding);
 }
-
 header {
     display: flex;
     flex-flow: column;
@@ -360,51 +331,51 @@ article {
 article h2 {
     padding-bottom: 10px;
 }
-article.w10 {
+.w10 {
     width: calc(10% - var(--padding));
 }
 
-article.w20 {
+.w20 {
     width: calc(20% - var(--padding));
 }
 
-article.w25 {
+.w25 {
     width: calc(25% - var(--padding));
 }
 
-article.w30 {
+.w30 {
     width: calc(30% - var(--padding));
 }
 
-article.w33 {
+.w33 {
     width: calc(33.333% - var(--padding));
 }
 
-article.w40 {
+.w40 {
     width: calc(40% - var(--padding));
 }
 
-article.w50 {
+.w50 {
     width: calc(50% - var(--padding));
 }
 
-article.w60 {
+.w60 {
     width: calc(60% - var(--padding));
 }
 
-article.w70 {
+.w70 {
     width: calc(70% - var(--padding));
 }
 
-article.w80 {
+.w80 {
     width: calc(80% - var(--padding));
 }
 
-article.w90 {
+.w90 {
     width: calc(90% - var(--padding));
 }
 
-article.w100 {
+.w100 {
     width: calc(100%);
 }
 

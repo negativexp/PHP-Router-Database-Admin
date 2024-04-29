@@ -18,7 +18,7 @@
                 echo "<table>";
                 echo "<thead>";
                 echo "<tr>
-<td>Id</td>
+<td class='fit'>Id</td>
 <td>Action route</td>
 <td>Post array</td></tr>";
                 echo "</thead>";

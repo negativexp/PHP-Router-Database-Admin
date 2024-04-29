@@ -7,7 +7,7 @@ $db->updateRouter();
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="alert">
+<div id="popupForm">
     <form method="post" action="/admin/router/addAllowedFileType">
         <h2>Přidat soubor</h2>
         <label>
@@ -19,7 +19,7 @@ $db->updateRouter();
             <input type="text" name="mimetype" required>
         </label>
         <div class="options">
-            <a class="small button" onclick="hideAlert()">Zavřít</a>
+            <a class="small button" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -32,7 +32,7 @@ $db->updateRouter();
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayAlert()">Přidat</a>
+            <a class="button" onclick="displayPopupForm()">Přidat</a>
         </div>
         <section>
             <article class="w100">
@@ -43,10 +43,10 @@ if(isset($db)) {
     echo "<table>";
     echo "<thead>";
     echo "<tr>
-<td>Id</td>
+<td class='fit'>Id</td>
 <td>file type</td>
 <td>mime type</td>
-<td>Options</td></tr>";
+<td class='fit'>Options</td></tr>";
     echo "</thead>";
 
     foreach ($allowedFiles as $folder) {

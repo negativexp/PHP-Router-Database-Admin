@@ -38,6 +38,7 @@ class Router {
         $this->post("/admin/database/addRow", "actions/admin/database/addRow.php");
         $this->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
         $this->post("/admin/database/customSql", "actions/admin/database/customSql.php");
+        $this->get('/admin/fileManager', "views/admin/fileManager.php");
     }
     private function checkNormalRoutes(): void {
         $sql = "select * from ".DB_PREFIX."_routes";

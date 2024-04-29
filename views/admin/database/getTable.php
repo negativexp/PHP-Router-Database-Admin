@@ -6,7 +6,7 @@ $db = new Database();
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
-<div id="alert">
+<div id="popupForm">
     <form method="post" action="/admin/database/addRow">
         <h2>Přidat řádek</h2>
         <input type="hidden" name="tableName" value="<?= isset($name) ? $name : "..."?>">
@@ -36,7 +36,7 @@ $db = new Database();
         echo "</table>";
         ?>
         <div class="options">
-            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -48,7 +48,7 @@ $db = new Database();
     <div class="wrapper">
         <div class="tableOptions">
             <a class="button" href="/admin/database/tables">Zpátky</a>
-            <a class="button" onclick="displayAlert()">Přidat řádek</a>
+            <a class="button" onclick="displayPopupForm()">Přidat řádek</a>
         </div>
         <section>
             <article class="w100">

@@ -7,7 +7,7 @@
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="alert">
+<div id="popupForm">
     <form method="post" action="/admin/router/addRoute">
         <h2>Přidat route</h2>
         <label>
@@ -50,7 +50,7 @@
             </select>
         </label>
         <div class="options">
-            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -64,7 +64,7 @@
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayAlert()">Přidat</a>
+            <a class="button" onclick="displayPopupForm()">Přidat</a>
         </div>
         <section>
             <article class="w100">
@@ -74,7 +74,7 @@
                     $routes = $db->fetchRows($db->executeQuery($sql));
                     echo "<table>";
                     echo "<thead>";
-                    echo "<tr><td>Id</td><td>Route</td><td>Type</td><td>Path</td><td>File exists?</td><td>Options</td></tr>";
+                    echo "<tr><td class='fit'>Id</td><td>Route</td><td>Type</td><td>Path</td><td>File exists?</td><td class='fit'>Options</td></tr>";
                     echo "</thead>";
                     foreach ($routes as $route) {
                         echo "<tr>";

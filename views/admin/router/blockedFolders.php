@@ -7,7 +7,7 @@ $db->updateRouter();
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="alert">
+<div id="popupForm">
     <form method="post" action="/admin/router/addBlockedFolder">
         <h2>Přidat složku</h2>
         <label>
@@ -15,7 +15,7 @@ $db->updateRouter();
             <input type="text" name="name" required>
         </label>
         <div class="options">
-            <a class="button small" onclick="hideAlert()">Zavřít</a>
+            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -29,7 +29,7 @@ $db->updateRouter();
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayAlert()">Přidat</a>
+            <a class="button" onclick="displayPopupForm()">Přidat</a>
         </div>
         <section>
             <article class="w100">
@@ -40,10 +40,10 @@ if(isset($db)) {
     echo "<table>";
     echo "<thead>";
     echo "<tr>
-<td>Id</td>
+<td class='fit'>Id</td>
 <td>Name</td>
 <td>Folder exists?</td>
-<td>Options</td></tr>";
+<td class='fit'>Options</td></tr>";
     echo "</thead>";
     foreach ($blockedFolders as $folder) {
         echo "<tr>";
