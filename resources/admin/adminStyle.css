@@ -272,6 +272,9 @@ table .fit {
 table td {
     padding: var(--padding);
 }
+table tr:not(:last-child) {
+
+}
 table thead td {
     font-weight: bold;
     text-align: center;
