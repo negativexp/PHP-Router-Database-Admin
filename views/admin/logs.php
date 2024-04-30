@@ -20,7 +20,7 @@
                 echo "<tr>
 <td class='fit'>Id</td>
 <td>Action route</td>
-<td>Post array</td></tr>";
+<td class='fit'>Post array</td></tr>";
                 echo "</thead>";
                 foreach ($logs as $log) {
                     echo "<tr>";
