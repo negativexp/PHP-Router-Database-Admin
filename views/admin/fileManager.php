@@ -45,7 +45,9 @@ $db = new Database();
                         <?php
                             $path = isset($_GET["folder"]) ? $_SERVER["DOCUMENT_ROOT"]."\\".$_GET["folder"] : $_SERVER["DOCUMENT_ROOT"];
                             $files = scandir($path);
-                            echo $path;
+                            if(isset($_GET["folder"])) {
+                                echo "<p>Cesta: root\\{$_GET["folder"]}</p>";
+                            } else echo "<p>Cesta: root</p>";
                             foreach($files as $file) {
                                 $fullpath = $path."\\".$file;
                                 if($file != "." && $file != "..") {
@@ -54,7 +56,7 @@ $db = new Database();
                                     if(is_dir($fullpath))
                                         if(isset($_GET["folder"])) {
                                             echo "<td><a href='?folder={$_GET["folder"]}\\{$file}'>{$file}</a></td>";
-                                        } else echo "<td><a href='?folder={$_GET["folder"]}{$file}'>{$file}</a></td>";
+                                        } else echo "<td><a href='?folder={$file}'>{$file}</a></td>";
                                     else echo "<td>{$file}</td>";
                                     if(is_dir($fullpath)) echo "<td>Složka</td>"; else echo "<td>".filesize($fullpath)." (bytes)</td>";
                                     echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
