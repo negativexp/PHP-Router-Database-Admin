@@ -16,6 +16,7 @@ if(isset($_POST["selected_files"]) && isset($_POST["delete"])) {
             unlink($file);
         }
     }
+    include_once("actions/admin/logger.php");
     returnWithBacklink();
 }
 returnWithoutBacklink();

@@ -4,11 +4,14 @@ if(isset($_POST["sql"])) {
     $getResult = isset($_POST["getResult"]);
     $sql = $_POST["sql"];
     if($getResult) {
-        $result = urlencode(serialize($db->fetchRows($db->executeQuery($sql))));
-        header("location: /admin/database/customSql?success=".$result);
+        $result = $db->fetchRows($db->executeQuery($sql));
+        $_SESSION["customsql_result"] = $result;
+        $sql = urlencode($sql);
+        header("location: /admin/database/customSql?sql={$sql}");
     } else {
         $db->executeQuery($sql, [], false);
-        header("location: /admin/database/customSql");
+        $sql = urlencode($sql);
+        header("location: /admin/database/customSql?sql={$sql}");
     }
     include_once("actions/admin/logger.php");
     exit();

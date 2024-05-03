@@ -8,7 +8,7 @@ if(isset($_POST["user"]) && isset($_POST["password"])) {
     $params = [$username, $password];
     if($db->fetchSingleRow($db->executeQuery($sql, $params))) {
         session_start();
-        $_SESSION["admin"] = true;
+        $_SESSION["admin"] = ["username" => "admin"];
         header("location: /admin");
     } else {
         header("location: /admin/login");
