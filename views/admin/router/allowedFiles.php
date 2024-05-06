@@ -57,7 +57,7 @@ if(isset($db)) {
         echo "<td>
                 <form method='post' action='/admin/router/removeAllowedFileType'>
                     <input type='hidden' name='id' value='{$folder["id"]}'>
-                    <input type='submit' value='Delete'>
+                    <input class='small' type='submit' value='Delete'>
                 </form>
               </td>";
         echo "</tr>";

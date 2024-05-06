@@ -38,11 +38,11 @@
                             $subfiles = scandir($path . '/' . $file);
                             foreach ($subfiles as $subfile) {
                                 if ($subfile != '.' && $subfile != '..') {
-                                    echo '<option value="' . $file . '/' . $subfile . '">' . $file . '/' . $subfile . '</option>';
+                                    echo '<option value="'.$path."/" . $file . '/' . $subfile . '">'.$path."/" . $file . '/' . $subfile . '</option>';
                                 }
                             }
                         } else {
-                            echo '<option value="' . $file . '">' . $file . '</option>';
+                            echo '<option value="'.$path."/".$file . '">' .$path."/".$file . '</option>';
                         }
                     }
                 }
@@ -83,7 +83,7 @@
                         echo "<td>{$route['type']}</td>";
                         echo "<td>{$route['path']}</td>";
                         echo "<td>" . ($route['fileExists'] == 1 ? "True" : "False") . "</td>";
-                        echo "<td><form method='post' action='/admin/router/removeRoute'><input type='hidden' name='id' value='{$route["id"]}'><input type='submit' value='Delete'></form></td>";
+                        echo "<td><form method='post' action='/admin/router/removeRoute'><input type='hidden' name='id' value='{$route["id"]}'><input class='small' type='submit' value='Delete'></form></td>";
                         echo "</tr>";
                     }
                     echo "</table>";

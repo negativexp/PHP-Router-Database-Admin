@@ -26,7 +26,7 @@ $db = new Database();
                     echo "<input type='hidden' name='backlink' value='{$_GET["folder"]}'>";
                 }
                 ?>
-                <a class="button">Přidat soubor</a>
+                <input class="button" type="submit" name="addFile" value="Přidat soubor">
                 <a class="button" onclick="location.reload()">Aktualizovat</a>
                 <input type="submit" name="delete" value="smazat">
             </div>
@@ -60,7 +60,7 @@ $db = new Database();
                                     else echo "<td>{$file}</td>";
                                     if(is_dir($fullpath)) echo "<td>Složka</td>"; else echo "<td>".filesize($fullpath)." (bytes)</td>";
                                     echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
-                                    echo "<td><a class='button'>Upravit</a></td>";
+                                    echo "<td><a class='button small'>Upravit</a></td>";
                                     echo "</tr>";
                                 }
                             }

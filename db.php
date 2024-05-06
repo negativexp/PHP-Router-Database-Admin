@@ -39,45 +39,42 @@ class Database {
     }
     // for non-select queries, set returnResult to false on call.
     public function executeQuery($sql, $params = [], $returnResult = true) {
-        try {
-            $stmt = $this->conn->prepare($sql);
-            if (!empty($params)) {
-                $types = '';
-                $bindParams = [&$types];
-                foreach ($params as &$param) {
-                    if (is_int($param)) {
-                        $types .= 'i';
-                    } elseif (is_float($param)) {
-                        $types .= 'd';
-                    } elseif (is_string($param)) {
-                        $types .= 's';
-                    } else {
-                        $types .= 'b';
-                    }
-                    $bindParams[] = &$param;
+        $stmt = $this->conn->prepare($sql);
+        if (!empty($params)) {
+            $types = '';
+            $bindParams = [&$types];
+            foreach ($params as &$param) {
+                if (is_int($param)) {
+                    $types .= 'i';
+                } elseif (is_float($param)) {
+                    $types .= 'd';
+                } elseif (is_string($param)) {
+                    $param = $this->sanatize($param);
+                    $types .= 's';
+                } else {
+                    $types .= 'b';
                 }
-                call_user_func_array([$stmt, 'bind_param'], $bindParams);
+                $bindParams[] = &$param;
             }
-            $stmt->execute();
-            if ($stmt->error) {
-                throw new Exception("Error in execute statement: " . $stmt->error);
-            }
-            if ($returnResult) {
-                $result = $stmt->get_result();
-                if ($result === false) {
-                    throw new Exception("Error in getting result: " . $stmt->error);
-                }
-                return $result;
-            }
-
-            $success = $stmt->affected_rows > 0;
-            $stmt->close();
-            return $success;
-        } catch (mysqli_sql_exception $e) {
-            echo "<p><b>mysqli_sql_exception</b>: {$e->getMessage()}</p>";
+            call_user_func_array([$stmt, 'bind_param'], $bindParams);
         }
+        $stmt->execute();
+        if ($stmt->error) {
+            return false;
+        }
+        if ($returnResult) {
+            $result = $stmt->get_result();
+            if ($result === false) {
+                return false;
+            }
+            return $result;
+        }
+
+        $success = $stmt->affected_rows > 0;
+        $stmt->close();
+        return $success;
     }
-    public function fetchRows($result) {
+    public function fetchRows($result): array {
         $rows = [];
         while ($row = $result->fetch_assoc()) {
             $rows[] = $row;
@@ -141,5 +138,9 @@ class Database {
                 $this->executeQuery($query, [], false);
             }
         }
+    }
+    public function sanatize($string): string
+    {
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
 }

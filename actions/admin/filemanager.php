@@ -4,9 +4,8 @@ function returnWithBacklink() {
         header("location: /admin/fileManager?folder={$_POST["backlink"]}");
     exit();
 }
-
 function returnWithoutBacklink() {
-    header("location: /admin/fileManager?folder={$_POST["backlink"]}");
+    header("location: /admin/fileManager");
     exit();
 }
 
@@ -19,4 +18,12 @@ if(isset($_POST["selected_files"]) && isset($_POST["delete"])) {
     include_once("actions/admin/logger.php");
     returnWithBacklink();
 }
+
+if($_POST["addFile"]) {
+    echo "mrdko";
+    echo $_POST["backlink"];
+    include_once("actions/admin/logger.php");
+}
+
+
 returnWithoutBacklink();
