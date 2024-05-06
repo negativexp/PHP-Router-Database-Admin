@@ -41,8 +41,8 @@ $db = new Database();
             </div>
         </div>
         <div class="options">
-            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
-            <a class="button small" onclick="addRow()">Přidat sloupec</a>
+            <a class="button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="addRow()">Přidat sloupec</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -115,7 +115,7 @@ if(isset($db)) {
                 <form class='formOptions' method='post' action='/admin/database/removeTable'>
                     <input type='hidden' name='name' value='{$table}' '>
                     <input class='small' type='submit' value='Smazat'>
-                    <a class='button small' href='/admin/database/table/{$table}'>Upravit</a>
+                    <a class='button' href='/admin/database/table/{$table}'>Upravit</a>
                 </form>
               </td>";
         echo "</tr>";

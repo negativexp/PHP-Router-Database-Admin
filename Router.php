@@ -38,7 +38,8 @@ class Router {
         $this->post("/admin/database/addRow", "actions/admin/database/addRow.php");
         $this->post("/admin/database/removeRow", "actions/admin/database/removeRow.php");
         $this->post("/admin/database/customSql", "actions/admin/database/customSql.php");
-        $this->get('/admin/fileManager', "views/admin/fileManager.php");
+        $this->get('/admin/fileManager', "views/admin/fileManager/fileManager.php");
+        $this->get('/admin/fileManager/$file', "views/admin/fileManager/file.php");
         $this->post('/admin/fileManager', "actions/admin/filemanager.php");
     }
     private function checkNormalRoutes(): void {

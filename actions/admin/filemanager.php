@@ -1,11 +1,10 @@
 <?php
-function returnWithBacklink() {
+function returnBack() {
     if(isset($_POST["backlink"]))
         header("location: /admin/fileManager?folder={$_POST["backlink"]}");
-    exit();
-}
-function returnWithoutBacklink() {
-    header("location: /admin/fileManager");
+    else {
+        header("location: /admin/fileManager");
+    }
     exit();
 }
 
@@ -16,14 +15,19 @@ if(isset($_POST["selected_files"]) && isset($_POST["delete"])) {
         }
     }
     include_once("actions/admin/logger.php");
-    returnWithBacklink();
+    returnBack();
 }
 
-if($_POST["addFile"]) {
-    echo "mrdko";
-    echo $_POST["backlink"];
+if(isset($_POST["addFile"]) && isset($_POST["fileName"])) {
+    if(isset($_POST["backlink"])) {
+        $file = fopen($_POST["backlink"]."/".$_POST["fileName"], "w");
+    } else $file = fopen($_POST["fileName"], "w");
+    fclose($file);
     include_once("actions/admin/logger.php");
+    returnBack();
 }
 
-
-returnWithoutBacklink();
+if(isset($_POST["saveFile"]) && isset($_POST["contents"])) {
+    //dodelat
+    returnBack();
+}

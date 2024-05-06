@@ -147,6 +147,7 @@ a.button, input[type="submit"] {
     align-items: center;
     justify-content: center;
     padding: 10px;
+    font-size: 16px;
 }
 a.button:hover, input[type="submit"]:hover {
     background-color: #a5a5a5;

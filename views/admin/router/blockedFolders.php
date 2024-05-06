@@ -15,7 +15,7 @@ $db->updateRouter();
             <input type="text" name="name" required>
         </label>
         <div class="options">
-            <a class="button small" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>

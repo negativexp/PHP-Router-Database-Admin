@@ -36,6 +36,6 @@
                 <p class="small">Administrátor</p>
             </div>
         </div>
-        <a class="button small" href="/admin/logout">Odhlásit se</a>
+        <a class="button" href="/admin/logout">Odhlásit se</a>
     </div>
 </div>
