@@ -14,7 +14,11 @@ $db = new Database();
             <span>Jméno souboru (včetně přípony)</span>
             <input type="text" name="fileName" required>
         </label>
-        <input type="hidden" name="backlink" value="<?= isset($_GET["folder"]) ? $_GET["folder"] : "" ?>">
+        <?php
+        if(isset($_GET["folder"])) {
+            echo "<input type='hidden' name='backlink' value='{$_GET["folder"]}'>";
+        }
+        ?>
         <div class="options">
             <a class="button" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit" name="addFile">

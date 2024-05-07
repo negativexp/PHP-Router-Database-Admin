@@ -30,7 +30,8 @@
                     echo "<td>{$log['route']}</td>";
                     echo "</td>";
                     echo "<td>";
-                    $postArr = unserialize($log["postArr"]);
+                    $postArr = urldecode($log["postArr"]);
+                    $postArr = unserialize($postArr);
                     $columnNames = array_keys($postArr);
                     echo "<table>";
                     echo "<thead>";

@@ -27,7 +27,8 @@ if(isset($_POST["addFile"]) && isset($_POST["fileName"])) {
     returnBack();
 }
 
-if(isset($_POST["saveFile"]) && isset($_POST["contents"])) {
-    //dodelat
+if(isset($_POST["saveFile"]) && isset($_POST["contents"]) && isset($_POST["filepath"])) {
+    file_put_contents($_POST["filepath"], $_POST["contents"]);
+    include_once("actions/admin/logger.php");
     returnBack();
 }

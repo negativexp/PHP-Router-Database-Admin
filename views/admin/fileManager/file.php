@@ -16,17 +16,21 @@ if(isset($file)) {
     <div class="wrapper">
         <form method="post" action="/admin/fileManager">
             <div class="tableOptions">
-                <input type="hidden" name="backlink" value="<?= isset($_GET["backlink"]) ? "?folder=".$_GET["backlink"] : ""?>">
-                <input type="hidden" name="path" value="<?= isset($_GET["backlink"]) ? "?folder=".$_GET["backlink"] : ""?>">
+                <input type="hidden" name="backlink" value="<?= isset($_GET["backlink"]) ? $_GET["backlink"] : ""?>">
+                <input type="hidden" name="filepath" value="<?= isset($file) ? $file : ""?>">
                 <a class="button" href="/admin/fileManager<?= isset($_GET["backlink"]) ? "?folder=".$_GET["backlink"] : ""?>">Zpátky</a>
                 <input type="submit" name="saveFile" value="Uložit">
             </div>
             <section>
                 <article class="w100">
                     <?php
-                    $content = file_get_contents($file)
+                    if(isset($file)) {
+                        if(is_file($file)) {
+                            $content = file_get_contents($file);
+                            echo "<textarea name='contents' style='height: 500px'>{$content}</textarea>";
+                        }
+                    }
                     ?>
-                    <textarea name="contents" style="height: 500px"><?= $content ?></textarea>
                 </article>
             </section>
         </form>
