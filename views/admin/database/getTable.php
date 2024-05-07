@@ -11,7 +11,7 @@ $db = new Database();
         <h2>Přidat řádek</h2>
         <input type="hidden" name="tableName" value="<?= isset($name) ? $name : "..."?>">
         <?php
-        $sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$name}'";
+        $sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$name}' ORDER BY ORDINAL_POSITION";
         $columns = $db->fetchRows($db->executeQuery($sql));
         echo "<table>";
         echo "<thead>";

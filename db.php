@@ -20,13 +20,13 @@ class Database {
         if($this->fetchSingleRow($this->executeQuery($sql, $params))["COUNT(DISTINCT `table_name`)"] == 0) {
             $sql = "
             CREATE TABLE " . DB_PREFIX . "_allowed_file_types (id INT AUTO_INCREMENT, filetype TEXT, mimetype TEXT, PRIMARY KEY (id));
-            CREATE TABLE " . DB_PREFIX . "_blocked_folders (id INT AUTO_INCREMENT, name TEXT, folderExists TINYINT(1), PRIMARY KEY (id));
-            CREATE TABLE " . DB_PREFIX . "_routes (id INT AUTO_INCREMENT, route TEXT, type TEXT, path TEXT, fileExists TINYINT(1), PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_blocked_folders (id INT AUTO_INCREMENT, name TEXT, PRIMARY KEY (id));
+            CREATE TABLE " . DB_PREFIX . "_routes (id INT AUTO_INCREMENT, route TEXT, type TEXT, path TEXT, PRIMARY KEY (id));
             CREATE TABLE " . DB_PREFIX . "_users (id INT AUTO_INCREMENT, username TEXT, password TEXT, PRIMARY KEY (id));
             CREATE TABLE " . DB_PREFIX . "_logs (id INT AUTO_INCREMENT, route TEXT, getArr TEXT, postArr TEXT, time DATETIME, PRIMARY KEY (id));
             INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('css', 'text/css');
             INSERT INTO " . DB_PREFIX . "_allowed_file_types (filetype, mimetype) VALUES ('js', 'text/javascript');
-            INSERT INTO " . DB_PREFIX . "_routes (route, type, path, fileExists) VALUES ('/', 'get', 'views/index.php', 0);
+            INSERT INTO " . DB_PREFIX . "_routes (route, type, path) VALUES ('/', 'get', 'views/index.php');
             INSERT INTO " . DB_PREFIX . "_users (username, password) VALUES ('root', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
             ";
             $this->executeMultipleQueries($sql);
@@ -86,36 +86,6 @@ class Database {
             return $result->fetch_assoc();
         } else {
             return null;
-        }
-    }
-    public function updateRouter(): void {
-        $this->updateRoutes();
-        $this->updateBlockedFolders();
-    }
-    private function updateRoutes(): void {
-        $sql = "select * from ".DB_PREFIX."_routes";
-        $routes = $this->fetchRows($this->executeQuery($sql));
-        foreach ($routes as $route) {
-            $sql = "update ".DB_PREFIX."_routes set fileExists = ? where id = ?";
-            if(file_exists($route["path"])) {
-                $params = [1, $route["id"]];
-            } else {
-                $params = [0, $route["id"]];
-            }
-            $this->executeQuery($sql, $params, false);
-        }
-    }
-    private function updateBlockedFolders(): void {
-        $sql = "select * from ".DB_PREFIX."_blocked_folders";
-        $blockedFolders = $this->fetchRows($this->executeQuery($sql));
-        foreach ($blockedFolders as $folder) {
-            $sql = "update ".DB_PREFIX."_blocked_folders set folderExists = ? where id = ?";
-            if(is_dir($folder["name"])) {
-                $params = [1, $folder["id"]];
-            } else {
-                $params = [0, $folder["id"]];
-            }
-            $this->executeQuery($sql, $params, false);
         }
     }
     private function fetchSingleColumn($result): array {

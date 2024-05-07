@@ -1,6 +1,5 @@
 <?php
     $db = new Database();
-    $db->updateRouter();
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +73,7 @@
                     $routes = $db->fetchRows($db->executeQuery($sql));
                     echo "<table>";
                     echo "<thead>";
-                    echo "<tr><td class='fit'>Id</td><td>Route</td><td>Type</td><td>Path</td><td>File exists?</td><td class='fit'>Options</td></tr>";
+                    echo "<tr><td class='fit'>Id</td><td>Route</td><td>Type</td><td>Path</td><td class='fit'>Options</td></tr>";
                     echo "</thead>";
                     foreach ($routes as $route) {
                         echo "<tr>";
@@ -82,7 +81,6 @@
                         echo "<td>{$route['route']}</td>";
                         echo "<td>{$route['type']}</td>";
                         echo "<td>{$route['path']}</td>";
-                        echo "<td>" . ($route['fileExists'] == 1 ? "True" : "False") . "</td>";
                         echo "<td><form method='post' action='/admin/router/removeRoute'><input type='hidden' name='id' value='{$route["id"]}'><input class='small' type='submit' value='Delete'></form></td>";
                         echo "</tr>";
                     }

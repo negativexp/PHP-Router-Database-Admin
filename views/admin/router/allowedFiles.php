@@ -1,6 +1,5 @@
 <?php
 $db = new Database();
-$db->updateRouter();
 ?>
 
 <!DOCTYPE html>

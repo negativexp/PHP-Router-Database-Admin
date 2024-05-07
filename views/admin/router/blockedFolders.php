@@ -1,6 +1,5 @@
 <?php
 $db = new Database();
-$db->updateRouter();
 ?>
 
 <!DOCTYPE html>
@@ -42,14 +41,12 @@ if(isset($db)) {
     echo "<tr>
 <td class='fit'>Id</td>
 <td>Name</td>
-<td>Folder exists?</td>
 <td class='fit'>Options</td></tr>";
     echo "</thead>";
     foreach ($blockedFolders as $folder) {
         echo "<tr>";
         echo "<td>{$folder['id']}</td>";
         echo "<td>{$folder['name']}</td>";
-        echo "<td>{$folder['folderExists']}</td>";
         echo "<td>
                 <form method='post' action='/admin/router/removeBlockedFolder'>
                     <input type='hidden' name='id' value='{$folder["id"]}'>

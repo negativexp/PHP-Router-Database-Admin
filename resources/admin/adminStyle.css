@@ -67,6 +67,12 @@ input[type="checkbox"] {
 form textarea {
     min-width: 100%;
 }
+table td.center .wrapper {
+    padding: 0;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
 #popupForm form {
     display: flex;
     gap: 10px;
@@ -328,6 +334,19 @@ article {
     gap: 5px;
     flex-flow: column;
     position: relative;
+}
+main {
+}
+.login {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 200px;
+    width: 100%;
+}
+.login input {
+    width: 100%;
 }
 .w800 {
     width: 900px !important;
