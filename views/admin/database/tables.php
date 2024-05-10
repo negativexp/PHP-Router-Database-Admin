@@ -5,7 +5,7 @@ $db = new Database();
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="popupForm">
+<div id="popupForm" class="popupform">
     <form class="w800" method="post" action="/admin/database/addTable">
         <label>
             <span>Jméno tabulky:</span>

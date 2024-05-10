@@ -6,7 +6,7 @@ $db = new Database();
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="popupForm">
+<div id="popupForm" class="popupform">
     <form method="post" action="/admin/router/addBlockedFolder">
         <h2>Přidat složku</h2>
         <label>

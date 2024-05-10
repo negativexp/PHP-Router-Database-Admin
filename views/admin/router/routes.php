@@ -6,7 +6,7 @@
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<div id="popupForm">
+<div id="popupForm" class="popupform">
     <form method="post" action="/admin/router/addRoute">
         <h2>Přidat route</h2>
         <label>

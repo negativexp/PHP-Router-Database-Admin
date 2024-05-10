@@ -6,7 +6,7 @@ $db = new Database();
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
-<div id="popupForm">
+<div id="popupForm" class="popupform">
     <form method="post" action="/admin/database/addRow">
         <h2>Přidat řádek</h2>
         <input type="hidden" name="tableName" value="<?= isset($name) ? $name : "..."?>">
