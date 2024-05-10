@@ -24,7 +24,7 @@ input[type="checkbox"] {
     width: 25px;
     height: 25px;
 }
-#popupForm {
+.popupform, .popupform2 {
     z-index: -1;
     width: 100%;
     height: 100%;
@@ -55,13 +55,13 @@ a:hover {
 input[type="checkbox"] {
     height: 15px;
 }
-#popupForm form label, #popupForm form input, #popupForm form select, #popupForm form label span, #popupForm option, #popupForm form h2, #popupForm form a, #popupForm table td {
+.popupform form label, .popupform form input, .popupform form select, .popupform form label span, .popupform option, .popupform form h2, .popupform form a, .popupform table td {
     color: black !important;
 }
-#popupForm form h2 {
+.popupform form h2 {
     padding-bottom: 10px;
 }
-#popupForm table input {
+.popupform table input {
     width: 100%;
 }
 form textarea {
@@ -73,7 +73,7 @@ table td.center .wrapper {
     flex-flow: row;
     align-items: center;
 }
-#popupForm form {
+.popupform form {
     display: flex;
     gap: 10px;
     flex-flow: column;
@@ -85,22 +85,22 @@ form {
     flex-flow: column;
     gap: var(--gap);
 }
-#popupForm form {
+.popupform form {
     width: 400px;
 }
-#popupForm form .button, #popupForm form input[type="submit"] {
+.popupform form .button, .popupform form input[type="submit"] {
     flex: 1;
 }
-#popupForm p {
+.popupform p {
     color: black;
 }
-#popupForm .message {
+.popupform .message {
     text-align: center;
     padding: var(--padding2);
     width: 400px;
     background-color: white;
 }
-#popupForm .options {
+.popupform .options {
     padding: var(--padding2) 0 0 0;
     display: flex;
     background-color: white;

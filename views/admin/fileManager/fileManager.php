@@ -7,7 +7,7 @@ $db = new Database();
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
 
-<div id="popupForm">
+<div id="popupForm" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Přidat soubor</h2>
         <label>
@@ -22,6 +22,24 @@ $db = new Database();
         <div class="options">
             <a class="button" onclick="hidePopupForm()">Zavřít</a>
             <input class="small" type="submit" name="addFile">
+        </div>
+    </form>
+</div>
+<div id="popupForm2" class="popupform">
+    <form method="post" action="/admin/fileManager">
+        <h2>Přidat složku</h2>
+        <label>
+            <span>Jméno složky</span>
+            <input type="text" name="folderName" required>
+        </label>
+        <?php
+        if(isset($_GET["folder"])) {
+            echo "<input type='hidden' name='backlink' value='{$_GET["folder"]}'>";
+        }
+        ?>
+        <div class="options">
+            <a class="button" onclick="hidePopupForm2()">Zavřít</a>
+            <input class="small" type="submit" name="addFolder">
         </div>
     </form>
 </div>
@@ -52,6 +70,7 @@ $db = new Database();
                 }
                 ?>
                 <a class="button" onclick="displayPopupForm()">Vytvořit soubor</a>
+                <a class="button" onclick="displayPopupForm2()">Vytvořit složku</a>
                 <a class="button" onclick="location.reload()">Aktualizovat</a>
                 <input type="submit" name="delete" value="smazat">
             </div>

@@ -6,7 +6,14 @@ function mobilenav() {
         nav.classList.toggle("open")
     }
 }
-
+function displayPopupForm2() {
+    const popupForm = document.getElementById("popupForm2")
+    popupForm.style.zIndex = 99
+}
+function hidePopupForm2() {
+    const popupForm = document.getElementById("popupForm2")
+    popupForm.style.zIndex = -1
+}
 function displayPopupForm() {
   const popupForm = document.getElementById("popupForm")
   popupForm.style.zIndex = 99

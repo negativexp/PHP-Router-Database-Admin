@@ -225,6 +225,7 @@ class Router {
         die();
     }
     private function adminMiddleware(): void {
+        //session is started on every ADMIN page due to this function.
         session_start();
         if(!isset($_SESSION["admin"])) {
             header("location: /admin/login");

@@ -13,10 +13,10 @@ if(isset($_POST["selected_files"]) && isset($_POST["delete"])) {
         foreach($_POST["selected_files"] as $file) {
             unlink($file);
         }
+        include_once("actions/admin/logger.php");
+        returnBack();
     }
-    include_once("actions/admin/logger.php");
-    returnBack();
-}
+} else header("location: /admin/fileManager?error=nothing_selected");
 
 if(isset($_POST["addFile"]) && isset($_POST["fileName"])) {
     if(isset($_POST["backlink"])) {
