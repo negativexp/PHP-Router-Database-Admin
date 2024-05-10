@@ -93,6 +93,7 @@ $db = new Database();
                             }
                             if(isset($files)) {
                                 foreach ($files as $file) {
+                                    $fullpath = $path."\\".$file;
                                     if($file != "." && $file != "..") {
                                         echo "<tr>";
                                         echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
