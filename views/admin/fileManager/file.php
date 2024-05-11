@@ -27,11 +27,102 @@ if(isset($file)) {
                     if(isset($file)) {
                         if(is_file($file)) {
                             $content = file_get_contents($file);
-                            echo "<textarea name='contents' style='height: 500px'>{$content}</textarea>";
+                            echo "
+  <div class='code-editor'>
+    <div class='row-numbers' id='rowNumbers'>
+      <p>1</p>
+    </div>
+    <textarea id='codeInput' spellcheck='false'>{$content}</textarea>
+  </div>";
                         }
                     }
                     ?>
                 </article>
+                <script>
+                    var codeInput = document.getElementById("codeInput");
+                    const symbols = {
+                        '[': ']',
+                        '(': ')',
+                        "'": "'",
+                        "{": "}",
+                    }
+                    function sleep(ms) {
+                        return new Promise(resolve => setTimeout(resolve, ms));
+                    }
+                    function updateNumbers() {
+                        var rowNumbersDiv = document.getElementById("rowNumbers")
+                        rowNumbersDiv.innerHTML = ''
+                        for (var i = 1; i <= codeInput.value.split('\n').length; i++) {
+                            var newRow = document.createElement("span")
+                            newRow.id = "coderow"+i
+                            newRow.textContent = i
+                            rowNumbersDiv.appendChild(newRow)
+                        }
+                    }
+                    function duplicateSpecificSymbols(e) {
+                        for (const key in symbols) {
+                            if(e.data === key) {
+                                const currentPos = codeInput.selectionStart
+                                var newValue = codeInput.value.slice(0, currentPos) + symbols[key] + codeInput.value.slice(currentPos, codeInput.value.length)
+                                console.log(newValue)
+                                codeInput.value = newValue
+                                codeInput.selectionEnd = currentPos
+                            }
+                        }
+                    }
+                    function getCaretPosition(element, x, y) {
+                        var rect = element.getBoundingClientRect();
+                        var lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
+                        var row = Math.floor((y - rect.top) / lineHeight) + 1;
+                        var textBeforeCursor = element.value.substring(0, element.selectionStart);
+                        var column = textBeforeCursor.split("\n").pop().length + 1;
+                        return { row: row, column: column };
+                    }
+                    function getCursorPosition() {
+                        var text = codeInput.value.substr(0, codeInput.selectionStart);
+                        var lines = text.split("\n");
+                        var row = lines.length;
+                        return row;
+                    }
+                    codeInput.addEventListener("input", (e) => {
+                        updateNumbers()
+                        duplicateSpecificSymbols(e)
+                        for(let i = 1; i <= document.getElementById("rowNumbers").children.length; i++) {
+                            if(i === getCursorPosition()) {
+                                document.getElementById("coderow"+i).style.fontWeight = "bolder"
+                            } else {
+                                document.getElementById("coderow"+i).style.fontWeight = "normal"
+                            }
+                        }
+                    })
+
+                    codeInput.addEventListener("click", (e) => {
+                        var cursorPosition = getCaretPosition(codeInput, e.clientX, e.clientY);
+                        for(let i = 1; i <= document.getElementById("rowNumbers").children.length; i++) {
+                            if(i === cursorPosition.row) {
+                                document.getElementById("coderow"+i).style.fontWeight = "bolder"
+                            } else {
+                                document.getElementById("coderow"+i).style.fontWeight = "normal"
+                            }
+                        }
+                    });
+                    codeInput.addEventListener("keydown", (e) => {
+                        if(e.key === "ArrowDown" || e.key === "ArrowUp") {
+                            sleep(20).then(() => {
+                                for(let i = 1; i <= document.getElementById("rowNumbers").children.length; i++) {
+                                    if(i === getCursorPosition()) {
+                                        document.getElementById("coderow"+i).style.fontWeight = "bolder"
+                                    } else {
+                                        document.getElementById("coderow"+i).style.fontWeight = "normal"
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+
+                    updateNumbers()
+                </script>
             </section>
         </form>
     </div>

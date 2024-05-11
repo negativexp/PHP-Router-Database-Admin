@@ -46,7 +46,7 @@ $db = new Database();
 
 <main>
     <header>
-        <h1 class="big">File Manager</h1>
+        <h1 class="big">Správce souborů</h1>
         <?php
         if(isset($_GET["folder"])) {
             echo "<p>Cesta: root{$_GET["folder"]}</p>";
