@@ -11,7 +11,7 @@ if(isset($file)) {
 
 <main>
     <header>
-        <h1 class="big">Soubor: <?= isset($file) ? $file : "" ?></h1>
+        <h1 class="big">Soubor: <?= isset($file) ? str_replace($_SERVER["DOCUMENT_ROOT"]."\\", "root", $file) : "" ?></h1>
     </header>
     <div class="wrapper">
         <form method="post" action="/admin/fileManager">
@@ -32,7 +32,7 @@ if(isset($file)) {
     <div class='row-numbers' id='rowNumbers'>
       <p>1</p>
     </div>
-    <textarea id='codeInput' spellcheck='false'>{$content}</textarea>
+    <textarea name='contents' id='codeInput' spellcheck='false'>".htmlspecialchars($content)."</textarea>
   </div>";
                         }
                     }

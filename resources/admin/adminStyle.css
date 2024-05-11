@@ -205,9 +205,15 @@ nav a:not(.active, .button):hover {
     background-color: #494e53;
 }
 .sub-nav {
-    display: none;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: opacity 1s ease, height 1s ease; /* Adding transition */
 }
+
 .subnavopen {
+    opacity: 1;
+    height: fit-content; /* Change height to fit-content */
     padding-left: 20px;
     display: flex;
     flex-flow: column;

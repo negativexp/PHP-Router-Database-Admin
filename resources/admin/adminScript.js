@@ -23,7 +23,10 @@ function hidePopupForm() {
   popupForm.style.zIndex = -1
 }
 
-function subnav(subNavId) {
+function subnav(subNavId, acko) {
     const subNav = document.getElementById(subNavId);
     subNav.classList.toggle("subnavopen")
+    if(subNav.classList.contains("subnavopen")) {
+        acko.style.textDecoration = "underline"
+    } else acko.style.textDecoration = "none"
 }
