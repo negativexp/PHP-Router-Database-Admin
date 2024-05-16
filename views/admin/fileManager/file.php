@@ -1,7 +1,7 @@
 <?php
 if(isset($file)) {
     $file = urldecode($file);
-}
+} else die("bez souboru?");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,16 +11,30 @@ if(isset($file)) {
 
 <main>
     <header>
-        <h1 class="big">Soubor: <?= isset($file) ? str_replace($_SERVER["DOCUMENT_ROOT"]."\\", "root", $file) : "" ?></h1>
+        <?php
+        if(is_file($file)) {
+            $editedString = str_replace($_SERVER["DOCUMENT_ROOT"] . "\\", "root", $file);
+            echo "<h1 class='big'>Soubor: {$editedString}</h1>";
+        } else {
+            $editedString = str_replace($_SERVER["DOCUMENT_ROOT"] . "\\", "root", $file);
+            echo "<h1 class='big'>Složka: {$editedString}</h1>";
+        }
+        ?>
     </header>
     <div class="wrapper">
         <form method="post" action="/admin/fileManager">
-            <div class="tableOptions">
-                <input type="hidden" name="backlink" value="<?= isset($_GET["backlink"]) ? $_GET["backlink"] : ""?>">
-                <input type="hidden" name="filepath" value="<?= isset($file) ? $file : ""?>">
-                <a class="button" href="/admin/fileManager<?= isset($_GET["backlink"]) ? "?folder=".$_GET["backlink"] : ""?>">Zpátky</a>
-                <input type="submit" name="saveFile" value="Uložit">
-            </div>
+            <?php
+            $testBacklink = $_GET["backlink"] ?? "";
+            echo "<div class='tableOptions'><input type='hidden' name='backlink' value='{$testBacklink}'>
+                <input type='hidden' name='filepath' value='{$file}?>'>
+                <a class='button' href='/admin/fileManager?folder={$testBacklink}'>Zpátky</a>";
+
+            if(is_file($file)) {
+                echo "<input type='submit' name='saveFile' value='Uložit soubor'></div>";
+            } else {
+                echo "<input type='submit' name='saveFolder' value='Uložit složku'></div>";
+            }
+            ?>
             <section>
                 <article class="w100">
                     <?php
@@ -34,6 +48,24 @@ if(isset($file)) {
     </div>
     <textarea name='contents' id='codeInput' spellcheck='false'>".htmlspecialchars($content)."</textarea>
   </div>";
+                        } else {
+                            //file = folder...
+                            echo "<p>Jméno složky:</p>";
+                            $basename = basename($file);
+                            echo "<input type='hidden' name='originalFolderName' value='{$file}'>";
+                            echo "<input type='text' name='folderName' required value='{$basename}'>";
+                            function folderSize ($dir)
+                            {
+                                $size = 0;
+
+                                foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
+                                    $size += is_file($each) ? filesize($each) : folderSize($each);
+                                }
+
+                                return $size;
+                            }
+                            $size = folderSize($file);
+                            echo "<p>Velikost složky: {$size} (bytes)</p>";
                         }
                     }
                     ?>

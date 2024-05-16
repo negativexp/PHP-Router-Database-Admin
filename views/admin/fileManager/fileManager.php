@@ -49,7 +49,7 @@ $db = new Database();
         <h1 class="big">Správce souborů</h1>
         <?php
         if(isset($_GET["folder"])) {
-            echo "<p>Cesta: root{$_GET["folder"]}</p>";
+            echo "<p>Cesta: root\\{$_GET["folder"]}</p>";
         } else echo "<p>Cesta: root</p>";
         ?>
     </header>
@@ -72,7 +72,7 @@ $db = new Database();
                 <a class="button" onclick="displayPopupForm()">Vytvořit soubor</a>
                 <a class="button" onclick="displayPopupForm2()">Vytvořit složku</a>
                 <a class="button" onclick="location.reload()">Aktualizovat</a>
-                <input type="submit" name="delete" value="smazat">
+                <input type="submit" name="delete" value="Smazat">
             </div>
             <section>
                 <article class="w100">
@@ -102,7 +102,7 @@ $db = new Database();
                                         echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
                                         if(isset($_GET["folder"])) {
                                             echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$_GET["folder"]}\\{$folder}'>{$folder}</a></div></td>";
-                                        } else                                             echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$folder}'>{$folder}</a></div></td>";
+                                        } else echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$folder}'>{$folder}</a></div></td>";
                                         echo "<td>Složka</td>";
                                         echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
                                         echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$folder) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Upravit</a></td>";
@@ -119,7 +119,7 @@ $db = new Database();
                                         echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/file.png' title='File'><p>{$file}</p></div></td>";
                                         echo "<td>".filesize($fullpath)." (bytes)</td>";
                                         echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
-                                        echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$file) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Upravit</a></td>";
+                                        echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$file) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Zobrazit</a></td>";
                                         echo "</tr>";
                                     }
                                 }
