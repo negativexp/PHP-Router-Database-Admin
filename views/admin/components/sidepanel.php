@@ -25,6 +25,7 @@
             <a class="small <?= active("/admin/database/customSql", $parsedURL) ?>" href="/admin/database/customSql">Vlastní SQL</a>
         </div>
         <a class="small <?= active("/admin/fileManager", $parsedURL) ?>" href="/admin/fileManager">Správce souborů</a>
+        <a class="small <?= active("/admin/websiteBuilder", $parsedURL) ?>" href="/admin/websiteBuilder">Website Builder</a>
         <a class="small <?= active("/admin/logs", $parsedURL) ?>" href="/admin/logs">Logs</a>
         <a class="logout small button">Odhlásit se</a>
     </nav>

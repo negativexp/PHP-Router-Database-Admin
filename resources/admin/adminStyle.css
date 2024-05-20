@@ -55,7 +55,7 @@ a:hover {
 input[type="checkbox"] {
     height: 15px;
 }
-.popupform form label, .popupform form input, .popupform form select, .popupform form label span, .popupform option, .popupform form h2, .popupform form a, .popupform table td {
+.popupform form label, .popupform form input, .popupform form select, .popupform form label span, .popupform option, .popupform form h2, .popupform form a, .popupform table td, .popupform form textarea {
     color: black !important;
 }
 .popupform form h2 {
@@ -365,6 +365,7 @@ main {
     flex-flow: column;
 }
 .code-editor textarea {
+    color: black !important;
     white-space: nowrap;
     padding-left: 5px;
     overflow: hidden;

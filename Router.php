@@ -41,6 +41,8 @@ class Router {
         $this->get('/admin/fileManager', "views/admin/fileManager/fileManager.php");
         $this->get('/admin/fileManager/$file', "views/admin/fileManager/file.php");
         $this->post('/admin/fileManager', "actions/admin/filemanager.php");
+
+        $this->get('/admin/websiteBuilder', "views/admin/websitebuilder.php");
     }
     private function checkNormalRoutes(): void {
         $sql = "select * from ".DB_PREFIX."_routes";
