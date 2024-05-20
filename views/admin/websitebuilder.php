@@ -8,7 +8,7 @@
         <h2>Přidat fotku</h2>
         <label>
             <span>Název cesty či webové adres</span>
-            <input type="text" id="imgSrc" required>
+            <input spellcheck="false" type="text" id="imgSrc" required>
         </label>
         <div class="options">
             <a class="button" onclick="hidePopupForm()">Zavřít</a>
@@ -19,7 +19,7 @@
 <div id="popupForm2" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Přidat vlastní HTML/JS/CSS</h2>
-        <textarea id="customHtml"></textarea>
+        <textarea spellcheck="false" id="customHtml"></textarea>
         <div class="options">
             <a class="button" onclick="hidePopupForm2()">Zavřít</a>
             <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
@@ -36,7 +36,11 @@
             display: flex;
             flex-flow: column;
         }
+        #code-editor-content .wrapper {
+            padding: 0;
+        }
         #code-editor-content .block {
+            border-radius: 7px;
             border: 1px solid white;
             display: flex;
             align-items: center;
@@ -44,6 +48,10 @@
         #code-editor-content .block:hover {
             border: 1px solid gray;
         }
+        #code-editor-content .block:hover a {
+            display: block !important;
+        }
+
         #code-editor-content .block span {
             width: 50px;
             padding-right: 15px;
@@ -52,20 +60,23 @@
         #code-editor-content .block *:nth-child(2) {
             flex: 1;
         }
+        #code-editor-content .block a {
+            display: none;
+        }
         #code-editor-content .block textarea {
             width: 100%;
         }
     </style>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="addElement('p')">Add text</a>
-            <a class="button" onclick="addElement('h1')">Add H1</a>
-            <a class="button" onclick="addElement('h2')">Add h2</a>
-            <a class="button" onclick="addElement('h3')">Add h3</a>
-            <a class="button" onclick="addElement('h4')">Add h4</a>
-            <a class="button" onclick="addElement('h5')">Add h5</a>
-            <a class="button" onclick="displayPopupForm()">add img</a>
-            <a class="button" onclick="displayPopupForm2()">add html</a>
+            <a class="button" onclick="addElement('p')">Text</a>
+            <a class="button" onclick="addElement('h1')">H1</a>
+            <a class="button" onclick="addElement('h2')">H2</a>
+            <a class="button" onclick="addElement('h3')">H3</a>
+            <a class="button" onclick="addElement('h4')">H4</a>
+            <a class="button" onclick="addElement('h5')">H5</a>
+            <a class="button" onclick="displayPopupForm()">img</a>
+            <a class="button" onclick="displayPopupForm2()">html</a>
         </div>
 
         <div class="code-editor">
@@ -103,6 +114,7 @@
                 const textarea = document.createElement("textarea")
                 textarea.value = innerHtml
                 textarea.setAttribute("style", "resize:auto;")
+                textarea.setAttribute("spellcheck", "false")
                 el.appendChild(textarea)
                 el.setAttribute("isediting", true)
             } else {
@@ -148,8 +160,9 @@
         });
 
         function deleteButton() {
-            const button = document.createElement("button")
+            const button = document.createElement("a")
             button.innerText = "smazat"
+            button.classList.add("button")
             button.setAttribute("onclick", "removeElement(this)")
             return button
         }
