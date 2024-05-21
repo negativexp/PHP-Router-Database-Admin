@@ -36,7 +36,7 @@
             display: flex;
             flex-flow: column;
         }
-        #code-editor-content .wrapper {
+        #code-editor-content .wrapper-content {
             padding: 0;
         }
         #code-editor-content .block {
@@ -46,16 +46,20 @@
             align-items: center;
         }
         #code-editor-content .block:hover {
-            border: 1px solid gray;
+            border: 1px solid rgb(128, 128, 128);
         }
         #code-editor-content .block:hover a {
             display: block !important;
         }
 
         #code-editor-content .block span {
-            width: 50px;
-            padding-right: 15px;
+            padding: 10px;
             text-align: right;
+            opacity: 0.3;
+            transition: opacity .2s ease;
+        }
+        #code-editor-content .block:hover span {
+            opacity: 1;
         }
         #code-editor-content .block *:nth-child(2) {
             flex: 1;
@@ -66,8 +70,41 @@
         #code-editor-content .block textarea {
             width: 100%;
         }
+        .s1 {
+            border: 1px solid black;
+            height: 100px;
+        }
+        .s2 {
+            border: 1px solid black;
+            height: 100px;
+        }
+        .s3 {
+            border: 1px solid black;
+            height: 100px;
+        }
+        .s4 {
+            border: 1px solid black;
+            height: 100px;
+        }
+        .w100 {
+            width: 100%;
+            height: 100px;
+            background: red;
+        }
+        .w50 {
+            width: 50%;
+            background: yellow;
+        }
+        .w33 {
+            width: 33.333%;
+            background: orange;
+        }
+        .w25 {
+            width: 25%;
+            background: purple;
+        }
     </style>
-    <div class="wrapper">
+    <div class="wrapper-content">
         <div class="tableOptions">
             <a class="button" onclick="addElement('p')">Text</a>
             <a class="button" onclick="addElement('h1')">H1</a>
@@ -77,6 +114,7 @@
             <a class="button" onclick="addElement('h5')">H5</a>
             <a class="button" onclick="displayPopupForm()">img</a>
             <a class="button" onclick="displayPopupForm2()">html</a>
+            <a class="button" onclick="addSection('w100')">w100</a>
         </div>
 
         <div class="code-editor">
@@ -91,6 +129,7 @@
     <script>
         const cec = document.getElementById("code-editor-content")
         const cee = document.getElementById("code-editor-data")
+        let activeBlock = null
 
         function updateNumbers() {
             const numArr = document.querySelectorAll(".code-editor .content .block .number")
@@ -105,6 +144,25 @@
                 block.remove();
             }
             updateNumbers()
+        }
+
+        function addSection(classname) {
+            const div = document.createElement("div")
+            div.classList.add("block")
+            div.setAttribute("onclick", "setActiveBlock(this)")
+            div.appendChild(elementNumber())
+            const divWrapper = document.createElement("div")
+            divWrapper.classList.add("wrapper")
+            divWrapper.setAttribute("ondblclick", "changeBlockHtml(this)")
+            divWrapper.setAttribute("isEditing", "false")
+
+            const section = document.createElement("section")
+            section.classList.add(classname)
+            divWrapper.appendChild(section)
+            div.appendChild(divWrapper)
+            div.appendChild(deleteButton())
+
+            cec.appendChild(div)
         }
 
         function changeBlockHtml(el) {
@@ -124,9 +182,21 @@
         }
 
 
+        function setActiveBlock(block) {
+            activeBlock = block
+            let arr = Array.from(cec.childNodes)
+            arr.shift()
+            arr.forEach(child => {
+                if(child === block) {
+                    child.setAttribute("style", "border-bottom:1px solid rgba(255, 0, 0, 0.2);")
+                } else child.setAttribute("style", "")
+            })
+        }
+
         function addElement(el) {
             const div = document.createElement("div")
             div.classList.add("block")
+            div.setAttribute("onclick", "setActiveBlock(this)")
             div.appendChild(elementNumber())
             const divWrapper = document.createElement("div")
             divWrapper.classList.add("wrapper")
