@@ -11,8 +11,8 @@
             <input spellcheck="false" type="text" id="imgSrc" required>
         </label>
         <div class="options">
-            <a class="button" onclick="hidePopupForm()">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
+            <a class="a class="button"" onclick="hidePopupForm()">Zavřít</a>
+            <a class="small a class="button"" type="submit" onclick="addElement('img')">Přidat</a>
         </div>
     </form>
 </div>
@@ -21,126 +21,238 @@
         <h2>Přidat vlastní HTML/JS/CSS</h2>
         <textarea spellcheck="false" id="customHtml"></textarea>
         <div class="options">
-            <a class="button" onclick="hidePopupForm2()">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
+            <a class="a class="button"" onclick="hidePopupForm2()">Zavřít</a>
+            <a class="small a class="button"" type="submit" onclick="addElement('custom')">Přidat</a>
         </div>
     </form>
+</div>
+<div id="contextMenu" class="context-menu"
+     style="display:none">
+    <ul>
+        <li><a class="button" onclick="deleteElement()">Smazat</a></li>
+    </ul>
 </div>
 <main>
     <header>
         <h1 class="big">Website Builder (lolíky)</h1>
     </header>
+    <link rel="stylesheet" href="../../resources/style.css">
     <style>
-        #richtextbox-blocks .block {
-            transition: border .2s ease;
-            border: 1px dashed rgba(128, 128, 128, 0.3);
+        #webBuilder-blocks {
+            padding: 5px;
+            display: flex;
+            flex-flow: column;
+            gap: 10px;
         }
-        #richtextbox-blocks .block:hover {
-            border: 1px dashed rgba(128, 128, 128, 1);
+        #webBuilder-blocks .webBuilder-block {
+            border: 1px dashed gray;
+            padding: 0px 0px 20px 0px;
         }
-        #richtextbox-blocks .block section:first-child{
-            padding-bottom: 20px;
+        #webBuilder-blocks .active {
+            border: 1px dashed red !important;
         }
-        #richtextbox-blocks .block * {
-            all: revert;
+        #webBuilder .text {
+            width: 100% !important;
         }
-        #richtextbox-blocks .active {
-            border: 1px solid red;
+        #webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block div, #webBuilder-blocks .webBuilder-block article  {
+            padding: 0 0 20px 0;
+            min-height: 20px;
+            min-width: 20px;
+            border: 1px dashed gray;
         }
-        #richtextbox-blocks .block section div {height: 20px; border: 1px solid black;}
-        #richtextbox-blocks .block .w100 { width: 100%; }
-        #richtextbox-blocks .block .w50 { width: 50%; }
-        #richtextbox-blocks .block .w33 { width: 33.333%; }
-        #richtextbox-blocks .block .w25 { width: 25%; }
+        #webBuilder p,#webBuilder h1,#webBuilder h2,#webBuilder h3,#webBuilder h4,#webBuilder h5 {
+            border: 1px dashed gray;
+            padding: 0 !important;
+        }
+        .context-menu {
+            position: absolute;
+            text-align: center;
+            background: lightgray;
+            border: 1px solid black;
+        }
+
+        .context-menu ul {
+            padding: 0px;
+            margin: 0px;
+            list-style: none;
+        }
+
+        .context-menu ul li {
+            padding-bottom: 7px;
+            padding-top: 7px;
+            border: 1px solid black;
+        }
+
+        .context-menu ul li a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .context-menu ul li:hover {
+            background: darkgray;
+        }
     </style>
     <div class="wrapper-content">
-        <a class="button" onclick="unsetActiveElement()">deaktivovat</a>
+        <a class="button" onclick="unsetActiveElement()">deaktivace</a>
         <div class="tableOptions">
-            <a class="button" onclick="addElement('p', true)">p</a>
-            <a class="button" onclick="addElement('h1', true)">h1</a>
-            <a class="button" onclick="addElement('h2', true)">h2</a>
-            <a class="button" onclick="addElement('h3', true)">h3</a>
-            <a class="button" onclick="addElement('h4', true)">h4</a>
+            <a class="button" onclick="addElement('p')">p</a>
+            <a class="button" onclick="addElement('h1')">h1</a>
+            <a class="button" onclick="addElement('h2')">h2</a>
+            <a class="button" onclick="addElement('h3')">h3</a>
+            <a class="button" onclick="addElement('h4')">h4</a>
+            <a class="button" onclick="addElement('h5')">h5</a>
         </div>
         <div class="tableOptions">
-            <a class="button" onclick="addElement('section')">section</a>
-            <a class="button" onclick="addElement('div')">div</a>
-            <a class="button" onclick="addElement('div', false, 'w100')">w100</a>
-            <a class="button" onclick="addElement('div', false, 'w50')">w50</a>
-            <a class="button" onclick="addElement('div', false, 'w33')">w33</a>
-            <a class="button" onclick="addElement('div', false, 'w25')">w25</a>
+            <a class="button" onclick="addClass(this.innerText)">w100</a>
+            <a class="button" onclick="addClass(this.innerText)">w50</a>
+            <a class="button" onclick="addClass(this.innerText)">w33</a>
+            <a class="button" onclick="addClass(this.innerText)">w25</a>
+            <a class="button" onclick="addClass(this.innerText)">column</a>
+            <a class="button" onclick="addClass(this.innerText)">row</a>
+            <a class="button" onclick="addClass(this.innerText)">red</a>
+            <a class="button" onclick="addClass(this.innerText)">purple</a>
+        </div>
+        <div class="tableOptions">
+            <a class="button" onclick="addElement(null)">empty block</a>
+            <a class="button" onclick="addElement(this.innerText)">section</a>
+            <a class="button" onclick="addElement(this.innerText)">article</a>
+            <a class="button" onclick="addElement(this.innerText)">div</a>
         </div>
 
-        <div id="richtextbox">
-            <div class="blocks" id="richtextbox-blocks">
+        <div id="webBuilder">
+            <div id="webBuilder-blocks">
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
-        const blocks = document.getElementById("richtextbox-blocks")
+        const blocks = document.getElementById("webBuilder-blocks")
         let activeElement = null
-        let activeSubElement = null
 
-        function appendToBlocks(element) {
-            const div = document.createElement("div")
-            div.classList.add("block")
-            addClickHandle(element)
-            div.appendChild(element)
-            div.setAttribute("isediting", "false")
-            addDoubleClickHandle(div)
-            blocks.appendChild(div)
+        function processAllElements(element, callback) {
+            callback(element)
+            element.querySelectorAll('*').forEach(child => {
+                callback(child)
+            })
         }
-        function addClickHandle(element) {
-            element.setAttribute("onclick", "setActiveElement(this)")
-        }
-        function addClickHandleSubElement(element) {
-            element.setAttribute("onclick", "setActiveSubElement(this)")
-        }
-        function unsetActiveSubElement() {
-            activeSubElement = null
-        }
-        function setActiveSubElement(element) {
-            activeSubElement = element
-            console.log("activce sub element: " + element)
-        }
-        function setActiveElement(element) {
-            activeElement = element
-            console.log("active element: " + element)
+
+        function setActiveElement(el) {
+            activeElement = el
+            console.log(el)
+            Array.from(blocks.children).forEach(block => {
+                processAllElements(block, elem => {
+                    if (elem === activeElement) {
+                        elem.classList.add('active')
+                    } else {
+                        elem.classList.remove('active')
+                    }
+                })
+            })
         }
         function unsetActiveElement() {
             activeElement = null
+            Array.from(blocks.children).forEach(block => {
+                processAllElements(block, elem => {
+                    elem.classList.remove('active');
+                });
+            });
         }
-        function addDoubleClickHandle(element) {
-            element.setAttribute("ondblclick", "displayHTML(this)")
+        function getClosestBlock(element) {
+            return element.closest(".webBuilder-block")
         }
-        function displayHTML(element) {
-            if(element.getAttribute("isediting") === "false") {
-                const textarea = document.createElement("textarea")
-                textarea.value = element.innerHTML
-                element.innerHTML = ""
-                element.appendChild(textarea)
-                element.setAttribute("isediting", "true")
-            } else {
-                element.innerHTML = element.children[0].value
-                element.setAttribute("isediting", "false")
+        function append(el) {
+            el.tabIndex = 0
+            el.setAttribute("onfocus", "setActiveElement(this)")
+
+            if (['P', 'H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName)) {
+                el.classList.add("text")
+                el.setAttribute("contenteditable", "true")
+                el.setAttribute("spellcheck", "false")
             }
-        }
-        function addElement(el, editable, classname) {
-            const element = document.createElement(el)
-            if(editable) {
-                element.setAttribute("contentEditable", "true")
-                element.setAttribute("style","width:100%")
-            }
-            if(classname) {
-                element.classList.add(classname)
-            }
+
             if(activeElement) {
-                addClickHandleSubElement(element)
-                activeElement.appendChild(element)
-            } else appendToBlocks(element)
+                if(el.tagName !== "NULL") {
+                    activeElement.appendChild(el)
+                }
+            } else {
+                const div = document.createElement("div")
+                div.addEventListener("contextmenu", rightClick)
+                div.classList.add("webBuilder-block")
+                div.tabIndex = 0
+                div.setAttribute("onfocus","setActiveElement(this)")
+                if(el.tagName !== "NULL") {
+                    div.appendChild(el);
+                }
+                blocks.appendChild(div)
+            }
+        }
+        function addElement(tagName) {
+            const element = document.createElement(tagName)
+            append(element)
+        }
+        function deleteElement() {
+            activeElement.remove()
+            activeElement = null
+            hideMenu()
+        }
+        function addClass(className) {
+            if(activeElement) {
+                if(!activeElement.classList.contains("webBuilder-block")) {
+                    activeElement.classList.toggle(className)
+                }
+            }
+        }
+        document.onclick = hideMenu;
+        function hideMenu() {
+            document.getElementById("contextMenu")
+                .style.display = "none"
+        }
+        function rightClick(e) {
+            e.preventDefault();
+            if (document.getElementById("contextMenu")
+                .style.display == "block")
+                hideMenu();
+            else{
+                var menu = document.getElementById("contextMenu")
+                menu.style.display = 'block'
+                menu.style.left = e.pageX + "px"
+                menu.style.top = e.pageY + "px"
+            }
+        }
+        sortable = new Sortable(blocks, {
+            animation: 150, // Optional: Animation speed when moving items
+            // Add any other options here as needed
+        });
+
+
+
+
+        function modifyAndOutputCSS(ruleName, newSelector) {
+            // Fetch the CSS file
+            fetch('../../resources/style.css')
+                .then(response => response.text())
+                .then(cssText => {
+                    // Split the CSS text into individual rules based on '}'
+                    let rules = cssText.split('}');
+
+                    // Modify the specific rule if found
+                    rules = rules.map(rule => {
+                        return ".test "+rule
+                    });
+
+                    // Join the modified rules back into a single CSS string
+                    let modifiedCSS = rules.join('}');
+
+                    // Output the modified CSS
+                    console.log(modifiedCSS);
+                })
+                .catch(error => {
+                    console.error('Error fetching CSS file:', error);
+                });
         }
 
+        // Example usage:
+        modifyAndOutputCSS('.old-selector', '.new-selector');
     </script>
 </main>
 </body>
