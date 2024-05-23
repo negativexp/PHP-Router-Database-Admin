@@ -36,101 +36,108 @@
     <header>
         <h1 class="big">Website Builder (lolíky)</h1>
     </header>
-    <link rel="stylesheet" href="../../resources/style.css">
-    <style>
-        #webBuilder-blocks {
-            padding: 5px;
-            display: flex;
-            flex-flow: column;
-            gap: 10px;
-        }
-        #webBuilder-blocks .webBuilder-block {
-            padding: 0px 0px 20px 0px;
-            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px inset, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-        }
-        #webBuilder-blocks .active {
-            border: 1px dashed rgba(255, 0, 0, 0.5) !important;
-        }
-        #webBuilder .text {
-            width: 100% !important;
-        }
-        #webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block div, #webBuilder-blocks .webBuilder-block article  {
-            padding: 0 0 20px 0;
-            min-height: 20px;
-            min-width: 20px;
-            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px inset, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-        }
-        #webBuilder p,#webBuilder h1,#webBuilder h2,#webBuilder h3,#webBuilder h4,#webBuilder h5 {
-            border: 1px dashed gray;
-            padding: 0 !important;
-        }
-        .context-menu {
-            position: absolute;
-            text-align: center;
-            background: lightgray;
-            border: 1px solid black;
-        }
-
-        .context-menu ul {
-            padding: 0px;
-            margin: 0px;
-            list-style: none;
-        }
-
-        .context-menu ul li {
-            padding-bottom: 7px;
-            padding-top: 7px;
-            border: 1px solid black;
-        }
-
-        .context-menu ul li a {
-            text-decoration: none;
-            color: black;
-        }
-
-        .context-menu ul li:hover {
-            background: darkgray;
-        }
-    </style>
     <div class="wrapper-content">
-        <a class="button" onclick="unsetActiveElement()">deaktivace aktivního elementu</a>
+        <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
         <div class="tableOptions">
-            <a class="button" onclick="addElement('p')">p</a>
-            <a class="button" onclick="addElement('h1')">h1</a>
-            <a class="button" onclick="addElement('h2')">h2</a>
-            <a class="button" onclick="addElement('h3')">h3</a>
-            <a class="button" onclick="addElement('h4')">h4</a>
-            <a class="button" onclick="addElement('h5')">h5</a>
+            <a class="small button" onclick="addElement('p')">p</a>
+            <a class="small button" onclick="addElement('h1')">h1</a>
+            <a class="small button" onclick="addElement('h2')">h2</a>
+            <a class="small button" onclick="addElement('h3')">h3</a>
+            <a class="small button" onclick="addElement('h4')">h4</a>
+            <a class="small button" onclick="addElement('h5')">h5</a>
         </div>
         <div class="tableOptions">
-            <a class="button" onclick="addClass(this.innerText)">w100</a>
-            <a class="button" onclick="addClass(this.innerText)">w50</a>
-            <a class="button" onclick="addClass(this.innerText)">w33</a>
-            <a class="button" onclick="addClass(this.innerText)">w25</a>
-            <a class="button" onclick="addClass(this.innerText)">column</a>
-            <a class="button" onclick="addClass(this.innerText)">row</a>
-            <a class="button" onclick="addClass(this.innerText)">red</a>
-            <a class="button" onclick="addClass(this.innerText)">purple</a>
+            <a class="small button" onclick="addClass(this.innerText)">w100</a>
+            <a class="small button" onclick="addClass(this.innerText)">w50</a>
+            <a class="small button" onclick="addClass(this.innerText)">w33</a>
+            <a class="small button" onclick="addClass(this.innerText)">w25</a>
+            <a class="small button" onclick="addClass(this.innerText)">column</a>
+            <a class="small button" onclick="addClass(this.innerText)">row</a>
+            <a class="small button" onclick="addClass(this.innerText)">red</a>
+            <a class="small button" onclick="addClass(this.innerText)">purple</a>
         </div>
         <div class="tableOptions">
-            <a class="button" onclick="addElement(null)">empty block</a>
-            <a class="button" onclick="addElement(this.innerText)">section</a>
-            <a class="button" onclick="addElement(this.innerText)">article</a>
-            <a class="button" onclick="addElement(this.innerText)">div</a>
-            <a class="button" onclick="displayPopupForm()">img</a>
+            <a class="small button" onclick="addElement(null)">empty block</a>
+            <a class="small button" onclick="addElement(this.innerText)">header</a>
+            <a class="small button" onclick="addElement(this.innerText)">section</a>
+            <a class="small button" onclick="addElement(this.innerText)">article</a>
+            <a class="small button" onclick="addElement(this.innerText)">div</a>
+            <a class="small button" onclick="displayPopupForm()">img</a>
         </div>
 
         <div id="webBuilder">
+            <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+            <link rel="stylesheet" href="../../resources/style.css">
+            <style>
+                .context-menu {
+                    position: absolute;
+                    text-align: center;
+                    background: lightgray;
+                    border: 1px solid black;
+                }
+                .context-menu ul {
+                    padding: 0px;
+                    margin: 0px;
+                    list-style: none;
+                }
+
+                .context-menu ul li {
+                    padding-bottom: 7px;
+                    padding-top: 7px;
+                    border: 1px solid black;
+                }
+
+                .context-menu ul li a {
+                    text-decoration: none;
+                    color: black;
+                }
+
+                .context-menu ul li:hover {
+                    background: darkgray;
+                }
+            </style>
             <div id="webBuilder-blocks">
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
         const blocks = document.getElementById("webBuilder-blocks")
         let activeElement = null
         let isSaved = false;
 
+        function deactivateEditorStyle() {
+            var styleTag = document.getElementById("adminStyle");
+            var sheet = styleTag.sheet ? styleTag.sheet : styleTag.styleSheet;
+
+            const adminRules = [
+                '#webBuilder-blocks .webBuilder-block *',
+                '#webBuilder-blocks .webBuilder-block',
+                '#webBuilder-blocks',
+                '#webBuilder .editingStyleText',
+                '#webBuilder p, #webBuilder h1, #webBuilder h2, #webBuilder h3, #webBuilder h4, #webBuilder h5',
+                '#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div'
+            ];
+
+            // Check if each rule exists, and toggle accordingly
+            adminRules.forEach(rule => {
+                var foundRuleIndex = -1;
+                // Check if the rule already exists
+                for (var i = 0; i < sheet.cssRules.length; i++) {
+                    if (sheet.cssRules[i].selectorText === rule) {
+                        foundRuleIndex = i;
+                        break;
+                    }
+                }
+
+                if (foundRuleIndex !== -1) {
+                    // Rule found, delete it (deactivate)
+                    sheet.deleteRule(foundRuleIndex);
+                } else {
+                    // Rule not found, add it (activate)
+                    sheet.insertRule(rule + ' { /* your styles here */ }', sheet.cssRules.length);
+                }
+            });
+        }
         function processAllElements(element, callback) {
             callback(element)
             element.querySelectorAll('*').forEach(child => {
@@ -165,7 +172,7 @@
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
             if (['P', 'H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName)) {
-                el.classList.add("text")
+                el.classList.add("editingStyleText")
                 el.setAttribute("contenteditable", "true")
                 el.setAttribute("spellcheck", "false")
             }
@@ -270,6 +277,11 @@
                 //dodelat ajax
                 isSaved = true
                 console.log("ctrl s")
+            }
+            if(event.ctrlKey && event.key === 'd') {
+                event.preventDefault()
+                unsetActiveElement()
+                console.log("ctrl d")
             }
         })
         window.addEventListener('beforeunload', function (event) {

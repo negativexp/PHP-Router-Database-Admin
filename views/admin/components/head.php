@@ -8,7 +8,7 @@ $string = str_repeat("../", $count);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="<?= $string ?>resources/admin/adminStyle.css">
+    <link rel="stylesheet" id="adminStyle" href="<?= $string ?>resources/admin/adminStyle.css">
     <script defer src="<?= $string ?>resources/admin/adminScript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>

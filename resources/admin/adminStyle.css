@@ -258,61 +258,58 @@ main .wrapper {
 main * {
     color: black;
 }
-ul {
+main ul {
     list-style: none;
     display: flex;
     flex-flow: column;
     gap: var(--gap);
 }
-ul li {
+main ul li {
     align-items: center;
     display: flex;
     gap: var(--gap);
 }
-table a {
+main table a {
     color: purple;
     text-decoration: underline;
 }
-table {
+main table {
     border-collapse: collapse;
     table-layout: auto;
     width: 100%;
 }
-table .fit {
+main table .fit {
     width: 1%;
     white-space: nowrap;
 }
-table td {
+main table td {
     padding: var(--padding);
 }
-table tr:not(:last-child) {
-
-}
-table thead td {
+main table thead td {
     font-weight: bold;
     text-align: center;
     border-bottom: 1px solid black;
 }
-table tbody tr:nth-child(even) {
+main table tbody tr:nth-child(even) {
     background-color: var(--color1);
 }
-table tbody td:nth-child(7) {
+main table tbody td:nth-child(7) {
     white-space: nowrap;
 }
-table tbody tr:not(:last-child) {
+main table tbody tr:not(:last-child) {
     border-bottom: 1px dashed grey;
 }
-table tbody td:not(:last-child), table thead td:not(:last-child) {
+main table tbody td:not(:last-child), table thead td:not(:last-child) {
     border-right: 1px dashed grey;
 }
-.tableOptions {
+main .tableOptions {
     display: flex;
     gap: var(--gap);
     border-radius: var(--radius);
     background-color: white;
     padding: var(--padding);
 }
-header {
+main > header {
     display: flex;
     flex-flow: column;
     justify-content: center;
@@ -321,18 +318,18 @@ header {
     background-color: white;
     height: 110px;
 }
-header .siteNav span {
+main > header .siteNav span {
     padding: 0 5px;
 }
-header .siteNav a {
+main > header .siteNav a {
     text-decoration: underline;
 }
-section {
+main .wrapper > section {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
-article {
+main .wrapper > section > article {
     border-radius: var(--radius);
     background-color: white;
     padding: var(--padding);
@@ -340,8 +337,6 @@ article {
     gap: 5px;
     flex-flow: column;
     position: relative;
-}
-main {
 }
 .login {
     position: absolute;
@@ -355,16 +350,16 @@ main {
     width: 100%;
 }
 
-.code-editor {
+main .code-editor {
     display: flex;
 }
-.code-editor .row-numbers {
+main .code-editor .row-numbers {
     padding-right: 10px;
     text-align: right;
     display: flex;
     flex-flow: column;
 }
-.code-editor textarea {
+main .code-editor textarea {
     color: black !important;
     white-space: nowrap;
     padding-left: 5px;
@@ -374,9 +369,39 @@ main {
     min-width: unset;
     resize: none;
 }
-.code-editor textarea:focus {
+main .code-editor textarea:focus {
     outline: none;
 }
+
+
+
+
+#webBuilder-blocks .webBuilder-block * {
+    min-height: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.5) !important;
+}
+#webBuilder-blocks {
+    padding: 5px;
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+}
+#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div {
+    padding: 5px 5px 20px 5px;
+}
+#webBuilder-blocks .webBuilder-block {
+    padding: 5px 5px 20px 5px;
+    box-shadow: inset rgba(60, 70, 85, 0.5) 0px 0px 40px 0px, rgba(0, 0, 0, .3) 0px 30px 100px -24px;
+}
+#webBuilder-blocks .active {
+    border: 1px dashed rgba(255, 0, 0, 0.5) !important;
+}
+#webBuilder .editingStyleText {
+    width: 100% !important;
+}
+
+
+
 
 .w800 {
     width: 900px !important;

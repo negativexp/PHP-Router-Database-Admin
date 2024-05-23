@@ -18,3 +18,14 @@
 .purple {
     background: purple;
 }
+
+header {
+    padding: 30px;
+    background: #343a40;
+}
+section {
+    padding: 30px;
+}
+h1 {
+    color: red;
+}
