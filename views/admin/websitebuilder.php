@@ -11,8 +11,8 @@
             <input spellcheck="false" type="text" id="imgSrc" required>
         </label>
         <div class="options">
-            <a class="a class="button"" onclick="hidePopupForm()">Zavřít</a>
-            <a class="small a class="button"" type="submit" onclick="addElement('img')">Přidat</a>
+            <a class="small button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
         </div>
     </form>
 </div>
@@ -21,8 +21,8 @@
         <h2>Přidat vlastní HTML/JS/CSS</h2>
         <textarea spellcheck="false" id="customHtml"></textarea>
         <div class="options">
-            <a class="a class="button"" onclick="hidePopupForm2()">Zavřít</a>
-            <a class="small a class="button"" type="submit" onclick="addElement('custom')">Přidat</a>
+            <a class="small button" onclick="hidePopupForm2()">Zavřít</a>
+            <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
         </div>
     </form>
 </div>
@@ -45,11 +45,11 @@
             gap: 10px;
         }
         #webBuilder-blocks .webBuilder-block {
-            border: 1px dashed gray;
             padding: 0px 0px 20px 0px;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px inset, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
         }
         #webBuilder-blocks .active {
-            border: 1px dashed red !important;
+            border: 1px dashed rgba(255, 0, 0, 0.5) !important;
         }
         #webBuilder .text {
             width: 100% !important;
@@ -58,7 +58,7 @@
             padding: 0 0 20px 0;
             min-height: 20px;
             min-width: 20px;
-            border: 1px dashed gray;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px inset, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
         }
         #webBuilder p,#webBuilder h1,#webBuilder h2,#webBuilder h3,#webBuilder h4,#webBuilder h5 {
             border: 1px dashed gray;
@@ -93,7 +93,7 @@
         }
     </style>
     <div class="wrapper-content">
-        <a class="button" onclick="unsetActiveElement()">deaktivace</a>
+        <a class="button" onclick="unsetActiveElement()">deaktivace aktivního elementu</a>
         <div class="tableOptions">
             <a class="button" onclick="addElement('p')">p</a>
             <a class="button" onclick="addElement('h1')">h1</a>
@@ -117,6 +117,7 @@
             <a class="button" onclick="addElement(this.innerText)">section</a>
             <a class="button" onclick="addElement(this.innerText)">article</a>
             <a class="button" onclick="addElement(this.innerText)">div</a>
+            <a class="button" onclick="displayPopupForm()">img</a>
         </div>
 
         <div id="webBuilder">
@@ -128,6 +129,7 @@
     <script>
         const blocks = document.getElementById("webBuilder-blocks")
         let activeElement = null
+        let isSaved = false;
 
         function processAllElements(element, callback) {
             callback(element)
@@ -135,7 +137,6 @@
                 callback(child)
             })
         }
-
         function setActiveElement(el) {
             activeElement = el
             console.log(el)
@@ -163,15 +164,13 @@
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
-
             if (['P', 'H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName)) {
                 el.classList.add("text")
                 el.setAttribute("contenteditable", "true")
                 el.setAttribute("spellcheck", "false")
             }
-
-            if(activeElement) {
-                if(el.tagName !== "NULL") {
+            if (activeElement) {
+                if (el.tagName !== "NULL") {
                     activeElement.appendChild(el)
                 }
             } else {
@@ -179,27 +178,42 @@
                 div.addEventListener("contextmenu", rightClick)
                 div.classList.add("webBuilder-block")
                 div.tabIndex = 0
-                div.setAttribute("onfocus","setActiveElement(this)")
-                if(el.tagName !== "NULL") {
-                    div.appendChild(el);
+                div.setAttribute("onfocus", "setActiveElement(this)")
+                if (el.tagName !== "NULL") {
+                    div.appendChild(el)
                 }
                 blocks.appendChild(div)
             }
         }
+
         function addElement(tagName) {
-            const element = document.createElement(tagName)
+            let element
+            if (tagName === "custom") {
+                const customHtml = document.getElementById("customHtml").value
+                const tempDiv = document.createElement('div')
+                tempDiv.innerHTML = customHtml.trim()
+                element = tempDiv.firstChild
+            } else {
+                element = document.createElement(tagName)
+                if(tagName === "img") {
+                    element.setAttribute("src", document.getElementById("imgSrc").value)
+                }
+            }
             append(element)
+            isSaved = false
+            hidePopupForm2()
+            hidePopupForm()
         }
         function deleteElement() {
             activeElement.remove()
             activeElement = null
             hideMenu()
+            isSaved = false
         }
         function addClass(className) {
-            if(activeElement) {
-                if(!activeElement.classList.contains("webBuilder-block")) {
-                    activeElement.classList.toggle(className)
-                }
+            if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
+                activeElement.classList.toggle(className)
+                isSaved = false
             }
         }
         document.onclick = hideMenu;
@@ -209,8 +223,7 @@
         }
         function rightClick(e) {
             e.preventDefault();
-            if (document.getElementById("contextMenu")
-                .style.display == "block")
+            if (document.getElementById("contextMenu").style.display == "block")
                 hideMenu();
             else{
                 var menu = document.getElementById("contextMenu")
@@ -251,8 +264,21 @@
                 });
         }
 
-        // Example usage:
-        modifyAndOutputCSS('.old-selector', '.new-selector');
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault()
+                //dodelat ajax
+                isSaved = true
+                console.log("ctrl s")
+            }
+        })
+        window.addEventListener('beforeunload', function (event) {
+            if(!isSaved) {
+                event.preventDefault()
+                //chrome
+                event.returnValue = ''
+            }
+        });
     </script>
 </main>
 </body>
