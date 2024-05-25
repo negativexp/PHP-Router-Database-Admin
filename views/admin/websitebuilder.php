@@ -26,25 +26,25 @@
         </div>
     </form>
 </div>
-<div id="contextMenu" class="context-menu"
-     style="display:none">
-    <ul>
-        <li><a class="button" onclick="deleteElement()">Smazat</a></li>
-    </ul>
+<div id="contextMenu" class="context-menu" style="display:none">
+    <p id="contextMenuActive"></p>
+    <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
 <main>
     <header>
-        <h1 class="big">Website Builder (lolíky)</h1>
+        <h1 class="big">Website Builder</h1>
     </header>
     <div class="wrapper-content">
-        <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
-        <div class="tableOptions">
+        <div id="textOptions" class="hidden">
             <a class="small button" onclick="addElement('p')">p</a>
             <a class="small button" onclick="addElement('h1')">h1</a>
             <a class="small button" onclick="addElement('h2')">h2</a>
             <a class="small button" onclick="addElement('h3')">h3</a>
             <a class="small button" onclick="addElement('h4')">h4</a>
             <a class="small button" onclick="addElement('h5')">h5</a>
+        </div>
+        <div class="tableOptions">
+            <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
         </div>
         <div class="tableOptions">
             <a class="small button" onclick="addClass(this.innerText)">w100</a>
@@ -57,7 +57,7 @@
             <a class="small button" onclick="addClass(this.innerText)">purple</a>
         </div>
         <div class="tableOptions">
-            <a class="small button" onclick="addElement(null)">empty block</a>
+            <a class="small button" onclick="addElement(null)">block</a>
             <a class="small button" onclick="addElement(this.innerText)">header</a>
             <a class="small button" onclick="addElement(this.innerText)">section</a>
             <a class="small button" onclick="addElement(this.innerText)">article</a>
@@ -102,8 +102,12 @@
     </div>
     <script>
         const blocks = document.getElementById("webBuilder-blocks")
+        const textOptions = document.getElementById("textOptions")
+        const contextMenuActive = document.getElementById("contextMenuActive")
+        const textElements = ['P', 'H1', 'H2', 'H3', 'H4', 'H5']
         let activeElement = null
         let isSaved = false;
+        let isDeactivatedAdminStyle = false;
 
         function deactivateEditorStyle() {
             var styleTag = document.getElementById("adminStyle");
@@ -118,25 +122,35 @@
                 '#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div'
             ];
 
-            // Check if each rule exists, and toggle accordingly
-            adminRules.forEach(rule => {
-                var foundRuleIndex = -1;
-                // Check if the rule already exists
-                for (var i = 0; i < sheet.cssRules.length; i++) {
-                    if (sheet.cssRules[i].selectorText === rule) {
-                        foundRuleIndex = i;
-                        break;
-                    }
-                }
+            const adminRulesWithProperties = [
+                '#webBuilder-blocks .webBuilder-block * { min-height: 20px; border: 1px dashed rgba(255, 255, 255, 0.5) !important; }',
+                '#webBuilder-blocks .webBuilder-block { padding: 5px 5px 20px 5px; box-shadow: inset rgba(60, 70, 85, 0.5) 0px 0px 40px 0px, rgba(0, 0, 0, .3) 0px 30px 100px -24px; }',
+                '#webBuilder-blocks { padding: 5px; display: flex; flex-flow: column; gap: 10px; }',
+                '#webBuilder .editingStyleText { width: 100% !important; }',
+                '#webBuilder p, #webBuilder h1, #webBuilder h2, #webBuilder h3, #webBuilder h4, #webBuilder h5 { padding: 5px 5px 20px 5px; }',
+                '#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div { padding: 5px 5px 20px 5px; }'
+            ];
 
-                if (foundRuleIndex !== -1) {
-                    // Rule found, delete it (deactivate)
-                    sheet.deleteRule(foundRuleIndex);
-                } else {
-                    // Rule not found, add it (activate)
-                    sheet.insertRule(rule + ' { /* your styles here */ }', sheet.cssRules.length);
-                }
-            });
+            if (!isDeactivatedAdminStyle) {
+                adminRules.forEach(rule => {
+                    for (let i = 0; i < sheet.cssRules.length; i++) {
+                        if (sheet.cssRules[i].selectorText === rule) {
+                            sheet.deleteRule(i);
+                            break;
+                        }
+                    }
+                });
+            } else {
+                adminRulesWithProperties.forEach(rule => {
+                    try {
+                        sheet.insertRule(rule, sheet.cssRules.length);
+                    } catch (e) {
+                        console.error('Error inserting rule: ', rule, e);
+                    }
+                });
+            }
+
+            isDeactivatedAdminStyle = !isDeactivatedAdminStyle;
         }
         function processAllElements(element, callback) {
             callback(element)
@@ -146,7 +160,6 @@
         }
         function setActiveElement(el) {
             activeElement = el
-            console.log(el)
             Array.from(blocks.children).forEach(block => {
                 processAllElements(block, elem => {
                     if (elem === activeElement) {
@@ -156,6 +169,13 @@
                     }
                 })
             })
+            if(!textElements.includes(activeElement.tagName)) {
+                console.log(activeElement)
+                textOptions.classList.remove("hidden")
+                textOptions.setAttribute("style", "top:"+getOffset(el).top+"px;left:"+getOffset(el).left+"px;")
+            } else {
+                textOptions.classList.add("hidden")
+            }
         }
         function unsetActiveElement() {
             activeElement = null
@@ -164,6 +184,7 @@
                     elem.classList.remove('active');
                 });
             });
+            textOptions.classList.add("hidden")
         }
         function getClosestBlock(element) {
             return element.closest(".webBuilder-block")
@@ -171,7 +192,7 @@
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
-            if (['P', 'H1', 'H2', 'H3', 'H4', 'H5'].includes(el.tagName)) {
+            if (textElements.includes(el.tagName)) {
                 el.classList.add("editingStyleText")
                 el.setAttribute("contenteditable", "true")
                 el.setAttribute("spellcheck", "false")
@@ -216,6 +237,7 @@
             activeElement = null
             hideMenu()
             isSaved = false
+            textOptions.classList.add("hidden")
         }
         function addClass(className) {
             if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
@@ -233,6 +255,7 @@
             if (document.getElementById("contextMenu").style.display == "block")
                 hideMenu();
             else{
+                contextMenuActive.innerText = activeElement.tagName
                 var menu = document.getElementById("contextMenu")
                 menu.style.display = 'block'
                 menu.style.left = e.pageX + "px"
@@ -270,6 +293,13 @@
                     console.error('Error fetching CSS file:', error);
                 });
         }
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
 
         document.addEventListener('keydown', function(event) {
             if (event.ctrlKey && event.key === 's') {
@@ -282,6 +312,10 @@
                 event.preventDefault()
                 unsetActiveElement()
                 console.log("ctrl d")
+            }
+            if(event.key === "Delete" && activeElement) {
+                deleteElement(activeElement)
+                activeElement = null
             }
         })
         window.addEventListener('beforeunload', function (event) {
