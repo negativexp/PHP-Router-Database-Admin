@@ -2,7 +2,7 @@
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<?php include_once("components/sidepanel.php"); ?>
+<?php include_once("views/admin/components/sidepanel.php"); ?>
 <div id="popupForm" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Přidat fotku</h2>
@@ -28,6 +28,7 @@
 </div>
 <div id="contextMenu" class="context-menu" style="display:none">
     <p id="contextMenuActive"></p>
+    <p id="contextMenuClasses"></p>
     <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
 <main>
@@ -57,7 +58,6 @@
             <a class="small button" onclick="addClass(this.innerText)">purple</a>
         </div>
         <div class="tableOptions">
-            <a class="small button" onclick="addElement(null)">block</a>
             <a class="small button" onclick="addElement(this.innerText)">header</a>
             <a class="small button" onclick="addElement(this.innerText)">section</a>
             <a class="small button" onclick="addElement(this.innerText)">article</a>
@@ -104,7 +104,9 @@
         const blocks = document.getElementById("webBuilder-blocks")
         const textOptions = document.getElementById("textOptions")
         const contextMenuActive = document.getElementById("contextMenuActive")
+        const contextMenuActiveClasses = document.getElementById("contextMenuClasses")
         const textElements = ['P', 'H1', 'H2', 'H3', 'H4', 'H5']
+        let lastAppended = null
         let activeElement = null
         let isSaved = false;
         let isDeactivatedAdminStyle = false;
@@ -115,20 +117,18 @@
 
             const adminRules = [
                 '#webBuilder-blocks .webBuilder-block *',
-                '#webBuilder-blocks .webBuilder-block',
                 '#webBuilder-blocks',
+                '#webBuilder-blocks .active',
                 '#webBuilder .editingStyleText',
-                '#webBuilder p, #webBuilder h1, #webBuilder h2, #webBuilder h3, #webBuilder h4, #webBuilder h5',
-                '#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div'
+                'p:focus, h1:focus, h2:focus, h3:focus, h4:focus, h5:focus'
             ];
 
             const adminRulesWithProperties = [
-                '#webBuilder-blocks .webBuilder-block * { min-height: 20px; border: 1px dashed rgba(255, 255, 255, 0.5) !important; }',
-                '#webBuilder-blocks .webBuilder-block { padding: 5px 5px 20px 5px; box-shadow: inset rgba(60, 70, 85, 0.5) 0px 0px 40px 0px, rgba(0, 0, 0, .3) 0px 30px 100px -24px; }',
+                '#webBuilder-blocks .webBuilder-block * { padding: 10px; border: 1px dashed rgba(255, 255, 255, 0.5); box-shadow: inset rgba(60, 70, 85, 0.5) 0px 0px 40px 0px, rgba(0, 0, 0, .3) 0px 30px 100px -24px; }',
                 '#webBuilder-blocks { padding: 5px; display: flex; flex-flow: column; gap: 10px; }',
-                '#webBuilder .editingStyleText { width: 100% !important; }',
-                '#webBuilder p, #webBuilder h1, #webBuilder h2, #webBuilder h3, #webBuilder h4, #webBuilder h5 { padding: 5px 5px 20px 5px; }',
-                '#webBuilder-blocks .webBuilder-block section, #webBuilder-blocks .webBuilder-block article, #webBuilder-blocks .webBuilder-block div { padding: 5px 5px 20px 5px; }'
+                '#webBuilder-blocks .active { border: 1px solid rgba(255, 0, 0, 0.7) !important; }',
+                '#webBuilder .editingStyleText { padding: 0; width: 100% !important; min-height: 20px; }',
+                'p:focus, h1:focus, h2:focus, h3:focus, h4:focus, h5:focus { outline: none; }'
             ];
 
             if (!isDeactivatedAdminStyle) {
@@ -170,7 +170,6 @@
                 })
             })
             if(!textElements.includes(activeElement.tagName)) {
-                console.log(activeElement)
                 textOptions.classList.remove("hidden")
                 textOptions.setAttribute("style", "top:"+getOffset(el).top+"px;left:"+getOffset(el).left+"px;")
             } else {
@@ -186,21 +185,36 @@
             });
             textOptions.classList.add("hidden")
         }
-        function getClosestBlock(element) {
-            return element.closest(".webBuilder-block")
+        function getClosestBlockElement(element) {
+            return element.closest(".webBuilder-block > *")
         }
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
             if (textElements.includes(el.tagName)) {
                 el.classList.add("editingStyleText")
+                el.addEventListener("keydown", function(event) {
+                    if (event.keyCode === 13 || event.keyCode === 27) {
+                        el.blur();
+                        if(el.tagName !== "P") {
+                            const closestElement = getClosestBlockElement(activeElement)
+                            unsetActiveElement()
+                            setActiveElement(closestElement)
+                        } else {
+                            const closestElement = getClosestBlockElement(activeElement)
+                            unsetActiveElement()
+                            setActiveElement(closestElement)
+                            append(document.createElement("p"))
+                        }
+                        // Workaround for webkit's bug
+                        window.getSelection().removeAllRanges();
+                    }
+                })
                 el.setAttribute("contenteditable", "true")
                 el.setAttribute("spellcheck", "false")
             }
             if (activeElement) {
-                if (el.tagName !== "NULL") {
-                    activeElement.appendChild(el)
-                }
+                activeElement.appendChild(el)
             } else {
                 const div = document.createElement("div")
                 div.addEventListener("contextmenu", rightClick)
@@ -212,6 +226,12 @@
                 }
                 blocks.appendChild(div)
             }
+            lastAppended = el
+
+            //jinak to nefocusuje P nevim
+            setTimeout(() => {
+                el.focus();
+            }, 0);
         }
 
         function addElement(tagName) {
@@ -256,6 +276,7 @@
                 hideMenu();
             else{
                 contextMenuActive.innerText = activeElement.tagName
+                contextMenuActiveClasses.innerText = activeElement.classList.toString()
                 var menu = document.getElementById("contextMenu")
                 menu.style.display = 'block'
                 menu.style.left = e.pageX + "px"
@@ -297,7 +318,7 @@
             const rect = el.getBoundingClientRect();
             return {
                 left: rect.left + window.scrollX,
-                top: rect.top + window.scrollY
+                top: rect.top + window.scrollY - 26
             };
         }
 
@@ -311,6 +332,7 @@
             if(event.ctrlKey && event.key === 'd') {
                 event.preventDefault()
                 unsetActiveElement()
+                activeElement.blur()
                 console.log("ctrl d")
             }
             if(event.key === "Delete" && activeElement) {
