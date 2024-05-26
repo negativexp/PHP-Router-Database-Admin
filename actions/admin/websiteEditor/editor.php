@@ -1,40 +1,73 @@
 <?php
-$blocks = json_decode(file_get_contents('php://input'));
+// Function to recursively generate HTML from array
+function arrayToHtml($elements) {
+    $html = '';
 
-$filename = 'output.txt';
-$file = fopen($filename, 'w') or die("Unable to open file!");
+    foreach ($elements as $element) {
+        // Only process children if the current element is not a div with class "webBuilder-block"
+        if ($element->tag !== 'div' || !isset($element->attrs->class) || $element->attrs->class !== 'webBuilder-block') {
+            $html .= '<' . $element->tag;
 
-// Output to file instead of echoing
-ob_start(); // Start output buffering to capture output
+            // Add attributes if present and exclude specific attributes if conditions are met
+            if (isset($element->attrs)) {
+                foreach ($element->attrs as $attr => $value) {
+                    if ($attr === 'class') {
+                        // Check if classList contains 'editingStyleText'
+                        $classList = explode(' ', $value);
+                        $filteredClasses = array_filter($classList, function($class) {
+                            return $class !== 'editingStyleText';
+                        });
+                        if (!empty($filteredClasses)) {
+                            $html .= ' ' . $attr . '="' . implode(' ', $filteredClasses) . '"';
+                        }
+                    } elseif (!in_array($attr, ['tabindex', 'onfocus', 'contenteditable', 'spellcheck'])) {
+                        $html .= ' ' . $attr . '="' . $value . '"';
+                    }
+                }
+            }
 
-// Example: Accessing and writing data to file
-fwrite($file, "Tag of the outermost element: " . $blocks->tag . "\n");
+            $html .= '>';
 
-// Accessing attributes of the outermost element
-fwrite($file, "ID attribute of the outermost element: " . $blocks->attrs->id . "\n");
+            // Check if there are children elements or text content
+            if (isset($element->children) && is_array($element->children)) {
+                $hasChildElements = false;
+                foreach ($element->children as $child) {
+                    if (isset($child->tag)) {
+                        $hasChildElements = true;
+                        break;
+                    }
+                }
 
-// Accessing children elements
-fwrite($file, "Number of children elements: " . count($blocks->children) . "\n");
+                if (!$hasChildElements) {
+                    // No child elements, so this element may contain text directly
+                    foreach ($element->children as $child) {
+                        if (!isset($child->tag)) {
+                            // Text node, include it directly
+                            $html .= $child;
+                        }
+                    }
+                } else {
+                    // Recursively process child elements
+                    $html .= arrayToHtml($element->children);
+                }
+            }
 
-// Iterating through children elements
-foreach ($blocks->children as $index => $child) {
-    fwrite($file, "Child " . ($index + 1) . " tag: " . $child->tag . "\n");
-
-    // Accessing attributes of child elements
-    fwrite($file, "Child " . ($index + 1) . " class attribute: " . $child->attrs->class . "\n");
-
-    // Accessing nested children elements
-    foreach ($child->children as $nestedChild) {
-        fwrite($file, "Nested child tag: " . $nestedChild->tag . "\n");
-        // Accessing text content of nested children (if any)
-        if (isset($nestedChild->children[0])) {
-            fwrite($file, "Nested child text content: " . $nestedChild->children[0] . "\n");
+            // Close tag
+            $html .= '</' . $element->tag . '>';
+        } else {
+            // Process children of the div with class "webBuilder-block"
+            if (isset($element->children) && is_array($element->children)) {
+                foreach ($element->children as $child) {
+                    // Only add child elements directly without wrapping div
+                    $html .= arrayToHtml([$child]);
+                }
+            }
         }
     }
+
+    return $html;
 }
-
-// Close the file
-fclose($file);
-
-// End output buffering and write captured output to the file
-file_put_contents($filename, ob_get_flush(), FILE_APPEND);
+$blocks = json_decode(file_get_contents('php://input'));
+$html = arrayToHtml($blocks);
+$file = fopen("views/index.php", "w");
+fwrite($file, print_r($html, true));

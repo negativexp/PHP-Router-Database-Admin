@@ -367,7 +367,7 @@
             var url = "/admin/websiteBuilder/editor";
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(htmlToJson(blocks)));
+            xhr.send(JSON.stringify(htmlToJson(blocks).children));
         }
         function htmlToJson(element) {
             const obj = {};

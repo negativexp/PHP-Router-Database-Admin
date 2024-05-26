@@ -1,6 +1,0 @@
-Tag of the outermost element: div
-ID attribute of the outermost element: webBuilder-blocks
-Number of children elements: 2
-Child 1 tag: div
-Child 1 class attribute: webBuilder-block
-Nested child tag: header
