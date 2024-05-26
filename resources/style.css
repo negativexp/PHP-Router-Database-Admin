@@ -12,6 +12,11 @@
     gap: 2%;
     flex-flow: row;
 }
+.vhCen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .red {
     background: red;
 }

@@ -3,6 +3,11 @@
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
+<style>
+    .tableOptions {
+        padding: 0 !important;
+    }
+</style>
 <div id="popupForm" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Přidat fotku</h2>
@@ -33,7 +38,7 @@
 </div>
 <main>
     <header>
-        <h1 class="big">Website Builder</h1>
+        <h1 class="big">Website Builder - <?= isset($viewName) ? $viewName : "..." ?></h1>
     </header>
     <div class="wrapper-content">
         <div id="textOptions" class="hidden">
@@ -43,17 +48,19 @@
             <a class="small button" onclick="addElement('h3')">h3</a>
             <a class="small button" onclick="addElement('h4')">h4</a>
             <a class="small button" onclick="addElement('h5')">h5</a>
-        </div>
-        <div class="tableOptions">
-            <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
-        </div>
-        <div class="tableOptions">
             <a class="small button" onclick="addClass(this.innerText)">w100</a>
             <a class="small button" onclick="addClass(this.innerText)">w50</a>
             <a class="small button" onclick="addClass(this.innerText)">w33</a>
             <a class="small button" onclick="addClass(this.innerText)">w25</a>
+        </div>
+        <div class="tableOptions">
+            <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
+            <a class="button" onclick="saveSite()">Uložit stránku</a>
+        </div>
+        <div class="tableOptions">
             <a class="small button" onclick="addClass(this.innerText)">column</a>
             <a class="small button" onclick="addClass(this.innerText)">row</a>
+            <a class="small button" onclick="addClass(this.innerText)">vhCen</a>
             <a class="small button" onclick="addClass(this.innerText)">red</a>
             <a class="small button" onclick="addClass(this.innerText)">purple</a>
         </div>
@@ -185,9 +192,6 @@
             });
             textOptions.classList.add("hidden")
         }
-        function getClosestBlockElement(element) {
-            return element.closest(".webBuilder-block > *")
-        }
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
@@ -252,8 +256,18 @@
             hidePopupForm2()
             hidePopupForm()
         }
+        function getClosestBlockElement(element) {
+            return element.closest(".webBuilder-block > *")
+        }
+        function getClosestBlock(element) {
+            return element.closest(".webBuilder-block")
+        }
         function deleteElement() {
-            activeElement.remove()
+            if(getClosestBlock(activeElement).childElementCount < 1) {
+                getClosestBlock(activeElement).remove()
+            } else {
+                activeElement.remove()
+            }
             activeElement = null
             hideMenu()
             isSaved = false
@@ -318,7 +332,7 @@
             const rect = el.getBoundingClientRect();
             return {
                 left: rect.left + window.scrollX,
-                top: rect.top + window.scrollY - 26
+                top: rect.top + window.scrollY - 39
             };
         }
 
@@ -347,6 +361,52 @@
                 event.returnValue = ''
             }
         });
+
+        function saveSite() {
+            var xhr = new XMLHttpRequest();
+            var url = "/admin/websiteBuilder/editor";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(htmlToJson(blocks)));
+        }
+        function htmlToJson(element) {
+            const obj = {};
+
+            // Check if the element has attributes
+            if (element.nodeType === 1) {
+                // Retrieve element tag name
+                obj.tag = element.tagName.toLowerCase();
+
+                // Retrieve element attributes if any
+                if (element.attributes.length > 0) {
+                    obj.attrs = {};
+                    for (let i = 0; i < element.attributes.length; i++) {
+                        const attr = element.attributes[i];
+                        obj.attrs[attr.nodeName] = attr.nodeValue;
+                    }
+                }
+            }
+
+            // Process child nodes recursively
+            if (element.hasChildNodes()) {
+                obj.children = [];
+                const childNodes = element.childNodes;
+                for (let i = 0; i < childNodes.length; i++) {
+                    const childNode = childNodes[i];
+                    if (childNode.nodeType === 3) {
+                        // Text node
+                        if (childNode.nodeValue.trim() !== '') {
+                            obj.children.push(childNode.nodeValue.trim());
+                        }
+                    } else {
+                        // Element node
+                        obj.children.push(htmlToJson(childNode));
+                    }
+                }
+            }
+
+            return obj;
+        }
     </script>
 </main>
 </body>

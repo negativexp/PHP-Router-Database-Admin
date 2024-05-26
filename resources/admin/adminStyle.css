@@ -373,7 +373,10 @@ main .code-editor textarea:focus {
     outline: none;
 }
 
-
+.tableOptions:nth-child(4) {
+    border-bottom: 1px solid black !important;
+    padding-bottom: 40px !important;
+}
 #contextMenuActive, #contextMenuClasses {
     color: black;
 }
@@ -381,9 +384,11 @@ main .code-editor textarea:focus {
     position: absolute;
     display: flex;
     gap: 5px;
-    padding-left: 5px;
+    padding: 5px;
+    background: darkgray;
+    border-radius: 7px;
 }
-#textOptions .button {
+#textOptions .button, #contextMenu .button {
     padding: 5px;
     font-size: 14px;
 }
