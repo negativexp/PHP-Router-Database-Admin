@@ -114,7 +114,39 @@
                     background: darkgray;
                 }
             </style>
-            <main id="webBuilder-blocks"></main>
+            <main id="webBuilder-blocks">
+                <?php
+                function getBodyContent($filePath) {
+                    $content = file_get_contents($filePath);
+                    $dom = new DOMDocument;
+                    libxml_use_internal_errors(true);  // Handle HTML5 tags properly
+                    $dom->loadHTML($content);
+                    libxml_clear_errors();
+
+                    $body = $dom->getElementsByTagName('body')->item(0);
+                    $html = '';
+                    foreach ($body->childNodes as $child) {
+                        // Only wrap non-empty nodes
+                        if (trim($dom->saveHTML($child)) !== '') {
+                            $wrapper = $dom->createElement('div');
+                            $wrapper->setAttribute('class', 'webBuilder-block');
+                            $wrapper->appendChild($child->cloneNode(true));
+                            $html .= $dom->saveHTML($wrapper);
+                        }
+                    }
+
+                    return $html;
+                }
+
+                if (isset($viewName)) {
+                    $file = "views/" . $viewName . ".php";
+                    $fileContent = file_get_contents($file);
+
+                    $bodyContent = getBodyContent($file);
+                    echo $bodyContent;
+                }
+                ?>
+            </main>
         </div>
     </div>
     <script>
@@ -356,13 +388,9 @@
         }
         function htmlToJson(element) {
             const obj = {};
-
             // Check if the element has attributes
             if (element.nodeType === 1) {
-                // Retrieve element tag name
                 obj.tag = element.tagName.toLowerCase();
-
-                // Retrieve element attributes if any
                 if (element.attributes.length > 0) {
                     obj.attrs = {};
                     for (let i = 0; i < element.attributes.length; i++) {
@@ -371,7 +399,6 @@
                     }
                 }
             }
-
             // Process child nodes recursively
             if (element.hasChildNodes()) {
                 obj.children = [];
@@ -379,17 +406,14 @@
                 for (let i = 0; i < childNodes.length; i++) {
                     const childNode = childNodes[i];
                     if (childNode.nodeType === 3) {
-                        // Text node
                         if (childNode.nodeValue.trim() !== '') {
                             obj.children.push(childNode.nodeValue.trim());
                         }
                     } else {
-                        // Element node
                         obj.children.push(htmlToJson(childNode));
                     }
                 }
             }
-
             return obj;
         }
     </script>

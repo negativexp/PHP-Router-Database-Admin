@@ -1,6 +1,6 @@
 <?php
 // Function to recursively generate HTML from array
-function arrayToHtml($elements) {
+function jsonToHtml($elements) {
     $html = '';
 
     foreach ($elements as $element) {
@@ -68,7 +68,7 @@ function arrayToHtml($elements) {
     return $html;
 }
 $blocks = json_decode(file_get_contents('php://input'));
-$html = arrayToHtml($blocks);
+$html = jsonToHtml($blocks);
 $file = fopen("views/index.php", "w");
 $startStructure = '
 <!doctype html>
