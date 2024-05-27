@@ -70,4 +70,16 @@ function arrayToHtml($elements) {
 $blocks = json_decode(file_get_contents('php://input'));
 $html = arrayToHtml($blocks);
 $file = fopen("views/index.php", "w");
+$startStructure = '
+<!doctype html>
+<html lang="en">
+<link rel="stylesheet" href="resources/style.css">
+<body>
+';
+$endStructure = '
+</body>
+</html>
+';
+fwrite($file, print_r($startStructure, true));
 fwrite($file, print_r($html, true));
+fwrite($file, print_r($endStructure, true));

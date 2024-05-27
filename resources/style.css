@@ -1,8 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 * {
-    font-family: "Bebas Neue", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+
 }
 .w100 { width: 100%; }
 .w50 { width: 50%; }

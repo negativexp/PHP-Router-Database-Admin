@@ -76,6 +76,17 @@
             <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
             <link rel="stylesheet" href="../../resources/style.css">
             <style>
+                main {
+                    padding-bottom: 100Px;
+                }
+                #webBuilder > main {
+                    overflow: hidden;
+                    border: 1px solid black;
+                }
+                .tableOptions {
+                    border-radius: 0 !important;
+                    padding-bottom: 10px !important;
+                }
                 .context-menu {
                     position: absolute;
                     text-align: center;
@@ -103,8 +114,7 @@
                     background: darkgray;
                 }
             </style>
-            <div id="webBuilder-blocks">
-            </div>
+            <main id="webBuilder-blocks"></main>
         </div>
     </div>
     <script>
@@ -263,7 +273,7 @@
             return element.closest(".webBuilder-block")
         }
         function deleteElement() {
-            if(getClosestBlock(activeElement).childElementCount < 1) {
+            if(getClosestBlock(activeElement).childElementCount > 0) {
                 getClosestBlock(activeElement).remove()
             } else {
                 activeElement.remove()
@@ -303,31 +313,6 @@
         });
 
 
-
-
-        function modifyAndOutputCSS(ruleName, newSelector) {
-            // Fetch the CSS file
-            fetch('../../resources/style.css')
-                .then(response => response.text())
-                .then(cssText => {
-                    // Split the CSS text into individual rules based on '}'
-                    let rules = cssText.split('}');
-
-                    // Modify the specific rule if found
-                    rules = rules.map(rule => {
-                        return ".test "+rule
-                    });
-
-                    // Join the modified rules back into a single CSS string
-                    let modifiedCSS = rules.join('}');
-
-                    // Output the modified CSS
-                    console.log(modifiedCSS);
-                })
-                .catch(error => {
-                    console.error('Error fetching CSS file:', error);
-                });
-        }
         function getOffset(el) {
             const rect = el.getBoundingClientRect();
             return {
