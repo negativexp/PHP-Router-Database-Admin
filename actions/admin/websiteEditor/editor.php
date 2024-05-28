@@ -1,85 +1,49 @@
 <?php
-// Function to recursively generate HTML from array
-function jsonToHtml($elements) {
-    $html = '';
 
-    foreach ($elements as $element) {
-        // Only process children if the current element is not a div with class "webBuilder-block"
-        if ($element->tag !== 'div' || !isset($element->attrs->class) || $element->attrs->class !== 'webBuilder-block') {
-            $html .= '<' . $element->tag;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-            // Add attributes if present and exclude specific attributes if conditions are met
-            if (isset($element->attrs)) {
-                foreach ($element->attrs as $attr => $value) {
-                    if ($attr === 'class') {
-                        // Check if classList contains 'editingStyleText'
-                        $classList = explode(' ', $value);
-                        $filteredClasses = array_filter($classList, function($class) {
-                            return $class !== 'editingStyleText';
-                        });
-                        if (!empty($filteredClasses)) {
-                            $html .= ' ' . $attr . '="' . implode(' ', $filteredClasses) . '"';
-                        }
-                    } elseif (!in_array($attr, ['tabindex', 'onfocus', 'contenteditable', 'spellcheck'])) {
-                        $html .= ' ' . $attr . '="' . $value . '"';
-                    }
-                }
-            }
-
-            $html .= '>';
-
-            // Check if there are children elements or text content
-            if (isset($element->children) && is_array($element->children)) {
-                $hasChildElements = false;
-                foreach ($element->children as $child) {
-                    if (isset($child->tag)) {
-                        $hasChildElements = true;
-                        break;
-                    }
-                }
-
-                if (!$hasChildElements) {
-                    // No child elements, so this element may contain text directly
-                    foreach ($element->children as $child) {
-                        if (!isset($child->tag)) {
-                            // Text node, include it directly
-                            $html .= $child;
-                        }
-                    }
-                } else {
-                    // Recursively process child elements
-                    $html .= arrayToHtml($element->children);
-                }
-            }
-
-            // Close tag
-            $html .= '</' . $element->tag . '>';
-        } else {
-            // Process children of the div with class "webBuilder-block"
-            if (isset($element->children) && is_array($element->children)) {
-                foreach ($element->children as $child) {
-                    // Only add child elements directly without wrapping div
-                    $html .= arrayToHtml([$child]);
-                }
-            }
-        }
-    }
-
-    return $html;
-}
-$blocks = json_decode(file_get_contents('php://input'));
-$html = jsonToHtml($blocks);
-$file = fopen("views/index.php", "w");
-$startStructure = '
+    $file = fopen("test.html", "w");
+    $startStructure = '
 <!doctype html>
 <html lang="en">
 <link rel="stylesheet" href="resources/style.css">
 <body>
 ';
-$endStructure = '
+    $endStructure = '
 </body>
 </html>
 ';
-fwrite($file, print_r($startStructure, true));
-fwrite($file, print_r($html, true));
-fwrite($file, print_r($endStructure, true));
+    fwrite($file, print_r($startStructure, true));
+    fwrite($file, print_r(jsonToHtml($data), true));
+    fwrite($file, print_r($endStructure, true));
+}
+
+function jsonToHtml($json) {
+    if (!isset($json['tag'])) {
+        return '';
+    }
+
+    $tag = $json['tag'];
+    $attributes = isset($json['attributes']) ? $json['attributes'] : [];
+    $children = isset($json['children']) ? $json['children'] : [];
+
+    $attrString = '';
+    foreach ($attributes as $key => $value) {
+        $attrString .= sprintf(' %s="%s"', htmlspecialchars($key), htmlspecialchars($value));
+    }
+
+    $html = sprintf('<%s%s>', htmlspecialchars($tag), $attrString);
+
+    foreach ($children as $child) {
+        if (isset($child['text'])) {
+            $html .= htmlspecialchars($child['text']);
+        } else {
+            $html .= jsonToHtml($child);
+        }
+    }
+
+    $html .= sprintf('</%s>', htmlspecialchars($tag));
+
+    return $html;
+}

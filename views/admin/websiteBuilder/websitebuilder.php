@@ -380,39 +380,60 @@
         });
 
         function saveSite() {
+            const cleanedMain = {
+                tag: 'main',
+                attributes: {},
+                children: []
+            };
+            Array.from(blocks.childNodes).forEach(block => {
+                block.childNodes.forEach(child => {
+                    if (child.nodeType === Node.ELEMENT_NODE) {
+                        cleanedMain.children.push(htmlToJson(child));
+                    }
+                });
+            });
             var xhr = new XMLHttpRequest();
             var url = "/admin/websiteBuilder/editor";
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(htmlToJson(blocks).children));
+            xhr.send(JSON.stringify(cleanedMain));
         }
-        function htmlToJson(element) {
-            const obj = {};
-            // Check if the element has attributes
-            if (element.nodeType === 1) {
-                obj.tag = element.tagName.toLowerCase();
-                if (element.attributes.length > 0) {
-                    obj.attrs = {};
-                    for (let i = 0; i < element.attributes.length; i++) {
-                        const attr = element.attributes[i];
-                        obj.attrs[attr.nodeName] = attr.nodeValue;
+        function htmlToJson(node) {
+            const obj = {
+                tag: node.tagName.toLowerCase()
+            };
+            if (node.attributes) {
+                const attrs = {};
+                for (let attr of node.attributes) {
+                    if (![
+                        'id',
+                        'tabindex',
+                        'onfocus',
+                        'draggable',
+                        'contenteditable',
+                        'spellcheck'
+                    ].includes(attr.name)) {
+                        attrs[attr.name] = attr.value;
+                    }
+                }
+                if (Object.keys(attrs).length > 0) {
+                    obj.attributes = attrs;
+                }
+            }
+            const children = [];
+            for (let child of node.childNodes) {
+                if (child.nodeType === Node.ELEMENT_NODE) {
+                    children.push(htmlToJson(child));
+                } else if (child.nodeType === Node.TEXT_NODE) {
+                    if (child.textContent.trim().length > 0) {
+                        children.push({
+                            text: child.textContent.trim()
+                        });
                     }
                 }
             }
-            // Process child nodes recursively
-            if (element.hasChildNodes()) {
-                obj.children = [];
-                const childNodes = element.childNodes;
-                for (let i = 0; i < childNodes.length; i++) {
-                    const childNode = childNodes[i];
-                    if (childNode.nodeType === 3) {
-                        if (childNode.nodeValue.trim() !== '') {
-                            obj.children.push(childNode.nodeValue.trim());
-                        }
-                    } else {
-                        obj.children.push(htmlToJson(childNode));
-                    }
-                }
+            if (children.length > 0) {
+                obj.children = children;
             }
             return obj;
         }
