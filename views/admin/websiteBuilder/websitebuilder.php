@@ -123,7 +123,7 @@
                     $dom->loadHTML($content);
                     libxml_clear_errors();
 
-                    $body = $dom->getElementsByTagName('body')->item(0);
+                    $body = $dom->getElementsByTagName('main')->item(0);
                     $html = '';
                     foreach ($body->childNodes as $child) {
                         // Only wrap non-empty nodes
@@ -400,12 +400,26 @@
             xhr.send(JSON.stringify(cleanedMain));
         }
         function htmlToJson(node) {
+            // Create a deep copy of the node to avoid affecting the original DOM
+            const clonedNode = node.cloneNode(true);
+
             const obj = {
-                tag: node.tagName.toLowerCase()
+                tag: clonedNode.tagName.toLowerCase()
             };
-            if (node.attributes) {
+
+            if (clonedNode.attributes) {
                 const attrs = {};
-                for (let attr of node.attributes) {
+                let classList = clonedNode.classList;
+
+                // Remove classes from the cloned node
+                if(classList.contains("editingStyleText")) {
+                    classList.remove("editingStyleText");
+                }
+                if(classList.contains("active")) {
+                    classList.remove("active");
+                }
+
+                for (let attr of clonedNode.attributes) {
                     if (![
                         'id',
                         'tabindex',
@@ -414,18 +428,17 @@
                         'contenteditable',
                         'spellcheck'
                     ].includes(attr.name)) {
-                        if(!attr.value.includes("editingStyleText") ||
-                        !attr.value.includes("active")) {
-                            attrs[attr.name] = attr.value;
-                        }
+                        attrs[attr.name] = attr.value;
                     }
                 }
+
                 if (Object.keys(attrs).length > 0) {
                     obj.attributes = attrs;
                 }
             }
+
             const children = [];
-            for (let child of node.childNodes) {
+            for (let child of clonedNode.childNodes) {
                 if (child.nodeType === Node.ELEMENT_NODE) {
                     children.push(htmlToJson(child));
                 } else if (child.nodeType === Node.TEXT_NODE) {
@@ -436,9 +449,11 @@
                     }
                 }
             }
+
             if (children.length > 0) {
                 obj.children = children;
             }
+
             return obj;
         }
     </script>
