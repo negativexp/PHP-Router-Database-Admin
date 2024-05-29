@@ -116,6 +116,30 @@
             </style>
             <main id="webBuilder-blocks">
                 <?php
+                function setAttributesRecursively($element) {
+                    // Add tabindex and onfocus attributes to all elements
+                    if ($element->nodeType === XML_ELEMENT_NODE) {
+                        $element->setAttribute('tabindex', '0');
+                        $element->setAttribute('onfocus', 'setActiveElement(this)');
+
+                        // Add contenteditable and textStyle class to specific elements
+                        $tagName = $element->tagName;
+                        if (in_array($tagName, ['p', 'h1', 'h2', 'h3', 'h4', 'h5'])) {
+                            $element->setAttribute('contenteditable', 'true');
+                            $currentClass = $element->getAttribute('class');
+                            $newClass = $currentClass ? $currentClass . ' editingStyleText' : 'editingStyleText';
+                            $element->setAttribute('class', $newClass);
+                        }
+                    }
+
+                    // Recursively add attributes to all child elements
+                    foreach ($element->childNodes as $child) {
+                        if ($child->nodeType === XML_ELEMENT_NODE) {
+                            setAttributesRecursively($child);
+                        }
+                    }
+                }
+
                 function getBodyContent($filePath) {
                     $content = file_get_contents($filePath);
                     $dom = new DOMDocument;
@@ -128,20 +152,28 @@
                     foreach ($body->childNodes as $child) {
                         // Only wrap non-empty nodes
                         if (trim($dom->saveHTML($child)) !== '') {
+                            setAttributesRecursively($child);  // Add attributes to all elements recursively
+
+                            // Create the wrapper div with the required attributes
                             $wrapper = $dom->createElement('div');
                             $wrapper->setAttribute('class', 'webBuilder-block');
+                            $wrapper->setAttribute('tabindex', '0');  // Add tabindex attribute to the wrapper
+                            $wrapper->setAttribute('onfocus', 'setActiveElement(this)');  // Add onfocus event handler to the wrapper
+                            $wrapper->setAttribute('spellcheck', 'false');  // Add onfocus event handler to the wrapper
+
+                            // Append the child with modified attributes to the wrapper
                             $wrapper->appendChild($child->cloneNode(true));
                             $html .= $dom->saveHTML($wrapper);
                         }
                     }
 
-                    return $html;
+                    return utf8_decode($html);
                 }
 
                 if (isset($viewName)) {
                     $file = "views/" . $viewName . ".php";
                     $fileContent = file_get_contents($file);
-                    if($fileContent) {
+                    if ($fileContent) {
                         $bodyContent = getBodyContent($file);
                         echo $bodyContent;
                     }
