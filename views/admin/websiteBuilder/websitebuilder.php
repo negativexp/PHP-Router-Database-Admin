@@ -141,9 +141,10 @@
                 if (isset($viewName)) {
                     $file = "views/" . $viewName . ".php";
                     $fileContent = file_get_contents($file);
-
-                    $bodyContent = getBodyContent($file);
-                    echo $bodyContent;
+                    if($fileContent) {
+                        $bodyContent = getBodyContent($file);
+                        echo $bodyContent;
+                    }
                 }
                 ?>
             </main>
@@ -242,16 +243,14 @@
                 el.addEventListener("keydown", function(event) {
                     if (event.keyCode === 13 || event.keyCode === 27) {
                         el.blur();
-                        if(el.tagName !== "P") {
-                            const closestElement = getClosestBlockElement(activeElement)
-                            unsetActiveElement()
-                            setActiveElement(closestElement)
-                        } else {
-                            const closestElement = getClosestBlockElement(activeElement)
-                            unsetActiveElement()
-                            setActiveElement(closestElement)
+                        const parent = activeElement.parentNode
+                        unsetActiveElement()
+                        setActiveElement(parent)
+                        if(el.tagName === "P") {
+                            setActiveElement(parent)
                             append(document.createElement("p"))
                         }
+
                         // Workaround for webkit's bug
                         window.getSelection().removeAllRanges();
                     }
@@ -305,15 +304,16 @@
             return element.closest(".webBuilder-block")
         }
         function deleteElement() {
-            if(getClosestBlock(activeElement).childElementCount > 0) {
-                getClosestBlock(activeElement).remove()
-            } else {
-                activeElement.remove()
-            }
+            activeElement.remove()
             activeElement = null
             hideMenu()
             isSaved = false
             textOptions.classList.add("hidden")
+            Array.from(blocks.childNodes).forEach(block => {
+                if(block.childElementCount === 0) {
+                    block.remove()
+                }
+            })
         }
         function addClass(className) {
             if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
@@ -356,7 +356,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.ctrlKey && event.key === 's') {
                 event.preventDefault()
-                //dodelat ajax
+                saveSite()
                 isSaved = true
                 console.log("ctrl s")
             }
@@ -383,7 +383,8 @@
             const cleanedMain = {
                 tag: 'main',
                 attributes: {},
-                children: []
+                children: [],
+                viewName: '<?= $viewName ?>'
             };
             Array.from(blocks.childNodes).forEach(block => {
                 block.childNodes.forEach(child => {
@@ -413,7 +414,10 @@
                         'contenteditable',
                         'spellcheck'
                     ].includes(attr.name)) {
-                        attrs[attr.name] = attr.value;
+                        if(!attr.value.includes("editingStyleText") ||
+                        !attr.value.includes("active")) {
+                            attrs[attr.name] = attr.value;
+                        }
                     }
                 }
                 if (Object.keys(attrs).length > 0) {

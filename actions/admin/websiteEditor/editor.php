@@ -3,7 +3,7 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $file = fopen("test.html", "w");
+    $file = fopen("views/".$data["viewName"].".php", "w");
     $startStructure = '
 <!doctype html>
 <html lang="en">
