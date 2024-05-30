@@ -83,6 +83,9 @@
                     overflow: hidden;
                     border: 1px solid black;
                 }
+                #webBuilder > main * {
+                    font-family: initial;
+                }
                 .tableOptions {
                     border-radius: 0 !important;
                     padding-bottom: 10px !important;
@@ -129,6 +132,7 @@
                             $currentClass = $element->getAttribute('class');
                             $newClass = $currentClass ? $currentClass . ' editingStyleText' : 'editingStyleText';
                             $element->setAttribute('class', $newClass);
+                            $element->setAttribute('onkeydown', 'textKeyDown(event, this)');
                         }
                     }
 
@@ -160,7 +164,7 @@
                             $wrapper->setAttribute('tabindex', '0');  // Add tabindex attribute to the wrapper
                             $wrapper->setAttribute('onfocus', 'setActiveElement(this)');  // Add onfocus event handler to the wrapper
                             $wrapper->setAttribute('spellcheck', 'false');  // Add onfocus event handler to the wrapper
-
+                            $wrapper->setAttribute('oncontextmenu', 'rightClick(event)');
                             // Append the child with modified attributes to the wrapper
                             $wrapper->appendChild($child->cloneNode(true));
                             $html .= $dom->saveHTML($wrapper);
@@ -267,26 +271,27 @@
             });
             textOptions.classList.add("hidden")
         }
+        function textKeyDown(event, el) {
+            if (event.keyCode === 13 || event.keyCode === 27) {
+                el.blur();
+                const parent = activeElement.parentNode
+                unsetActiveElement()
+                setActiveElement(parent)
+                if(el.tagName === "P") {
+                    setActiveElement(parent)
+                    append(document.createElement("p"))
+                }
+
+                // Workaround for webkit's bug
+                window.getSelection().removeAllRanges();
+            }
+        }
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
             if (textElements.includes(el.tagName)) {
                 el.classList.add("editingStyleText")
-                el.addEventListener("keydown", function(event) {
-                    if (event.keyCode === 13 || event.keyCode === 27) {
-                        el.blur();
-                        const parent = activeElement.parentNode
-                        unsetActiveElement()
-                        setActiveElement(parent)
-                        if(el.tagName === "P") {
-                            setActiveElement(parent)
-                            append(document.createElement("p"))
-                        }
-
-                        // Workaround for webkit's bug
-                        window.getSelection().removeAllRanges();
-                    }
-                })
+                el.setAttribute("onkeydown", "textKeyDown(event, this)")
                 el.setAttribute("contenteditable", "true")
                 el.setAttribute("spellcheck", "false")
             }
@@ -362,7 +367,7 @@
             e.preventDefault();
             if (document.getElementById("contextMenu").style.display == "block")
                 hideMenu();
-            else{
+            else {
                 contextMenuActive.innerText = activeElement.tagName
                 contextMenuActiveClasses.innerText = activeElement.classList.toString()
                 var menu = document.getElementById("contextMenu")
