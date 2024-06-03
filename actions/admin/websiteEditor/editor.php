@@ -1,5 +1,4 @@
 <?php
-$finalHtml = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
@@ -7,52 +6,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $startStructure = '
 <!doctype html>
 <html lang="en">
-<link rel="stylesheet" href="resources/style.css">
+<head>
+    <link rel="stylesheet" href="resources/style.css">
+</head>
 <body>
 ';
     $endStructure = '
 </body>
 </html>
 ';
-    fwrite($file, print_r(betterJSON($data), true));
+    fwrite($file, $startStructure);
+    fwrite($file, handleFormatting($data));
+    fwrite($file, $endStructure);
 }
-function betterJSON($json) {
-    $html = '';
 
-    if (!isset($json['tag'])) {
-        return '';
-    }
-
-    $tag = $json['tag'];
-    $attributes = isset($json['attributes']) ? $json['attributes'] : [];
-    $children = isset($json['children']) ? $json['children'] : [];
-
-    $attrString = '';
-    foreach ($attributes as $key => $value) {
-        $attrString .= sprintf(' %s="%s"', htmlspecialchars($key), htmlspecialchars($value));
-    }
-
-    $html .= sprintf('<%s%s>', htmlspecialchars($tag), $attrString);
-    $html .= sprintf('</%s>', htmlspecialchars($tag));
-    return $html;
-
-}
-function checkHeader($json) {
-    if (!isset($json['children'])) {
-        return '';
-    }
-    $headerHtml = '';
-    $otherHtml = '';
-
-    foreach ($json['children'] as $child) {
-        if ($child['tag'] === 'header') {
-            $headerHtml .= jsonToHtml($child);
-        } else {
-            $otherHtml .= jsonToHtml($child);
-        }
-    }
-
-    return $headerHtml . $otherHtml;
+function handleFormatting($data) {
+    return handleHeader($data);
 }
 function jsonToHtml($json) {
     if (!isset($json['tag'])) {
@@ -81,4 +50,25 @@ function jsonToHtml($json) {
     $html .= sprintf('</%s>', htmlspecialchars($tag));
 
     return $html;
+}
+
+function handleHeader($json) {
+    if (!isset($json['children'])) {
+        return jsonToHtml($json);
+    }
+
+    $headerHtml = '';
+    $otherHtml = '';
+
+    foreach ($json['children'] as $child) {
+        if ($child['tag'] === 'header') {
+            $headerHtml .= jsonToHtml($child);
+        } else {
+            $otherHtml .= jsonToHtml($child);
+        }
+    }
+
+    $mainHtml = sprintf('<main>%s</main>', $otherHtml);
+
+    return $headerHtml . $mainHtml;
 }

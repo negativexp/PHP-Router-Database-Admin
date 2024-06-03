@@ -147,7 +147,7 @@
                 function getBodyContent($filePath) {
                     $content = file_get_contents($filePath);
                     $dom = new DOMDocument;
-                    libxml_use_internal_errors(true);  // Handle HTML5 tags properly
+                    libxml_use_internal_errors(true);
                     $dom->loadHTML($content);
                     libxml_clear_errors();
 
@@ -281,7 +281,6 @@
                     setActiveElement(parent)
                     append(document.createElement("p"))
                 }
-
                 // Workaround for webkit's bug
                 window.getSelection().removeAllRanges();
             }
@@ -369,7 +368,9 @@
                 hideMenu();
             else {
                 contextMenuActive.innerText = activeElement.tagName
-                contextMenuActiveClasses.innerText = activeElement.classList.toString()
+                var dupClasses = Array.from(activeElement.classList)
+                dupClasses.splice(dupClasses.indexOf("editingStyleText"), 1)
+                contextMenuActiveClasses.innerText = dupClasses
                 var menu = document.getElementById("contextMenu")
                 menu.style.display = 'block'
                 menu.style.left = e.pageX + "px"
@@ -437,7 +438,6 @@
             xhr.send(JSON.stringify(cleanedMain));
         }
         function htmlToJson(node) {
-            // Create a deep copy of the node to avoid affecting the original DOM
             const clonedNode = node.cloneNode(true);
 
             const obj = {
@@ -463,9 +463,12 @@
                         'onfocus',
                         'draggable',
                         'contenteditable',
-                        'spellcheck'
+                        'spellcheck',
+                        'onkeydown'
                     ].includes(attr.name)) {
-                        attrs[attr.name] = attr.value;
+                        if(attr !== "class" && classList.length !== 0) {
+                            attrs[attr.name] = attr.value;
+                        }
                     }
                 }
 
