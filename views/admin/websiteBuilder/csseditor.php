@@ -127,6 +127,7 @@
                             }
                         }
                     });
+                    let isSaved = false;
                     codeInput.addEventListener("keydown", (e) => {
                         if(e.key === "ArrowDown" || e.key === "ArrowUp") {
                             sleep(20).then(() => {
@@ -140,8 +141,24 @@
                             });
                         }
                     });
-
-
+                    document.addEventListener('keydown', function(event) {
+                        if (event.ctrlKey && event.key === 's') {
+                            event.preventDefault()
+                            isSaved = true
+                            var xhr = new XMLHttpRequest();
+                            var url = "/admin/cssEditor";
+                            xhr.open("POST", url, true);
+                            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhr.send("css="+encodeURIComponent(document.getElementById("codeInput").value));
+                        }
+                    })
+                    window.addEventListener('beforeunload', function (event) {
+                        if(!isSaved) {
+                            event.preventDefault()
+                            //chrome
+                            event.returnValue = ''
+                        }
+                    });
                     updateNumbers()
                 </script>
             </section>
