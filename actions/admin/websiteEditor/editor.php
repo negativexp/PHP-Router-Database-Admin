@@ -16,59 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </html>
 ';
     fwrite($file, $startStructure);
-    fwrite($file, handleFormatting($data));
+    fwrite($file, print_r(jsonToHtml($data), true));
     fwrite($file, $endStructure);
 }
 
-function handleFormatting($data) {
-    return handleHeader($data);
-}
 function jsonToHtml($json) {
-    if (!isset($json['tag'])) {
-        return '';
-    }
-
-    $tag = $json['tag'];
-    $attributes = isset($json['attributes']) ? $json['attributes'] : [];
-    $children = isset($json['children']) ? $json['children'] : [];
-
-    $attrString = '';
-    foreach ($attributes as $key => $value) {
-        $attrString .= sprintf(' %s="%s"', htmlspecialchars($key), htmlspecialchars($value));
-    }
-
-    $html = sprintf('<%s%s>', htmlspecialchars($tag), $attrString);
-
-    foreach ($children as $child) {
-        if (isset($child['text'])) {
-            $html .= htmlspecialchars($child['text']);
-        } else {
-            $html .= jsonToHtml($child);
+    $output = "";
+    if(isset($json["blocks"])) {
+        foreach ($json["blocks"] as $block) {
+            if (!isset($block['tag'])) {
+                return '';
+            } else {
+                $tag = $block["tag"];
+                $attrs = $block["attributes"];
+                $output .= "<{$tag} {$attrs}"."<br>";
+            }
         }
+        return $output;
     }
-
-    $html .= sprintf('</%s>', htmlspecialchars($tag));
-
-    return $html;
-}
-
-function handleHeader($json) {
-    if (!isset($json['children'])) {
-        return jsonToHtml($json);
-    }
-
-    $headerHtml = '';
-    $otherHtml = '';
-
-    foreach ($json['children'] as $child) {
-        if ($child['tag'] === 'header') {
-            $headerHtml .= jsonToHtml($child);
-        } else {
-            $otherHtml .= jsonToHtml($child);
-        }
-    }
-
-    $mainHtml = sprintf('<main>%s</main>', $otherHtml);
-
-    return $headerHtml . $mainHtml;
 }

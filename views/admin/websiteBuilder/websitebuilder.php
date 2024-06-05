@@ -66,6 +66,7 @@
         </div>
         <div class="tableOptions">
             <a class="small button" onclick="addElement(this.innerText)">header</a>
+            <a class="small button" onclick="addElement(this.innerText)">footer</a>
             <a class="small button" onclick="addElement(this.innerText)">section</a>
             <a class="small button" onclick="addElement(this.innerText)">article</a>
             <a class="small button" onclick="addElement(this.innerText)">div</a>
@@ -419,18 +420,17 @@
 
         function saveSite() {
             const cleanedMain = {
-                tag: 'main',
-                attributes: {},
-                children: [],
+                blocks: [],
                 viewName: '<?= $viewName ?>'
             };
             Array.from(blocks.childNodes).forEach(block => {
                 block.childNodes.forEach(child => {
                     if (child.nodeType === Node.ELEMENT_NODE) {
-                        cleanedMain.children.push(htmlToJson(child));
+                        cleanedMain.blocks.push(htmlToJson(child));
                     }
                 });
             });
+            console.log(cleanedMain)
             var xhr = new XMLHttpRequest();
             var url = "/admin/websiteBuilder/editor";
             xhr.open("POST", url, true);
