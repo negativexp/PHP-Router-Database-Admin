@@ -172,8 +172,9 @@
                             }
                         }
 
-                        return utf8_decode($html);
+                        return iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $html);
                     }
+                    return "";
                 }
 
                 if (isset($viewName)) {
@@ -226,11 +227,44 @@
                     }
                 })
             })
-            if(!textElements.includes(activeElement.tagName)) {
-                textOptions.classList.remove("hidden")
-                textOptions.setAttribute("style", "top:"+getOffset(el).top+"px;left:"+getOffset(el).left+"px;")
+            function getOffset(el) {
+                const rect = el.getBoundingClientRect();
+                return {
+                    top: rect.top + window.scrollY,
+                    left: rect.left + window.scrollX,
+                    width: rect.width,
+                    height: rect.height
+                };
+            }
+
+            function isOutOfBounds(element, viewportWidth, viewportHeight) {
+                const rect = element.getBoundingClientRect();
+                return rect.right > viewportWidth || rect.bottom > viewportHeight;
+            }
+
+            if (!textElements.includes(activeElement.tagName)) {
+                textOptions.classList.remove("hidden");
+
+                const offset = getOffset(el);
+                let top = offset.top;
+                let left = offset.left;
+
+                // Position the element
+                textOptions.setAttribute("style", `top:${top}px;left:${left}px;`);
+
+                // Check if out of bounds and adjust if necessary
+                if (isOutOfBounds(textOptions, window.innerWidth, window.innerHeight)) {
+                    if (offset.top + textOptions.offsetHeight > window.innerHeight) {
+                        top = window.innerHeight - textOptions.offsetHeight;
+                    }
+                    if (offset.left + textOptions.offsetWidth > window.innerWidth) {
+                        left = window.innerWidth - textOptions.offsetWidth;
+                    }
+                    // Reposition the element
+                    textOptions.setAttribute("style", `top:${top}px;left:${left}px;`);
+                }
             } else {
-                textOptions.classList.add("hidden")
+                textOptions.classList.add("hidden");
             }
         }
         function unsetActiveElement() {
@@ -338,7 +372,9 @@
             if (document.getElementById("contextMenu").style.display == "block")
                 hideMenu();
             else {
-                contextMenuActive.innerText = activeElement.tagName
+                if(activeElement.tagName) {
+                    contextMenuActive.innerText = activeElement.tagName
+                }
                 var dupClasses = Array.from(activeElement.classList)
                 dupClasses.splice(dupClasses.indexOf("editingStyleText"), 1)
                 contextMenuActiveClasses.innerText = dupClasses
