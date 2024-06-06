@@ -2,7 +2,51 @@
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
-<?php include_once("views/admin/components/sidepanel.php"); ?>
+<div class="sidepanel">
+    <div class="button" onclick="mobilenav()">
+        <img class="icon" src="../imgs/nav.svg">
+    </div>
+    <nav>
+        <?php
+        $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+        function active($url, $parsedurl): string {
+            if($url == $parsedurl) {
+                return "active";
+            }
+            return "";
+        }
+        ?>
+        <a class="small" href="/admin/websiteBuilder">Zpátky</a>
+        <a class="small" onclick="saveSite()">Uložit stránku</a>
+        <a class="small" onclick="deactivateEditorStyle()">Deaktivace admin stylu</a>
+        <a class="small" onclick="subnav('sub-nav1', this)">Elementy</a>
+        <div class="sub-nav" id="sub-nav1">
+            <a class="small" onclick="addElement('header')">header</a>
+            <a class="small" onclick="addElement('section')">section</a>
+            <a class="small" onclick="addElement('article')">article</a>
+            <a class="small" onclick="addElement('img')">img</a>
+            <a class="small" onclick="addElement('div')">div</a>
+            <a class="small" onclick="addElement('footer')">footer</a>
+        </div>
+        <a class="small" onclick="subnav('sub-nav2', this)">Třídy</a>
+        <div class="sub-nav" id="sub-nav2">
+            <a class="small" onclick="addClass('column')">column</a>
+            <a class="small" onclick="addClass('row')">row</a>
+            <a class="small" onclick="addClass('vhCen')">vhCen</a>
+        </div>
+        <a class="logout small button">Odhlásit se</a>
+    </nav>
+    <div class="profile">
+        <div class="wrapper">
+            <img class="icon" src="../imgs/typek.jpg">
+            <div class="info">
+                <p class="medium">Matyáš Pavel Schuller</p>
+                <p class="small">Administrátor</p>
+            </div>
+        </div>
+        <a class="button" href="/admin/logout">Odhlásit se</a>
+    </div>
+</div>
 <style>
     .tableOptions {
         padding: 0 !important;
@@ -32,49 +76,30 @@
     </form>
 </div>
 <div id="contextMenu" class="context-menu" style="display:none">
-    <p id="contextMenuActive"></p>
-    <p id="contextMenuClasses"></p>
+    <span id="contextMenuActive"></span>
+    <span id="contextMenuClasses"></span>
     <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
 <main>
     <div class="wrapper-content">
         <div id="textOptions" class="hidden">
-            <a class="small button" onclick="addElement('p')">p</a>
-            <a class="small button" onclick="addElement('h1')">h1</a>
-            <a class="small button" onclick="addElement('h2')">h2</a>
-            <a class="small button" onclick="addElement('h3')">h3</a>
-            <a class="small button" onclick="addElement('h4')">h4</a>
-            <a class="small button" onclick="addElement('h5')">h5</a>
+            <a class="small button" onclick="addElement(this.innerText)">p</a>
+            <a class="small button" onclick="addElement(this.innerText)">h1</a>
+            <a class="small button" onclick="addElement(this.innerText)">h2</a>
+            <a class="small button" onclick="addElement(this.innerText)">h3</a>
+            <a class="small button" onclick="addElement(this.innerText)">h4</a>
+            <a class="small button" onclick="addElement(this.innerText)">h5</a>
             <a class="small button" onclick="addClass(this.innerText)">w100</a>
             <a class="small button" onclick="addClass(this.innerText)">w50</a>
             <a class="small button" onclick="addClass(this.innerText)">w33</a>
             <a class="small button" onclick="addClass(this.innerText)">w25</a>
-        </div>
-        <div class="tableOptions">
-            <a class="button" onclick="deactivateEditorStyle()">deaktivace admin stylu</a>
-            <a class="button" onclick="saveSite()">Uložit stránku</a>
-        </div>
-        <div class="tableOptions">
-            <a class="small button" onclick="addClass(this.innerText)">column</a>
-            <a class="small button" onclick="addClass(this.innerText)">row</a>
-            <a class="small button" onclick="addClass(this.innerText)">vhCen</a>
-            <a class="small button" onclick="addClass(this.innerText)">red</a>
-            <a class="small button" onclick="addClass(this.innerText)">purple</a>
-        </div>
-        <div class="tableOptions">
-            <a class="small button" onclick="addElement(this.innerText)">header</a>
-            <a class="small button" onclick="addElement(this.innerText)">footer</a>
-            <a class="small button" onclick="addElement(this.innerText)">section</a>
-            <a class="small button" onclick="addElement(this.innerText)">article</a>
-            <a class="small button" onclick="addElement(this.innerText)">div</a>
-            <a class="small button" onclick="displayPopupForm()">img</a>
         </div>
 
         <div id="webBuilder">
             <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
             <link rel="stylesheet" href="../../resources/style.css">
             <style>
-                main {
+                body > main {
                     padding-bottom: 100Px;
                 }
                 .tableOptions {
@@ -175,50 +200,15 @@
         let lastAppended = null
         let activeElement = null
         let isSaved = false;
-        let isDeactivatedAdminStyle = false;
+        let isDeactivatedAdminStyle = true;
 
         function deactivateEditorStyle() {
-            var styleTag = document.getElementById("adminStyle");
-            var sheet = styleTag.sheet ? styleTag.sheet : styleTag.styleSheet;
-
-            const adminRules = [
-                "#webBuilder-blocks .webBuilder-block > \*:first-child",
-                '#webBuilder-blocks',
-                '#webBuilder-blocks .active',
-                '#webBuilder .editingStyleText',
-                'p:focus, h1:focus, h2:focus, h3:focus, h4:focus, h5:focus'
-            ];
-
-            const adminRulesWithProperties = [
-                '#webBuilder-blocks .webBuilder-block > *:first-child { padding: 5px; box-shadow: inset 0 0 12px -5px rgba(0, 0, 0, 0.8); }',
-                '#webBuilder-blocks { padding: 5px; display: flex; flex-flow: column; gap: 5px; }',
-                '#webBuilder-blocks .active { border: 1px solid rgba(255, 0, 0, 0.7) !important; }',
-                '#webBuilder .editingStyleText { padding: 0; width: 100% !important; min-height: 20px; }',
-                'p:focus, h1:focus, h2:focus, h3:focus, h4:focus, h5:focus { outline: none; }'
-            ];
-
-            if (!isDeactivatedAdminStyle) {
-                adminRules.forEach(rule => {
-                    for (let i = 0; i < sheet.cssRules.length; i++) {
-                        console.log(sheet.cssRules[i].selectorText)
-                        if (sheet.cssRules[i].selectorText === rule) {
-                            sheet.deleteRule(i);
-                            break;
-                        }
-                    }
-                });
-            } else {
-                adminRulesWithProperties.forEach(rule => {
-                    try {
-                        sheet.insertRule(rule, sheet.cssRules.length);
-                    } catch (e) {
-                        console.error('Error inserting rule: ', rule, e);
-                    }
-                });
-            }
+            const webBuilder = document.getElementById("webBuilder");
+            webBuilder.classList.toggle('admin-styles');
 
             isDeactivatedAdminStyle = !isDeactivatedAdminStyle;
         }
+
         function processAllElements(element, callback) {
             callback(element)
             element.querySelectorAll('*').forEach(child => {
