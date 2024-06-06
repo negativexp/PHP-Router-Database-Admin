@@ -121,12 +121,10 @@
             <main id="webBuilder-blocks">
                 <?php
                 function setAttributesRecursively($element) {
-                    // Add tabindex and onfocus attributes to all elements
                     if ($element->nodeType === XML_ELEMENT_NODE) {
                         $element->setAttribute('tabindex', '0');
                         $element->setAttribute('onfocus', 'setActiveElement(this)');
 
-                        // Add contenteditable and textStyle class to specific elements
                         $tagName = $element->tagName;
                         if (in_array($tagName, ['p', 'h1', 'h2', 'h3', 'h4', 'h5'])) {
                             $element->setAttribute('contenteditable', 'true');
@@ -137,12 +135,25 @@
                         }
                     }
 
-                    // Recursively add attributes to all child elements
                     foreach ($element->childNodes as $child) {
                         if ($child->nodeType === XML_ELEMENT_NODE) {
                             setAttributesRecursively($child);
                         }
                     }
+                }
+
+                function wrapAndAddAttributes($element, $dom) {
+                    setAttributesRecursively($element);
+
+                    $wrapper = $dom->createElement('div');
+                    $wrapper->setAttribute('class', 'webBuilder-block');
+                    $wrapper->setAttribute('tabindex', '0');
+                    $wrapper->setAttribute('onfocus', 'setActiveElement(this)');
+                    $wrapper->setAttribute('spellcheck', 'false');
+                    $wrapper->setAttribute('oncontextmenu', 'rightClick(event)');
+
+                    $wrapper->appendChild($element->cloneNode(true));
+                    return $wrapper;
                 }
 
                 function getBodyContent($filePath) {
@@ -152,23 +163,22 @@
                     $dom->loadHTML($content);
                     libxml_clear_errors();
 
-                    $body = $dom->getElementsByTagName('main')->item(0);
+                    $body = $dom->getElementsByTagName('body')->item(0);
                     $html = '';
-                    foreach ($body->childNodes as $child) {
-                        // Only wrap non-empty nodes
-                        if (trim($dom->saveHTML($child)) !== '') {
-                            setAttributesRecursively($child);  // Add attributes to all elements recursively
 
-                            // Create the wrapper div with the required attributes
-                            $wrapper = $dom->createElement('div');
-                            $wrapper->setAttribute('class', 'webBuilder-block');
-                            $wrapper->setAttribute('tabindex', '0');  // Add tabindex attribute to the wrapper
-                            $wrapper->setAttribute('onfocus', 'setActiveElement(this)');  // Add onfocus event handler to the wrapper
-                            $wrapper->setAttribute('spellcheck', 'false');  // Add onfocus event handler to the wrapper
-                            $wrapper->setAttribute('oncontextmenu', 'rightClick(event)');
-                            // Append the child with modified attributes to the wrapper
-                            $wrapper->appendChild($child->cloneNode(true));
-                            $html .= $dom->saveHTML($wrapper);
+                    foreach ($body->childNodes as $child) {
+                        if ($child->nodeName === 'main') {
+                            foreach ($child->childNodes as $mainChild) {
+                                if (trim($dom->saveHTML($mainChild)) !== '') {
+                                    $wrappedElement = wrapAndAddAttributes($mainChild, $dom);
+                                    $html .= $dom->saveHTML($wrappedElement);
+                                }
+                            }
+                        } else {
+                            if (trim($dom->saveHTML($child)) !== '') {
+                                $wrappedElement = wrapAndAddAttributes($child, $dom);
+                                $html .= $dom->saveHTML($wrappedElement);
+                            }
                         }
                     }
 
@@ -177,11 +187,14 @@
 
                 if (isset($viewName)) {
                     $file = "views/" . $viewName . ".php";
-                    $fileContent = file_get_contents($file);
-                    if ($fileContent) {
+                    if (file_exists($file)) {
                         $bodyContent = getBodyContent($file);
                         echo $bodyContent;
+                    } else {
+                        echo "<p>The view file does not exist.</p>";
                     }
+                } else {
+                    echo "<p>No view name specified.</p>";
                 }
                 ?>
             </main>
