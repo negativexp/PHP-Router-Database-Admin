@@ -3,9 +3,9 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+    font-family: "Plus Jakarta Sans";
+    font-optical-sizing: auto;
+    font-style: normal;
 }
 .w100 { width: 100%; }
 .w50 { width: 50%; }
@@ -31,16 +31,4 @@
 }
 .purple {
     background: purple;
-}
-header {
-padding:10px;
-background: red;
-display:flex;
-flex-flow:column;
-}
-
-section {
-border:1px solid black;
-border-radius:7px;
-margin:5px;
 }

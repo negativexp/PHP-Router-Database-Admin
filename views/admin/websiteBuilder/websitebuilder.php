@@ -37,9 +37,6 @@
     <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
 <main>
-    <header>
-        <h1 class="big">Website Builder - <?= isset($viewName) ? $viewName : "..." ?></h1>
-    </header>
     <div class="wrapper-content">
         <div id="textOptions" class="hidden">
             <a class="small button" onclick="addElement('p')">p</a>
@@ -80,42 +77,9 @@
                 main {
                     padding-bottom: 100Px;
                 }
-                #webBuilder > main {
-                    overflow: hidden;
-                    border: 1px solid black;
-                }
-                #webBuilder > main * {
-                    font-family: initial;
-                }
                 .tableOptions {
                     border-radius: 0 !important;
                     padding-bottom: 10px !important;
-                }
-                .context-menu {
-                    position: absolute;
-                    text-align: center;
-                    background: lightgray;
-                    border: 1px solid black;
-                }
-                .context-menu ul {
-                    padding: 0px;
-                    margin: 0px;
-                    list-style: none;
-                }
-
-                .context-menu ul li {
-                    padding-bottom: 7px;
-                    padding-top: 7px;
-                    border: 1px solid black;
-                }
-
-                .context-menu ul li a {
-                    text-decoration: none;
-                    color: black;
-                }
-
-                .context-menu ul li:hover {
-                    background: darkgray;
                 }
             </style>
             <main id="webBuilder-blocks">
@@ -160,29 +124,31 @@
                     $content = file_get_contents($filePath);
                     $dom = new DOMDocument;
                     libxml_use_internal_errors(true);
-                    $dom->loadHTML($content);
-                    libxml_clear_errors();
+                    if($content) {
+                        $dom->loadHTML($content);
+                        libxml_clear_errors();
 
-                    $body = $dom->getElementsByTagName('body')->item(0);
-                    $html = '';
+                        $body = $dom->getElementsByTagName('body')->item(0);
+                        $html = '';
 
-                    foreach ($body->childNodes as $child) {
-                        if ($child->nodeName === 'main') {
-                            foreach ($child->childNodes as $mainChild) {
-                                if (trim($dom->saveHTML($mainChild)) !== '') {
-                                    $wrappedElement = wrapAndAddAttributes($mainChild, $dom);
+                        foreach ($body->childNodes as $child) {
+                            if ($child->nodeName === 'main') {
+                                foreach ($child->childNodes as $mainChild) {
+                                    if (trim($dom->saveHTML($mainChild)) !== '') {
+                                        $wrappedElement = wrapAndAddAttributes($mainChild, $dom);
+                                        $html .= $dom->saveHTML($wrappedElement);
+                                    }
+                                }
+                            } else {
+                                if (trim($dom->saveHTML($child)) !== '') {
+                                    $wrappedElement = wrapAndAddAttributes($child, $dom);
                                     $html .= $dom->saveHTML($wrappedElement);
                                 }
                             }
-                        } else {
-                            if (trim($dom->saveHTML($child)) !== '') {
-                                $wrappedElement = wrapAndAddAttributes($child, $dom);
-                                $html .= $dom->saveHTML($wrappedElement);
-                            }
                         }
-                    }
 
-                    return utf8_decode($html);
+                        return utf8_decode($html);
+                    }
                 }
 
                 if (isset($viewName)) {
@@ -216,7 +182,7 @@
             var sheet = styleTag.sheet ? styleTag.sheet : styleTag.styleSheet;
 
             const adminRules = [
-                '#webBuilder-blocks .webBuilder-block *',
+                "#webBuilder-blocks .webBuilder-block > \*:first-child",
                 '#webBuilder-blocks',
                 '#webBuilder-blocks .active',
                 '#webBuilder .editingStyleText',
@@ -224,8 +190,8 @@
             ];
 
             const adminRulesWithProperties = [
-                '#webBuilder-blocks .webBuilder-block * { padding: 10px; border: 1px dashed rgba(255, 255, 255, 0.5); box-shadow: inset rgba(60, 70, 85, 0.5) 0px 0px 40px 0px, rgba(0, 0, 0, .3) 0px 30px 100px -24px; }',
-                '#webBuilder-blocks { padding: 5px; display: flex; flex-flow: column; gap: 10px; }',
+                '#webBuilder-blocks .webBuilder-block > *:first-child { padding: 5px; box-shadow: inset 0 0 12px -5px rgba(0, 0, 0, 0.8); }',
+                '#webBuilder-blocks { padding: 5px; display: flex; flex-flow: column; gap: 5px; }',
                 '#webBuilder-blocks .active { border: 1px solid rgba(255, 0, 0, 0.7) !important; }',
                 '#webBuilder .editingStyleText { padding: 0; width: 100% !important; min-height: 20px; }',
                 'p:focus, h1:focus, h2:focus, h3:focus, h4:focus, h5:focus { outline: none; }'
@@ -234,6 +200,7 @@
             if (!isDeactivatedAdminStyle) {
                 adminRules.forEach(rule => {
                     for (let i = 0; i < sheet.cssRules.length; i++) {
+                        console.log(sheet.cssRules[i].selectorText)
                         if (sheet.cssRules[i].selectorText === rule) {
                             sheet.deleteRule(i);
                             break;
