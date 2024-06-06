@@ -35,6 +35,16 @@
 
 
 header {
-background:red;
-padding:20px;
+background:pink;
+padding:30px;
+}
+
+section {
+padding:30px;
+}
+
+footer {
+padding: 10px;
+background:black;
+color: gray;
 }

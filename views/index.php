@@ -5,6 +5,6 @@
     <link rel="stylesheet" href="resources/style.css">
 </head>
 <body>
-<header><h1>1</h1><p>jnlůokůioljkjiop</p></header><main><section><p>lgihkjbulgkhjbulhjkgbhnlůjk</p><p>lhbkgvjghjkbůlhjkůlbhnk§lkl§</p><p>ů</p><p>ků§l</p><p>ků§</p><p>ků§</p><p>klů§</p><p>klů§k</p><p>ů§l</p><p>k§ůk</p><p>ů§</p><p>ků§</p></section></main>
+<header><h1>Hlavní nadpissdfsfdasdfasdf</h1><p>asfdasfdadsffsad</p></header><main><section><h2>Podnadis</h2><p>asdfasfdfsdaafsdasfdasfdfasdfasd</p></section></main><footer><h3>patricka mrdko</h3></footer>
 </body>
 </html>
