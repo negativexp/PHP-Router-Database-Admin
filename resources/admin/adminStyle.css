@@ -397,6 +397,9 @@ main .code-editor textarea:focus {
     overflow: hidden;
     background: white;
 }
+textarea.admin-styles {
+    width: 100%;
+}
 .admin-styles #webBuilder-blocks .webBuilder-block *:not(p,h1,h2,h3,h4,h5) {
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 12px -5px inset;
     padding: 5px;

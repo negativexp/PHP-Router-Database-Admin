@@ -141,6 +141,7 @@
                     $wrapper->setAttribute('onfocus', 'setActiveElement(this)');
                     $wrapper->setAttribute('spellcheck', 'false');
                     $wrapper->setAttribute('oncontextmenu', 'rightClick(event)');
+                    $wrapper->setAttribute('ondblclick', 'toggleHtml(this)');
 
                     $wrapper->appendChild($element->cloneNode(true));
                     return $wrapper;
@@ -292,11 +293,21 @@
             }
         }
         function toggleHtml(block) {
-            const outerHtml = block.outerHTML
-            Array.from(block.children).forEach(child => {
-                child.remove()
-            })
-            const textarea = document.createElement("textarea")
+            hideMenu()
+            if(block.children[0].tagName !== "TEXTAREA") {
+                const outerHtml = block.outerHTML
+                Array.from(block.children).forEach(child => {
+                    child.remove()
+                })
+                const textarea = document.createElement("textarea")
+                textarea.classList.add("admin-styles")
+                textarea.value = outerHtml
+                block.appendChild(textarea)
+            } else {
+                const outerHtml = block.children[0].value
+                block.children[0].remove()
+                block.outerHTML = outerHtml
+            }
         }
         function append(el) {
             el.tabIndex = 0
@@ -439,18 +450,25 @@
                 viewName: '<?= $viewName ?>'
             };
             Array.from(blocks.childNodes).forEach(block => {
+                // nejde to... musi se double uložit pokud je block v html verzi
+                if(block.tagName === "DIV" && block.classList.contains("webBuilder-block") && block.children[0].tagName === "TEXTAREA") {
+                    toggleHtml(block)
+                }
                 block.childNodes.forEach(child => {
                     if (child.nodeType === Node.ELEMENT_NODE) {
                         cleanedMain.blocks.push(htmlToJson(child));
                     }
                 });
             });
-            console.log(cleanedMain)
-            var xhr = new XMLHttpRequest();
-            var url = "/admin/websiteBuilder/editor";
-            xhr.open("POST", url, true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(cleanedMain));
+
+            setTimeout(() => {
+                console.log(cleanedMain)
+                var xhr = new XMLHttpRequest();
+                var url = "/admin/websiteBuilder/editor";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(cleanedMain));
+            }, 50)
         }
         function htmlToJson(node) {
             const clonedNode = node.cloneNode(true);
@@ -479,7 +497,8 @@
                         'draggable',
                         'contenteditable',
                         'spellcheck',
-                        'onkeydown'
+                        'onkeydown',
+                        'ondbclick'
                     ].includes(attr.name)) {
                         if(attr !== "class" && classList.length !== 0) {
                             attrs[attr.name] = attr.value;
