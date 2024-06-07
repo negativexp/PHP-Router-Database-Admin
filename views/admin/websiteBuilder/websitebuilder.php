@@ -27,6 +27,7 @@
             <a class="small" onclick="addElement('img')">img</a>
             <a class="small" onclick="addElement('div')">div</a>
             <a class="small" onclick="addElement('footer')">footer</a>
+            <a class="small" onclick="addElement('a')">a</a>
         </div>
         <a class="small" onclick="subnav('sub-nav2', this)">Třídy</a>
         <div class="sub-nav" id="sub-nav2">
@@ -290,6 +291,13 @@
                 window.getSelection().removeAllRanges();
             }
         }
+        function toggleHtml(block) {
+            const outerHtml = block.outerHTML
+            Array.from(block.children).forEach(child => {
+                child.remove()
+            })
+            const textarea = document.createElement("textarea")
+        }
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
@@ -307,6 +315,7 @@
                 div.classList.add("webBuilder-block")
                 div.tabIndex = 0
                 div.setAttribute("onfocus", "setActiveElement(this)")
+                div.setAttribute("ondblclick", "toggleHtml(this)")
                 if (el.tagName !== "NULL") {
                     div.appendChild(el)
                 }
