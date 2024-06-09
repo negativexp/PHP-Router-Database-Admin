@@ -97,8 +97,6 @@
         </div>
 
         <div id="webBuilder">
-            <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-            <link rel="stylesheet" href="../../resources/style.css">
             <style>
                 body > main {
                     padding-bottom: 100Px;
@@ -108,6 +106,8 @@
                     padding-bottom: 10px !important;
                 }
             </style>
+            <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+            <link id="indexStyle" rel="stylesheet" href="../../resources/style.css">
             <main id="webBuilder-blocks">
                 <?php
                 function setAttributesRecursively($element) {
@@ -195,6 +195,36 @@
         </div>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get the webBuilder-blocks element
+            const webBuilderBlocks = document.getElementById('webBuilder-blocks');
+
+            // Function to apply styles from body to webBuilder-blocks
+            function applyBodyStyles() {
+                // Get all stylesheets
+                const stylesheet = document.getElementById("indexStyle").sheet;
+
+                try {
+                    // Get all rules in the stylesheet
+                    const rules = stylesheet.cssRules || stylesheet.rules;
+
+                    for (const rule of rules) {
+                        // Check if the rule is for the body
+                        if (rule.selectorText === 'body') {
+                            // Apply each style property to webBuilder-blocks
+                            for (let style of rule.style) {
+                                webBuilderBlocks.style[style] = rule.style[style];
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.log(`Couldn't read the stylesheet: ${stylesheet.href}`);
+                }
+            }
+
+            applyBodyStyles();
+        });
+
         const blocks = document.getElementById("webBuilder-blocks")
         const textOptions = document.getElementById("textOptions")
         const contextMenuActive = document.getElementById("contextMenuActive")
