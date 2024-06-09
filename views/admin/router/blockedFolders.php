@@ -14,7 +14,7 @@ $db = new Database();
             <input type="text" name="name" required>
         </label>
         <div class="options">
-            <a class="button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="MessageBox('popupForm')">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -28,7 +28,7 @@ $db = new Database();
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayPopupForm()">Přidat</a>
+            <a class="button" onclick="MessageBox('popupForm')">Přidat</a>
         </div>
         <section>
             <article class="w100">

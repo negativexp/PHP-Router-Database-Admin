@@ -24,7 +24,7 @@
             <a class="small" onclick="addElement('header')">header</a>
             <a class="small" onclick="addElement('section')">section</a>
             <a class="small" onclick="addElement('article')">article</a>
-            <a class="small" onclick="addElement('img')">img</a>
+            <a class="small" onclick="MessageBox('popupForm')">img</a>
             <a class="small" onclick="addElement('div')">div</a>
             <a class="small" onclick="addElement('footer')">footer</a>
             <a class="small" onclick="addElement('a')">a</a>
@@ -61,7 +61,7 @@
             <input spellcheck="false" type="text" id="imgSrc" required>
         </label>
         <div class="options">
-            <a class="small button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="small button" onclick="MessageBox('popupForm')">Zavřít</a>
             <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
         </div>
     </form>
@@ -71,7 +71,7 @@
         <h2>Přidat vlastní HTML/JS/CSS</h2>
         <textarea spellcheck="false" id="customHtml"></textarea>
         <div class="options">
-            <a class="small button" onclick="hidePopupForm2()">Zavřít</a>
+            <a class="small button" onclick="MessageBox('popupForm2')">Zavřít</a>
             <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
         </div>
     </form>
@@ -292,23 +292,74 @@
                 window.getSelection().removeAllRanges();
             }
         }
+        // Object to store attributes when toggling HTML
+        let storedAttributes = {};
+
         function toggleHtml(block) {
-            hideMenu()
-            if(block.children[0].tagName !== "TEXTAREA") {
-                const outerHtml = block.outerHTML
-                Array.from(block.children).forEach(child => {
-                    child.remove()
-                })
-                const textarea = document.createElement("textarea")
-                textarea.classList.add("admin-styles")
-                textarea.value = outerHtml
-                block.appendChild(textarea)
+            hideMenu();
+
+            if (block.children[0].tagName !== "TEXTAREA") {
+                var outerHtml = block.outerHTML;
+
+                function extractAttributes(html) {
+                    const attributesToStore = ["class", "tabindex", "onfocus", "spellcheck", "oncontextmenu", "ondblclick", "draggable", "onkeydown", "contenteditable"];
+                    let extractedAttributes = {};
+
+                    attributesToStore.forEach(attr => {
+                        const regex = new RegExp(`\\s*${attr}="([^"]*)"`, 'gi');
+                        const matches = html.matchAll(regex);
+                        for (const match of matches) {
+                            if (!extractedAttributes[attr]) {
+                                extractedAttributes[attr] = [];
+                            }
+                            extractedAttributes[attr].push(match[1]);
+                        }
+                        html = html.replace(regex, '');
+                    });
+
+                    // Remove extra spaces inside tags
+                    html = html.replace(/<\s*(\w+)\s*(.*?)\s*>/g, '<$1$2>');
+
+                    return { html, extractedAttributes };
+                }
+
+                if (block.classList.contains("webBuilder-block") || block.classList.contains("editingStyleText")) {
+                    const result = extractAttributes(outerHtml);
+                    outerHtml = result.html;
+                    storedAttributes = result.extractedAttributes;
+                }
+
+                Array.from(block.children).forEach(child => child.remove());
+
+                const textarea = document.createElement("textarea");
+                textarea.classList.add("admin-styles");
+                textarea.value = outerHtml;
+                block.appendChild(textarea);
+
             } else {
-                const outerHtml = block.children[0].value
-                block.children[0].remove()
-                block.outerHTML = outerHtml
+                let outerHtml = block.children[0].value;
+                block.children[0].remove();
+
+                if (storedAttributes && (outerHtml.includes('class="webBuilder-block"') || outerHtml.includes('class="editingStyleText"'))) {
+                    Object.keys(storedAttributes).forEach(attr => {
+                        const regex = new RegExp(`<([a-z]+)([^>]*)>`, 'gi');
+                        let index = 0;
+                        outerHtml = outerHtml.replace(regex, (match, p1, p2) => {
+                            if (storedAttributes[attr][index]) {
+                                const replacement = `${p1}${p2} ${attr}="${storedAttributes[attr][index]}"`;
+                                index++;
+                                return `<${replacement.trim()}>`;
+                            }
+                            return match;
+                        });
+                    });
+                }
+
+                block.outerHTML = outerHtml;
             }
         }
+
+
         function append(el) {
             el.tabIndex = 0
             el.setAttribute("onfocus", "setActiveElement(this)")
@@ -355,8 +406,6 @@
             }
             append(element)
             isSaved = false
-            hidePopupForm2()
-            hidePopupForm()
         }
         function getClosestBlockElement(element) {
             return element.closest(".webBuilder-block > *")
@@ -449,26 +498,29 @@
                 blocks: [],
                 viewName: '<?= $viewName ?>'
             };
+
             Array.from(blocks.childNodes).forEach(block => {
-                // nejde to... musi se double uložit pokud je block v html verzi
-                if(block.tagName === "DIV" && block.classList.contains("webBuilder-block") && block.children[0].tagName === "TEXTAREA") {
-                    toggleHtml(block)
-                }
+                block.childNodes.forEach(child => {
+                    if(child.tagName === "TEXTAREA" && child.classList.contains("admin-styles")) {
+                        toggleHtml(block)
+                    }
+                })
+            })
+
+            Array.from(blocks.childNodes).forEach(block => {
                 block.childNodes.forEach(child => {
                     if (child.nodeType === Node.ELEMENT_NODE) {
-                        cleanedMain.blocks.push(htmlToJson(child));
+                        cleanedMain.blocks.push(htmlToJson(child))
                     }
-                });
-            });
+                })
+            })
 
-            setTimeout(() => {
-                console.log(cleanedMain)
-                var xhr = new XMLHttpRequest();
-                var url = "/admin/websiteBuilder/editor";
-                xhr.open("POST", url, true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(JSON.stringify(cleanedMain));
-            }, 50)
+            console.log(cleanedMain)
+            var xhr = new XMLHttpRequest();
+            var url = "/admin/websiteBuilder/editor";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(cleanedMain));
         }
         function htmlToJson(node) {
             const clonedNode = node.cloneNode(true);

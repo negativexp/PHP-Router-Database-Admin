@@ -16,7 +16,7 @@
             <input spellcheck="false" type="text" id="imgSrc" required>
         </label>
         <div class="options">
-            <a class="small button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="small button" onclick="MessageBox('popupForm')">Zavřít</a>
             <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
         </div>
     </form>
@@ -26,7 +26,7 @@
         <h2>Přidat vlastní HTML/JS/CSS</h2>
         <textarea spellcheck="false" id="customHtml"></textarea>
         <div class="options">
-            <a class="small button" onclick="hidePopupForm2()">Zavřít</a>
+            <a class="small button" onclick="MessageBox('popupForm2')">Zavřít</a>
             <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
         </div>
     </form>

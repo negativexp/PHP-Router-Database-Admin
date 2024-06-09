@@ -20,7 +20,7 @@ $db = new Database();
         }
         ?>
         <div class="options">
-            <a class="button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="MessageBox('popupForm')">Zavřít</a>
             <input class="small" type="submit" name="addFile">
         </div>
     </form>
@@ -38,7 +38,7 @@ $db = new Database();
         }
         ?>
         <div class="options">
-            <a class="button" onclick="hidePopupForm2()">Zavřít</a>
+            <a class="button" onclick="MessageBox('popupForm2')">Zavřít</a>
             <input class="small" type="submit" name="addFolder">
         </div>
     </form>
@@ -69,8 +69,8 @@ $db = new Database();
                     echo "<input type='hidden' name='backlink' value='{$_GET["folder"]}'>";
                 }
                 ?>
-                <a class="button" onclick="displayPopupForm()">Vytvořit soubor</a>
-                <a class="button" onclick="displayPopupForm2()">Vytvořit složku</a>
+                <a class="button" onclick="MessageBox('popupForm')">Vytvořit soubor</a>
+                <a class="button" onclick="MessageBox('popupForm2')">Vytvořit složku</a>
                 <a class="button" onclick="location.reload()">Aktualizovat</a>
                 <input type="submit" name="delete" value="Smazat">
             </div>

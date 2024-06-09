@@ -36,7 +36,7 @@ $db = new Database();
         echo "</table>";
         ?>
         <div class="options">
-            <a class="button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="MessageBox('popupForm')">Zavřít</a>
             <input class="small" type="submit">
         </div>
     </form>
@@ -48,7 +48,7 @@ $db = new Database();
     <div class="wrapper">
         <div class="tableOptions">
             <a class="button" href="/admin/database/tables">Zpátky</a>
-            <a class="button" onclick="displayPopupForm()">Přidat řádek</a>
+            <a class="button" onclick="MessageBox('popupForm')">Přidat řádek</a>
         </div>
         <section>
             <article class="w100">

@@ -454,7 +454,9 @@ textarea.admin-styles {
 .context-menu ul li:hover {
     background: darkgray;
 }
-
+.z-top {
+    z-index: 99;
+}
 
 
 .w800 {

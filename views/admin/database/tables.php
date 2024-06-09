@@ -41,7 +41,7 @@ $db = new Database();
             </div>
         </div>
         <div class="options">
-            <a class="button" onclick="hidePopupForm()">Zavřít</a>
+            <a class="button" onclick="MessageBox('popupForm')">Zavřít</a>
             <a class="button" onclick="addRow()">Přidat sloupec</a>
             <input class="small" type="submit">
         </div>
@@ -97,7 +97,7 @@ $db = new Database();
     </header>
     <div class="wrapper">
         <div class="tableOptions">
-            <a class="button" onclick="displayPopupForm()">Přidat</a>
+            <a class="button" onclick="MessageBox('popupForm')">Přidat</a>
         </div>
         <section>
             <article class="w100">
