@@ -114,6 +114,8 @@
 
         <script>
             let activeElement = null;
+            let isSaved = true;
+            const webBuilderBody = document.getElementById("webBuilder-Body")
             const contextMenu = document.getElementById("contextMenu")
             const webBuilder = document.getElementById("webBuilder")
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
@@ -124,29 +126,77 @@
                     fallbackOnBody: true,
                     swapThreshold: 0.65
                 })
-
-                el.addEventListener("mousedown", (event) => {
-                    setActiveElement(event, el)
-                    event.stopPropagation()
-                })
+                el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
             })
-            function deactivateSelected() {
-                activeElement = null
-                console.log("active el: NULL")
-            }
-            function setActiveElement(event, el) {
-                activeElement = el
-                console.log("active el", el)
-                openContextMenu()
-            }
-            function addElement(tagname) {
-                if(activeElement) {
-                    const el = document.createElement(tagname)
-                    activeElement.appendChild(el)
-                }
+            function elementMouseDown(event, el) {
+                setActiveElement(event, el)
+                event.stopPropagation()
             }
             const openContextMenu = () => {contextMenu.classList.remove("hidden")}
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
+            function deactivateSelected() {
+                removeActiveClass()
+                activeElement = null
+                console.log("active el: NULL")
+            }
+            function removeActiveClass() {
+                const arr = Array.from(document.querySelectorAll(".webBuilder-block"));
+                arr.concat(fixedElements);
+                arr.forEach(arrEl => {
+                    if(arrEl.classList.contains("active")) {
+                        arrEl.classList.remove("active")
+                    }
+                })
+            }
+            function setActiveElement(event, el) {
+                removeActiveClass()
+                el.classList.add("active")
+                activeElement = el
+                console.log("active el", el)
+            }
+            function addElement(tagname) {
+                isSaved = false;
+                if(activeElement) {
+                    const el = document.createElement(tagname)
+                    const wrapper = document.createElement("div")
+                    wrapper.classList.add("webBuilder-block")
+                    wrapper.appendChild(el)
+                    el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
+                    activeElement.appendChild(wrapper)
+                }
+            }
+            function deleteElement(el) {
+                for(i = 0; i < fixedElements.count(); i++) {
+                    if(fixedElements[i] === el) {
+                        el.remove()
+                        break
+                    }
+                }
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.ctrlKey && event.key === 's') {
+                    event.preventDefault()
+                    isSaved = true
+                    console.log("saved")
+                }
+                if(event.ctrlKey && event.key === 'd') {
+                    event.preventDefault()
+                    closeContextMenu()
+                    deactivateSelected()
+                }
+                if(event.key === "Delete" && activeElement) {
+                    deleteElement(activeElement)
+                    activeElement = null
+                }
+            })
+            window.addEventListener('beforeunload', function (event) {
+                if(!isSaved) {
+                    event.preventDefault()
+                    //chrome
+                    event.returnValue = ''
+                }
+            });
         </script>
     </div>
 </main>
