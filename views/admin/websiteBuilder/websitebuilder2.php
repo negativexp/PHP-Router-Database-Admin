@@ -81,6 +81,11 @@
     <span id="contextMenuClasses"></span>
     <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
+<div id="helperBox">
+    <p>aktivní element: <span id="activeElementSpan"></span></p>
+    <p>třídy: <span id="activeElementStylesSpan"></span></p>
+    <p>id: <span id="activeElementId"></span></p>
+</div>
 <main>
     <div class="wrapper-content">
         <div id="textOptions" class="hidden">
@@ -99,8 +104,8 @@
         <div id="webBuilder">
             <style>
                 #webBuilder-Body, #webBuilder-Main {
-                    margin: 5px;
-                    padding-bottom: 20px;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
                     border: 1px solid black;
                 }
             </style>
@@ -115,7 +120,11 @@
         <script>
             let activeElement = null;
             let isSaved = true;
+            const activeElementSpan = document.getElementById("activeElementSpan")
+            const activeElementStylesSpan = document.getElementById("activeElementStylesSpan")
+            const activeElementId = document.getElementById("activeElementId")
             const webBuilderBody = document.getElementById("webBuilder-Body")
+            const webBuilderMain = document.getElementById("webBuilder-Main")
             const contextMenu = document.getElementById("contextMenu")
             const webBuilder = document.getElementById("webBuilder")
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
@@ -129,40 +138,29 @@
                 el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
             })
             function elementMouseDown(event, el) {
-                setActiveElement(event, el)
+                setActiveElement(el)
                 event.stopPropagation()
             }
             const openContextMenu = () => {contextMenu.classList.remove("hidden")}
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
             function deactivateSelected() {
-                removeActiveClass()
                 activeElement = null
                 console.log("active el: NULL")
             }
-            function removeActiveClass() {
-                const arr = Array.from(document.querySelectorAll(".webBuilder-block"));
-                arr.concat(fixedElements);
-                arr.forEach(arrEl => {
-                    if(arrEl.classList.contains("active")) {
-                        arrEl.classList.remove("active")
-                    }
-                })
-            }
-            function setActiveElement(event, el) {
-                removeActiveClass()
-                el.classList.add("active")
-                activeElement = el
-                console.log("active el", el)
-            }
             function addElement(tagname) {
+                //pokud aktivni element je webBuilder-main, ...-body
                 isSaved = false;
                 if(activeElement) {
                     const el = document.createElement(tagname)
-                    const wrapper = document.createElement("div")
-                    wrapper.classList.add("webBuilder-block")
-                    wrapper.appendChild(el)
                     el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
-                    activeElement.appendChild(wrapper)
+                    if(activeElement === webBuilderBody || activeElement === webBuilderMain) {
+                        const wrapper = document.createElement("div")
+                        wrapper.classList.add("webBuilder-block")
+                        wrapper.appendChild(el)
+                        activeElement.appendChild(wrapper)
+                    } else {
+                        activeElement.appendChild(el)
+                    }
                 }
             }
             function deleteElement(el) {
@@ -173,7 +171,31 @@
                     }
                 }
             }
+            function setActiveElement(el) {
+                activeElement = el
+                Array.from(document.getElementById("webBuilder").children).forEach(child => {
+                    processAllElements(child, elem => {
+                        if (elem === activeElement) {
+                            elem.classList.add('active')
+                        } else {
+                            elem.classList.remove('active')
+                        }
+                    })
+                })
+                activeElementSpan.innerText = el.tagName
+                let updatedClassList = el.classList.toString()
+                    .replace("active", "")
+                    .replace("sortable-chosen", "")
+                activeElementStylesSpan.innerText = updatedClassList
+                activeElementId.innerText = el.id
 
+            }
+            function processAllElements(element, callback) {
+                callback(element)
+                element.querySelectorAll('*').forEach(child => {
+                    callback(child)
+                })
+            }
             document.addEventListener('keydown', function(event) {
                 if (event.ctrlKey && event.key === 's') {
                     event.preventDefault()
