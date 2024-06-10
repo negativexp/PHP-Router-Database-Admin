@@ -42,7 +42,7 @@ class Router {
         $this->get('/admin/fileManager/$file', "views/admin/fileManager/file.php");
         $this->post('/admin/fileManager', "actions/admin/filemanager.php");
         $this->get('/admin/websiteBuilder', "views/admin/websitebuilder/viewselection.php");
-        $this->get('/admin/websiteBuilder/$viewName', "views/admin/websitebuilder/websitebuilder.php");
+        $this->get('/admin/websiteBuilder/$viewName', "views/admin/websitebuilder/websitebuilder2.php");
         $this->post("/admin/websiteBuilder/editor", "actions/admin/websiteEditor/editor.php");
         $this->get('/admin/cssEditor', "views/admin/websiteBuilder/csseditor.php");
         $this->post('/admin/cssEditor', "actions/admin/websiteEditor/savecss.php");

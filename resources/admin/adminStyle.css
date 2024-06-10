@@ -383,6 +383,7 @@ main .code-editor textarea:focus {
     background: darkgray;
     border-radius: 7px;
 }
+
 #textOptions .button, #contextMenu .button {
     padding: 5px;
     font-size: 14px;
@@ -390,7 +391,7 @@ main .code-editor textarea:focus {
 #contextMenu {
     max-width: 175px;
 }
-#textOptions.hidden {
+#textOptions.hidden, #contextMenu.hidden {
     display: none;
 }
 #webBuilder > main {
