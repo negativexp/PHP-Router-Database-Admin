@@ -48,11 +48,6 @@
         <a class="button" href="/admin/logout">Odhlásit se</a>
     </div>
 </div>
-<style>
-    .tableOptions {
-        padding: 0 !important;
-    }
-</style>
 <div id="popupForm" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Přidat fotku</h2>
@@ -101,10 +96,13 @@
 
         <div id="webBuilder">
             <style>
+                #webBuilder {
+                    all: initial;
+                }
                 #webBuilder-Body, #webBuilder-Main {
-                    padding-top: 10px;
-                    padding-bottom: 10px;
-                    border: 1px solid black;
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                    outline: 1px solid black;
                 }
             </style>
             <div id="webBuilder-Body">
@@ -125,17 +123,8 @@
             const webBuilderMain = document.getElementById("webBuilder-Main")
             const contextMenu = document.getElementById("contextMenu")
             const webBuilder = document.getElementById("webBuilder")
+            const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5']
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
-            fixedElements.forEach(el => {
-                new Sortable(el, {
-                    group: "nested",
-                    animation: 150,
-                    fallbackOnBody: true,
-                    swapThreshold: 0.65
-                })
-                el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
-                el.addEventListener("contextmenu", rightClick)
-            })
 
             function elementMouseDown(event, el) {
                 setActiveElement(el)
@@ -143,18 +132,75 @@
             }
             const openContextMenu = () => {contextMenu.classList.remove("hidden")}
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
+            const displayTextOptions = () => {
+                if (activeElement) {
+                    const rect = activeElement.getBoundingClientRect();
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    const spaceAbove = rect.top;
+
+                    if (spaceBelow >= textOptions.offsetHeight) {
+                        // There is enough space below the activeElement
+                        textOptions.style.top = `${rect.bottom + window.scrollY}px`;
+                        textOptions.style.left = `${rect.left + window.scrollX}px`;
+                    } else if (spaceAbove >= textOptions.offsetHeight) {
+                        // There is not enough space below, but there is enough space above
+                        textOptions.style.top = `${rect.top + window.scrollY - textOptions.offsetHeight}px`;
+                        textOptions.style.left = `${rect.left + window.scrollX}px`;
+                    } else {
+                        // Default to placing it below the activeElement if possible
+                        textOptions.style.top = `${rect.bottom + window.scrollY}px`;
+                        textOptions.style.left = `${rect.left + window.scrollX}px`;
+                    }
+
+                    textOptions.classList.remove('hidden');
+                }
+            }
+            const hideTextOptions = () => { textOptions.classList.add("hidden") }
             function deactivateSelected() {
                 activeElement = null
                 activeElementSpan.innerText = ""
                 activeElementStylesSpan.innerText = ""
                 activeElementId.innerText = ""
                 setActiveClass()
+                hideTextOptions()
+            }
+            function textKeyDown(event, el) {
+                if(event.key === "Enter") {
+                    if(el.tagName === "P") {
+                        event.preventDefault()
+                        setActiveElement(el.parentElement)
+                        addElement("p")
+                    } else {
+                        setActiveElement(el.parentElement)
+                        el.blur()
+                    }
+                }
+                if(event.key === "Backspace") {
+                    if(el.innerText.length < 1) {
+                        setActiveElement(el.parentElement)
+                        el.remove()
+                    }
+                }
+                if(event.key === "Escape") {
+                    deactivateSelected()
+                    el.blur()
+                }
             }
             function addElement(tagname) {
                 isSaved = false;
                 if(activeElement) {
                     const el = document.createElement(tagname)
-                    el.addEventListener("contextmenu", rightClick)
+                    if(textElements.includes(tagname)) {
+                        el.setAttribute("contenteditable", "true")
+                        el.setAttribute("onkeydown", "textKeyDown(event, this)")
+                        el.addEventListener("paste", (event) => {
+                            event.preventDefault();
+                            const text = (event.clipboardData || window.clipboardData).getData('text');
+                            document.execCommand("insertText", false, text);
+                        })
+                    } else {
+                        el.addEventListener("contextmenu", rightClick)
+                    }
                     el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
                     if(activeElement === webBuilderBody || activeElement === webBuilderMain) {
                         const wrapper = document.createElement("div")
@@ -164,15 +210,12 @@
                     } else {
                         activeElement.appendChild(el)
                     }
+                    el.focus()
+                    setActiveElement(el)
                 }
             }
             function deleteElement(el) {
-                for(i = 0; i < fixedElements.count(); i++) {
-                    if(fixedElements[i] === el) {
-                        el.remove()
-                        break
-                    }
-                }
+                el.remove()
                 deactivateSelected()
             }
             function setActiveClass() {
@@ -188,6 +231,11 @@
             }
             function setActiveElement(el) {
                 activeElement = el
+                if(!textElements.includes(el.tagName.toLowerCase())) {
+                    displayTextOptions()
+                } else {
+                    hideTextOptions()
+                }
                 setActiveClass()
                 activeElementSpan.innerText = el.tagName
                 let updatedClassList = el.classList.toString()
@@ -230,6 +278,16 @@
                     event.returnValue = ''
                 }
             });
+            fixedElements.forEach(el => {
+                new Sortable(el, {
+                    group: "nested",
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65
+                })
+                el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
+                el.addEventListener("contextmenu", rightClick)
+            })
         </script>
     </div>
 </main>

@@ -259,45 +259,6 @@
                     }
                 })
             })
-            function getOffset(el) {
-                const rect = el.getBoundingClientRect();
-                return {
-                    top: rect.top + window.scrollY,
-                    left: rect.left + window.scrollX,
-                    width: rect.width,
-                    height: rect.height
-                };
-            }
-
-            function isOutOfBounds(element, viewportWidth, viewportHeight) {
-                const rect = element.getBoundingClientRect();
-                return rect.right > viewportWidth || rect.bottom > viewportHeight;
-            }
-
-            if (!textElements.includes(activeElement.tagName)) {
-                textOptions.classList.remove("hidden");
-
-                const offset = getOffset(el);
-                let top = offset.top;
-                let left = offset.left;
-
-                // Position the element
-                textOptions.setAttribute("style", `top:${top}px;left:${left}px;`);
-
-                // Check if out of bounds and adjust if necessary
-                if (isOutOfBounds(textOptions, window.innerWidth, window.innerHeight)) {
-                    if (offset.top + textOptions.offsetHeight > window.innerHeight) {
-                        top = window.innerHeight - textOptions.offsetHeight;
-                    }
-                    if (offset.left + textOptions.offsetWidth > window.innerWidth) {
-                        left = window.innerWidth - textOptions.offsetWidth;
-                    }
-                    // Reposition the element
-                    textOptions.setAttribute("style", `top:${top}px;left:${left}px;`);
-                }
-            } else {
-                textOptions.classList.add("hidden");
-            }
         }
         function unsetActiveElement() {
             activeElement = null

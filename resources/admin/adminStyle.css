@@ -20,6 +20,9 @@
     --yellow: #FFD700;
     --color1: #f1f1f1;
 }
+main * {
+    color: black;
+}
 input[type="checkbox"] {
     width: 25px;
     height: 25px;
@@ -255,9 +258,6 @@ main .wrapper {
     flex-flow: column;
     gap: var(--gap);
 }
-main * {
-    color: black;
-}
 main ul {
     list-style: none;
     display: flex;
@@ -375,16 +375,23 @@ main .code-editor textarea:focus {
 #textOptions {
     position: absolute;
     display: flex;
-    gap: 5px;
+    gap: 10px;
     padding: 5px;
-    background: darkgray;
+    background:#343a40;
     border-radius: 7px;
+    border: 1px solid darkgray;
+}
+#textOptions .button {
+    color: white;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
 }
 #textOptions.hidden, #contextMenu.hidden {
     display: none;
 }
 #webBuilder .active {
-    border: 1px dashed red;
+    outline: 1px dashed red;
 }
 #helperBox {
     font-size: 12px;
