@@ -372,9 +372,6 @@ main .code-editor textarea {
 main .code-editor textarea:focus {
     outline: none;
 }
-#contextMenuActive, #contextMenuClasses {
-    color: black;
-}
 #textOptions {
     position: absolute;
     display: flex;
@@ -383,23 +380,8 @@ main .code-editor textarea:focus {
     background: darkgray;
     border-radius: 7px;
 }
-
-#textOptions .button, #contextMenu .button {
-    padding: 5px;
-    font-size: 14px;
-}
-#contextMenu {
-    max-width: 175px;
-}
 #textOptions.hidden, #contextMenu.hidden {
     display: none;
-}
-#webBuilder > main {
-    overflow: hidden;
-    background: white;
-}
-textarea.admin-styles {
-    width: 100%;
 }
 #webBuilder .active {
     border: 1px dashed red;
@@ -419,26 +401,6 @@ textarea.admin-styles {
     text-align: center;
     background: lightgray;
     border: 1px solid black;
-}
-.context-menu ul {
-    padding: 0px;
-    margin: 0px;
-    list-style: none;
-}
-
-.context-menu ul li {
-    padding-bottom: 7px;
-    padding-top: 7px;
-    border: 1px solid black;
-}
-
-.context-menu ul li a {
-    text-decoration: none;
-    color: black;
-}
-
-.context-menu ul li:hover {
-    background: darkgray;
 }
 .z-top {
     z-index: 99;

@@ -77,8 +77,6 @@
     </form>
 </div>
 <div id="contextMenu" class="context-menu hidden">
-    <span id="contextMenuActive"></span>
-    <span id="contextMenuClasses"></span>
     <a class="button" onclick="deleteElement()">Smazat</a>
 </div>
 <div id="helperBox">
@@ -136,7 +134,9 @@
                     swapThreshold: 0.65
                 })
                 el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
+                el.addEventListener("contextmenu", rightClick)
             })
+
             function elementMouseDown(event, el) {
                 setActiveElement(el)
                 event.stopPropagation()
@@ -145,13 +145,16 @@
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
             function deactivateSelected() {
                 activeElement = null
-                console.log("active el: NULL")
+                activeElementSpan.innerText = ""
+                activeElementStylesSpan.innerText = ""
+                activeElementId.innerText = ""
+                setActiveClass()
             }
             function addElement(tagname) {
-                //pokud aktivni element je webBuilder-main, ...-body
                 isSaved = false;
                 if(activeElement) {
                     const el = document.createElement(tagname)
+                    el.addEventListener("contextmenu", rightClick)
                     el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
                     if(activeElement === webBuilderBody || activeElement === webBuilderMain) {
                         const wrapper = document.createElement("div")
@@ -170,9 +173,9 @@
                         break
                     }
                 }
+                deactivateSelected()
             }
-            function setActiveElement(el) {
-                activeElement = el
+            function setActiveClass() {
                 Array.from(document.getElementById("webBuilder").children).forEach(child => {
                     processAllElements(child, elem => {
                         if (elem === activeElement) {
@@ -182,6 +185,10 @@
                         }
                     })
                 })
+            }
+            function setActiveElement(el) {
+                activeElement = el
+                setActiveClass()
                 activeElementSpan.innerText = el.tagName
                 let updatedClassList = el.classList.toString()
                     .replace("active", "")
@@ -195,6 +202,10 @@
                 element.querySelectorAll('*').forEach(child => {
                     callback(child)
                 })
+            }
+            function rightClick(e) {
+                e.preventDefault();
+                openContextMenu()
             }
             document.addEventListener('keydown', function(event) {
                 if (event.ctrlKey && event.key === 's') {
