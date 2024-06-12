@@ -4,7 +4,6 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    color: white;
     font-family: 'Montserrat', sans-serif;
 }
 :root {
@@ -19,9 +18,6 @@
     --orange: #FFAF00;
     --yellow: #FFD700;
     --color1: #f1f1f1;
-}
-main * {
-    color: black;
 }
 input[type="checkbox"] {
     width: 25px;
@@ -58,9 +54,6 @@ a:hover {
 input[type="checkbox"] {
     height: 15px;
 }
-.popupform form label, .popupform form input, .popupform form select, .popupform form label span, .popupform option, .popupform form h2, .popupform form a, .popupform table td, .popupform form textarea {
-    color: black !important;
-}
 .popupform form h2 {
     padding-bottom: 10px;
 }
@@ -93,9 +86,6 @@ form {
 }
 .popupform form .button, .popupform form input[type="submit"] {
     flex: 1;
-}
-.popupform p {
-    color: black;
 }
 .popupform .message {
     text-align: center;
@@ -146,13 +136,14 @@ canvas {
 }
 a {
     text-decoration: none;
+    color: white;
 }
 a.button, input[type="submit"] {
     border: none;
     border-radius: var(--radius);
     background-color: #e3e3e3;
-    color: black;
     display: flex;
+    color: black;
     align-items: center;
     justify-content: center;
     padding: 10px;
@@ -227,6 +218,7 @@ nav a:not(.active, .button):hover {
     display: flex;
     flex-flow: column;
     gap: var(--gap);
+    color: white;
 }
 .profile .wrapper {
     gap: var(--gap);
@@ -253,6 +245,7 @@ main {
     overflow-y: scroll;
 }
 main .wrapper {
+    color: black;
     padding: var(--padding);
     display: flex;
     flex-flow: column;
@@ -360,7 +353,6 @@ main .code-editor .row-numbers {
     flex-flow: column;
 }
 main .code-editor textarea {
-    color: black !important;
     white-space: nowrap;
     padding-left: 5px;
     overflow: hidden;
@@ -373,6 +365,7 @@ main .code-editor textarea:focus {
     outline: none;
 }
 #textOptions {
+    margin-top: 5px;
     position: absolute;
     display: flex;
     gap: 10px;
@@ -380,6 +373,7 @@ main .code-editor textarea:focus {
     background:#343a40;
     border-radius: 7px;
     border: 1px solid darkgray;
+    z-index: 99;
 }
 #textOptions .button {
     color: white;
@@ -387,7 +381,13 @@ main .code-editor textarea:focus {
     padding: 0;
     border-radius: 0;
 }
-#textOptions.hidden, #contextMenu.hidden {
+#contextMenu {
+    z-index: 100;
+}
+#textOptions.hidden {
+    display: none;
+}
+.hidden {
     display: none;
 }
 #webBuilder .active {
@@ -402,6 +402,7 @@ main .code-editor textarea:focus {
     padding: 10px;
     display: flex;
     gap: 10px;
+    color: white;
 }
 .context-menu {
     position: absolute;
@@ -409,11 +410,38 @@ main .code-editor textarea:focus {
     background: lightgray;
     border: 1px solid black;
 }
-.z-top {
-    z-index: 99;
+.context-menu .button {
+    font-size: 14px;
+    border-radius: 0;
 }
 
 
+#webBuilder {
+    padding: 10px;
+}
+#webBuilder-Body, #webBuilder-Main {
+    padding-bottom: 20px;
+    position: relative;
+}
+#webBuilder-Body {
+    padding-top: 20px;
+}
+#webBuilder-Main::after { content: "main"; }
+#webBuilder-Body::after { content: "body"; }
+#webBuilder-Body::after, #webBuilder-Main::After {
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    opacity: 0.3;
+}
+
+
+.z-top {
+    z-index: 102;
+}
 .w800 {
     width: 900px !important;
 }

@@ -72,12 +72,19 @@
     </form>
 </div>
 <div id="contextMenu" class="context-menu hidden">
-    <a class="button" onclick="deleteElement()">Smazat</a>
+    <div id="displayDeleteButton" class="hidden">
+        <a class="button" onclick="deleteElement()">Smazat</a>
+    </div>
+    <a class="button" onclick="">nastavit ID</a>
+    <a class="button" onclick="">nastavit Třídy</a>
+    <div id="displayImgSettings" class="hidden">
+        <a class="button" onclick="">nastavit src</a>
+    </div>
 </div>
 <div id="helperBox">
-    <p>aktivní element: <span id="activeElementSpan"></span></p>
-    <p>třídy: <span id="activeElementStylesSpan"></span></p>
-    <p>id: <span id="activeElementId"></span></p>
+    <p>Aktivní element: <span id="activeElementSpan"></span></p>
+    <p>Třídy: <span id="activeElementStylesSpan"></span></p>
+    <p>ID: <span id="activeElementId"></span></p>
 </div>
 <main>
     <div class="wrapper-content">
@@ -95,16 +102,6 @@
         </div>
 
         <div id="webBuilder">
-            <style>
-                #webBuilder {
-                    all: initial;
-                }
-                #webBuilder-Body, #webBuilder-Main {
-                    padding-top: 20px;
-                    padding-bottom: 20px;
-                    outline: 1px solid black;
-                }
-            </style>
             <div id="webBuilder-Body">
                 <div id="webBuilder-Main">
                 </div>
@@ -116,6 +113,9 @@
         <script>
             let activeElement = null;
             let isSaved = true;
+            let copyElement = null
+            const displayImgSettingsDiv = document.getElementById("displayImgSettings");
+            const displayDeleteButtonDiv = document.getElementById("displayDeleteButton")
             const activeElementSpan = document.getElementById("activeElementSpan")
             const activeElementStylesSpan = document.getElementById("activeElementStylesSpan")
             const activeElementId = document.getElementById("activeElementId")
@@ -127,10 +127,19 @@
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
 
             function elementMouseDown(event, el) {
-                setActiveElement(el)
                 event.stopPropagation()
+                closeContextMenu()
+                setActiveElement(el)
             }
-            const openContextMenu = () => {contextMenu.classList.remove("hidden")}
+            const openContextMenu = () => {
+                if(activeElement.tagName === "img") {
+                    displayImgSettingsDiv.classList.remove("hidden")
+                } else displayImgSettingsDiv.classList.add("hidden")
+                if(activeElement.tagName !== "DIV" && activeElement.id !== "webBuilder-Body") {
+                    displayDeleteButtonDiv.classList.remove("hidden")
+                } else displayDeleteButtonDiv.classList.add("hidden")
+                contextMenu.classList.remove("hidden")
+            }
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
             const displayTextOptions = () => {
                 if (activeElement) {
@@ -190,6 +199,9 @@
                 isSaved = false;
                 if(activeElement) {
                     const el = document.createElement(tagname)
+                    if(tagname === "img") {
+                        el.src = document.getElementById("imgSrc").value
+                    }
                     if(textElements.includes(tagname)) {
                         el.setAttribute("contenteditable", "true")
                         el.setAttribute("onkeydown", "textKeyDown(event, this)")
@@ -214,9 +226,14 @@
                     setActiveElement(el)
                 }
             }
-            function deleteElement(el) {
-                el.remove()
-                deactivateSelected()
+            function deleteElement() {
+                if (activeElement.tagName !== "DIV" && activeElement.id !== "webBuilder-Body") {
+                    activeElement.remove()
+                    deactivateSelected()
+                    closeContextMenu()
+                } else {
+                    closeContextMenu()
+                }
             }
             function setActiveClass() {
                 Array.from(document.getElementById("webBuilder").children).forEach(child => {
@@ -243,7 +260,6 @@
                     .replace("sortable-chosen", "")
                 activeElementStylesSpan.innerText = updatedClassList
                 activeElementId.innerText = el.id
-
             }
             function processAllElements(element, callback) {
                 callback(element)
@@ -252,9 +268,15 @@
                 })
             }
             function rightClick(e) {
+                contextMenu.style.left = e.pageX + "px"
+                contextMenu.style.top = e.pageY + "px"
                 e.preventDefault();
                 openContextMenu()
             }
+            window.addEventListener("resize", () => {
+                closeContextMenu()
+                displayTextOptions()
+            })
             document.addEventListener('keydown', function(event) {
                 if (event.ctrlKey && event.key === 's') {
                     event.preventDefault()
@@ -269,6 +291,41 @@
                 if(event.key === "Delete" && activeElement) {
                     deleteElement(activeElement)
                     activeElement = null
+                }
+                if(event.ctrlKey && event.key === 'c') {
+                    if(!textElements.includes(activeElement.tagName.toLowerCase())) {
+                        event.preventDefault()
+                        console.log("copy block")
+                        copyElement = activeElement.cloneNode(true)
+                    }
+                }
+                if(event.ctrlKey && event.key === 'v') {
+                    //napicu zkopirovany picoviny nejdou
+                    if(copyElement) {
+                        if(!textElements.includes(activeElement.tagName.toLowerCase())) {
+                            event.preventDefault()
+                            console.log("paste block")
+                            if(activeElement) {
+                                copyElement.addEventListener("mousedown", (event) => elementMouseDown(event, copyElement))
+                                copyElement.childNodes.forEach(child => {
+                                    processAllElements(child, childEl => {
+                                        childEl.addEventListener("mousedown", (event) => elementMouseDown(event, childEl))
+                                    })
+                                })
+                                if(activeElement === webBuilderBody || activeElement === webBuilderMain) {
+                                    const wrapper = document.createElement("div")
+                                    wrapper.classList.add("webBuilder-block")
+                                    wrapper.appendChild(copyElement)
+                                    activeElement.appendChild(wrapper)
+                                } else {
+                                    activeElement.appendChild(copyElement)
+                                }
+                            }
+                            deactivateSelected()
+                            setActiveElement(copyElement)
+                            copyElement = activeElement.cloneNode(true)
+                        }
+                    }
                 }
             })
             window.addEventListener('beforeunload', function (event) {
@@ -285,7 +342,10 @@
                     fallbackOnBody: true,
                     swapThreshold: 0.65
                 })
-                el.addEventListener("mousedown", (event) => elementMouseDown(event, el))
+                el.addEventListener("mousedown", (event) => {
+                    elementMouseDown(event, el)
+                    closeContextMenu()
+                })
                 el.addEventListener("contextmenu", rightClick)
             })
         </script>
