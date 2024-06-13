@@ -281,7 +281,12 @@
                 if (event.ctrlKey && event.key === 's') {
                     event.preventDefault()
                     isSaved = true
-                    console.log("saved")
+
+                    var xhr = new XMLHttpRequest();
+                    var url = "/admin/websiteBuilder/editor";
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(saveWebsite());
                 }
                 if(event.ctrlKey && event.key === 'd') {
                     event.preventDefault()
@@ -348,6 +353,65 @@
                 })
                 el.addEventListener("contextmenu", rightClick)
             })
+
+
+            function transformElement(element) {
+                if (element.id === 'webBuilder-Body') {
+                    const body = document.createElement('body');
+                    while (element.firstChild) {
+                        body.appendChild(element.firstChild);
+                    }
+                    element.replaceWith(body);
+                    element = body;
+                } else if (element.id === 'webBuilder-Main') {
+                    const main = document.createElement('main');
+                    while (element.firstChild) {
+                        main.appendChild(element.firstChild);
+                    }
+                    // Copy over attributes
+                    Array.from(element.attributes).forEach(attr => {
+                        main.setAttribute(attr.name, attr.value);
+                    });
+                    element.replaceWith(main);
+                    element = main;
+                }
+
+                // Remove specified attributes and empty class
+                element.removeAttribute('contenteditable');
+                element.removeAttribute('onkeydown');
+                element.removeAttribute('draggable');
+                if (element.getAttribute('class') === '') {
+                    element.removeAttribute('class');
+                }
+
+                // Process child elements recursively
+                Array.from(element.children).forEach(child => transformElement(child));
+            }
+            function elementToJson(element) {
+                const obj = {
+                    tag: element.tagName.toLowerCase(),
+                };
+                if (element.hasAttributes()) {
+                    const attrs = element.attributes;
+                    for (let i = 0; i < attrs.length; i++) {
+                        obj[attrs[i].name] = attrs[i].value;
+                    }
+                }
+                if (element.childElementCount > 0) {
+                    obj.children = Array.from(element.children).map(child => elementToJson(child));
+                } else if (element.textContent.trim()) {
+                    obj.text = element.textContent.trim();
+                }
+                return obj;
+            }
+            function saveWebsite() {
+                const webBuilderElement = document.getElementById('webBuilder-Body');
+                const inputHTML = webBuilderElement.innerHTML;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(inputHTML, 'text/html');
+                console.log("Saved:");
+                return JSON.stringify(elementToJson(doc.body), null, 2)
+            }
         </script>
     </div>
 </main>
