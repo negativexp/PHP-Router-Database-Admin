@@ -21,13 +21,18 @@ padding:30px;
 section {
 padding:30px;
 }
-
+article {
+    padding: 20px 0;
+}
 footer {
 padding: 10px;
 background:black;
 color: white !important;
 }
 
+.h50 {
+    height: 50px;
+}
 .w100 { width: 100%; }
 .w50 { width: 50%; }
 .w33 { width: 33.333%; }

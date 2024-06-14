@@ -82,9 +82,9 @@
     </div>
 </div>
 <div id="helperBox">
-    <p>Aktivní element: <span id="activeElementSpan"></span></p>
-    <p>Třídy: <span id="activeElementStylesSpan"></span></p>
-    <p>ID: <span id="activeElementId"></span></p>
+    <p>Element: <span id="activeElementSpan">...</span></p>
+    <p>Třídy: <span id="activeElementStylesSpan">...</span></p>
+    <p>ID: <span id="activeElementId">...</span></p>
 </div>
 <main>
     <div class="wrapper-content">
@@ -349,6 +349,41 @@
                     })
                     el.addEventListener("contextmenu", rightClick)
                 })
+                function isBeforeOrAfter(element, referenceElement) {
+                    // Function to check if the element is before the reference element
+                    function isBefore(element, referenceElement) {
+                        var prevSiblings = [];
+                        var prevSibling = element.previousSibling;
+                        while (prevSibling) {
+                            if (prevSibling.nodeType === Node.ELEMENT_NODE) {
+                                prevSiblings.push(prevSibling);
+                            }
+                            prevSibling = prevSibling.previousSibling;
+                        }
+
+                        return prevSiblings.includes(referenceElement);
+                    }
+
+                    // Function to check if the element is after the reference element
+                    function isAfter(element, referenceElement) {
+                        var nextSiblings = [];
+                        var nextSibling = element.nextSibling;
+                        while (nextSibling) {
+                            if (nextSibling.nodeType === Node.ELEMENT_NODE) {
+                                nextSiblings.push(nextSibling);
+                            }
+                            nextSibling = nextSibling.nextSibling;
+                        }
+
+                        return nextSiblings.includes(referenceElement);
+                    }
+
+                    // Check if element is before or after the reference element
+                    return {
+                        isBefore: isBefore(element, referenceElement),
+                        isAfter: isAfter(element, referenceElement)
+                    };
+                }
 
                 function loadWebsite(html) {
                     // Parse the HTML string into a document
@@ -360,27 +395,41 @@
                     const webBuilderMain = document.getElementById('webBuilder-Main');
                     const bodyContent = Array.from(doc.body.children);
                     bodyContent.forEach(bodyChild => {
-                        webBuilderBody.appendChild(bodyChild)
-                    })
+                        processAllElements(bodyChild, bodyChildChild => {
+                            if(bodyChildChild.tagName !== "MAIN") {
+                                if(textElements.includes(bodyChildChild.tagName.toLowerCase())) {
+                                    bodyChildChild.setAttribute("contenteditable", "true")
+                                    bodyChildChild.setAttribute("onkeydown", "textKeyDown(event, this)")
+                                    bodyChildChild.addEventListener("paste", (event) => {
+                                        event.preventDefault();
+                                        const text = (event.clipboardData || window.clipboardData).getData('text');
+                                        document.execCommand("insertText", false, text);
+                                    })
+                                } else {
+                                    bodyChildChild.addEventListener("contextmenu", rightClick)
+                                }
+                                bodyChildChild.addEventListener("mousedown", (event) => elementMouseDown(event, bodyChildChild))
+                                console.log(bodyChildChild)
+                            }
+                        })
+                        if (bodyChild.tagName === "MAIN") {
+                            Array.from(bodyChild.children).forEach(mainChild => {
+                                webBuilderMain.appendChild(mainChild);
+                            });
+                        } else {
+                            var result = isBeforeOrAfter(bodyChild, doc.body.querySelector("main"));
+                            if(result.isAfter) {
+                                webBuilderBody.insertBefore(bodyChild, webBuilderMain)
+                            }
+                            if(result.isBefore) {
+                                webBuilderBody.appendChild(bodyChild)
+                            }
+                        }
+                    });
                 }
 
                 // Example usage: you can get the HTML content from an API or any other source
-                const savedHTML = `
-        <body>
-            <header class=""><h1 class="">Hlavní nadpis</h1></header>
-            <main style="" class="">
-                <section class="">
-                    <h2 class="">Section #1</h2>
-                    <p class="">text under section 1</p>
-                    <article class="">
-                        <h3 class="">article #1</h3>
-                        <p class="">text under article #1</p>
-                    </article>
-                </section>
-            </main>
-            <footer class=""><p class="">Footer</p></footer>
-        </body>
-    `;
+                const savedHTML = `<?= file_get_contents("views/index.php") ?>`;
                 loadWebsite(savedHTML);
             });
 
