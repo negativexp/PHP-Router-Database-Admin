@@ -62,7 +62,7 @@ $db = new Database();
                     foreach($columns as $column) {
                         echo "<td>{$column["COLUMN_NAME"]}</td>";
                     }
-                    echo "<td>Options</td>";
+                    echo "<td class='fit'>Options</td>";
                     echo "</tr>";
                     echo "</thead>";
                     echo "<tbody>";

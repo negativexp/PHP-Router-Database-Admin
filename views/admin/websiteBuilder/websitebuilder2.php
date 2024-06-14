@@ -17,7 +17,7 @@
         }
         ?>
         <a class="small" href="/admin/websiteBuilder">Zpátky</a>
-        <a class="small" onclick="saveSite()">Uložit stránku</a>
+        <a class="small" onclick="saveWebsite()">Uložit stránku</a>
         <a class="small" onclick="deactivateEditorStyle()">Deaktivace admin stylu</a>
         <a class="small" onclick="subnav('sub-nav1', this)">Elementy</a>
         <div class="sub-nav" id="sub-nav1">
@@ -281,12 +281,7 @@
                 if (event.ctrlKey && event.key === 's') {
                     event.preventDefault()
                     isSaved = true
-
-                    var xhr = new XMLHttpRequest();
-                    var url = "/admin/websiteBuilder/editor";
-                    xhr.open("POST", url, true);
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.send(saveWebsite());
+                    saveWebsite()
                 }
                 if(event.ctrlKey && event.key === 'd') {
                     event.preventDefault()
@@ -340,20 +335,54 @@
                     event.returnValue = ''
                 }
             });
-            fixedElements.forEach(el => {
-                new Sortable(el, {
-                    group: "nested",
-                    animation: 150,
-                    fallbackOnBody: true,
-                    swapThreshold: 0.65
+            document.addEventListener('DOMContentLoaded', () => {
+                fixedElements.forEach(el => {
+                    new Sortable(el, {
+                        group: "nested",
+                        animation: 150,
+                        fallbackOnBody: true,
+                        swapThreshold: 0.65
+                    })
+                    el.addEventListener("mousedown", (event) => {
+                        elementMouseDown(event, el)
+                        closeContextMenu()
+                    })
+                    el.addEventListener("contextmenu", rightClick)
                 })
-                el.addEventListener("mousedown", (event) => {
-                    elementMouseDown(event, el)
-                    closeContextMenu()
-                })
-                el.addEventListener("contextmenu", rightClick)
-            })
 
+                function loadWebsite(html) {
+                    // Parse the HTML string into a document
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // Extract body content
+                    const webBuilderBody = document.getElementById('webBuilder-Body');
+                    const webBuilderMain = document.getElementById('webBuilder-Main');
+                    const bodyContent = Array.from(doc.body.children);
+                    bodyContent.forEach(bodyChild => {
+                        webBuilderBody.appendChild(bodyChild)
+                    })
+                }
+
+                // Example usage: you can get the HTML content from an API or any other source
+                const savedHTML = `
+        <body>
+            <header class=""><h1 class="">Hlavní nadpis</h1></header>
+            <main style="" class="">
+                <section class="">
+                    <h2 class="">Section #1</h2>
+                    <p class="">text under section 1</p>
+                    <article class="">
+                        <h3 class="">article #1</h3>
+                        <p class="">text under article #1</p>
+                    </article>
+                </section>
+            </main>
+            <footer class=""><p class="">Footer</p></footer>
+        </body>
+    `;
+                loadWebsite(savedHTML);
+            });
 
             function transformElement(element) {
                 if (element.id === 'webBuilder-Body') {
@@ -409,8 +438,13 @@
                 const inputHTML = webBuilderElement.innerHTML;
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(inputHTML, 'text/html');
+                var xhr = new XMLHttpRequest();
+                var url = "/admin/websiteBuilder/editor";
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(elementToJson(doc.body), null, 2));
+                console.log(elementToJson(doc.body))
                 console.log("Saved:");
-                return JSON.stringify(elementToJson(doc.body), null, 2)
             }
         </script>
     </div>

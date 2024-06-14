@@ -113,7 +113,7 @@ if(isset($db)) {
         echo "<td>{$table}</td>";
         echo "<td>
                 <form class='formOptions' method='post' action='/admin/database/removeTable'>
-                    <input type='hidden' name='name' value='{$table}' '>
+                    <input type='hidden' name='name' value='{$table}'>
                     <input class='small' type='submit' value='Smazat'>
                     <a class='button' href='/admin/database/table/{$table}'>Upravit</a>
                 </form>
