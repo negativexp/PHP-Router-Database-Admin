@@ -8,6 +8,10 @@ main {
 display:flex;
 flex-flow:column;
 }
+body {
+padding: 10px;
+background:gray;
+}
 h2 {
 padding-bottom:10px;
 }

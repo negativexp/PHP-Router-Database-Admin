@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
-<body>
+<body id="websiteBuilderBody">
 <div class="sidepanel">
     <div class="button" onclick="mobilenav()">
         <img class="icon" src="../imgs/nav.svg">
@@ -131,9 +131,16 @@
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
 
             let stylesRemoved = false;
-            let deletedRules = [];
+            let deletedRules = [
+                '#webBuilder { }',
+                '#webBuilder-Body, #webBuilder-Main { padding-bottom: 20px; position: relative; }',
+                '#webBuilder-Body { padding-top: 20px; }',
+                '#webBuilder-Main::after { content: "main"; }',
+                '#webBuilder-Body::after { content: "body"; }',
+                '#webBuilder-Body::after, #webBuilder-Main::after { width: 100%; height: 20px; position: absolute; bottom: 0; left: 0; text-align: center; opacity: 0.3; }'
+            ];
             function toggleEditorStyle() {
-                const styleElement = document.getElementById('webBuilderStyles');
+                const styleElement = document.getElementById('adminStyle');
                 const targetSelectors = [
                     '#webBuilder',
                     '#webBuilder-Body',
@@ -153,9 +160,6 @@
                         }
                     }
                 } else {
-                    // Delete specified rules
-                    deletedRules = [];
-
                     for (let sheet of document.styleSheets) {
                         try {
                             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
@@ -243,7 +247,7 @@
                 }
             }
             function addClass(className) {
-                if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
+                if(activeElement && !activeElement.classList.contains("webBuilder-block") && activeElement.id !== "webBuilder-Body") {
                     activeElement.classList.toggle(className)
                     isSaved = false
                     setActiveElement(activeElement)
@@ -389,7 +393,36 @@
                     event.returnValue = ''
                 }
             });
+            function applyDeletedStyles(element, deletedRules) {
+                deletedRules.forEach(rule => {
+                    const style = rule.split('{')[1].trim().slice(0, -1);
+                    const declarations = style.split(';').filter(Boolean);
+
+                    declarations.forEach(declaration => {
+                        const [property, value] = declaration.split(':').map(part => part.trim());
+                        element.style[property] = value;
+                    });
+                });
+            }
             document.addEventListener('DOMContentLoaded', () => {
+                // Use document.styleSheets[1] to target the second stylesheet
+                const sheet = document.styleSheets[1];
+
+                // Array to store deleted rules from the second stylesheet
+                let deletedRulesIndexStyle = [];
+
+                // Loop through the CSS rules of the second stylesheet and delete 'body' styles
+                for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                    let rule = sheet.cssRules[i];
+                    if (rule.type === CSSRule.STYLE_RULE && ['body'].includes(rule.selectorText)) {
+                        deletedRulesIndexStyle.push(rule.cssText);
+                        sheet.deleteRule(i);
+                    }
+                }
+
+                // Apply deleted styles to #webBuilder-Body
+                const webBuilderBody = document.getElementById('webBuilder-Body');
+                applyDeletedStyles(webBuilderBody, deletedRulesIndexStyle);
                 fixedElements.forEach(el => {
                     new Sortable(el, {
                         group: "nested",
@@ -469,6 +502,7 @@
                             Array.from(bodyChild.children).forEach(mainChild => {
                                 webBuilderMain.appendChild(mainChild);
                             });
+                            webBuilderMain.classList = bodyChild.classList
                         } else {
                             var result = isBeforeOrAfter(bodyChild, doc.body.querySelector("main"));
                             if(result.isAfter) {
