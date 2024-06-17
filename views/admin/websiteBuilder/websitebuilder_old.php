@@ -417,6 +417,9 @@
             })
         }
         function addClass(className) {
+            console.log(activeElement) {
+
+            }
             if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
                 activeElement.classList.toggle(className)
                 isSaved = false

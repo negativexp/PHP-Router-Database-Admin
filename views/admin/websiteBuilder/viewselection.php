@@ -36,8 +36,8 @@ $db = new Database();
                             echo "<td>
 <form class='formOptions' method='post' action=''>
 <input type='hidden' name='siteName' value='{$fileName}'>
-<input type='submit' class='small button' name='delete' value='Smazat'>
 <a class='small button' href='/admin/websiteBuilder/{$href}'>Upravit</a>
+<input type='submit' class='small button' name='delete' value='Smazat'>
 </form>
 </td>";
                             echo "</tr>";

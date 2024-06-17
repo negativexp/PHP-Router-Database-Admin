@@ -403,6 +403,7 @@ main .code-editor textarea:focus {
     display: flex;
     gap: 10px;
     color: white;
+    z-index: 102;
 }
 .context-menu {
     position: absolute;
@@ -440,7 +441,7 @@ main .code-editor textarea:focus {
 
 
 .z-top {
-    z-index: 102;
+    z-index: 99;
 }
 .w800 {
     width: 900px !important;

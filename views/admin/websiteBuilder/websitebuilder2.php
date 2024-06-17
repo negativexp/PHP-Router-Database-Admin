@@ -18,7 +18,7 @@
         ?>
         <a class="small" href="/admin/websiteBuilder">Zpátky</a>
         <a class="small" onclick="saveWebsite()">Uložit stránku</a>
-        <a class="small" onclick="deactivateEditorStyle()">Deaktivace admin stylu</a>
+        <a class="small" onclick="toggleEditorStyle()">Deaktivace admin stylu</a>
         <a class="small" onclick="subnav('sub-nav1', this)">Elementy</a>
         <div class="sub-nav" id="sub-nav1">
             <a class="small" onclick="addElement('header')">header</a>
@@ -34,6 +34,10 @@
             <a class="small" onclick="addClass('column')">column</a>
             <a class="small" onclick="addClass('row')">row</a>
             <a class="small" onclick="addClass('vhCen')">vhCen</a>
+            <a class="small" onclick="addClass('w25')">w25</a>
+            <a class="small" onclick="addClass('w50')">w50</a>
+            <a class="small" onclick="addClass('w75')">w75</a>
+            <a class="small" onclick="addClass('w100')">w100</a>
         </div>
         <a class="logout small button">Odhlásit se</a>
     </nav>
@@ -126,6 +130,49 @@
             const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5']
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
 
+            let stylesRemoved = false;
+            let deletedRules = [];
+            function toggleEditorStyle() {
+                const styleElement = document.getElementById('webBuilderStyles');
+                const targetSelectors = [
+                    '#webBuilder',
+                    '#webBuilder-Body',
+                    '#webBuilder-Main',
+                    '#webBuilder-Body, #webBuilder-Main',
+                    '#webBuilder-Body::after',
+                    '#webBuilder-Main::after'
+                ];
+
+                if (stylesRemoved) {
+                    // Re-insert deleted rules
+                    for (let rule of deletedRules) {
+                        try {
+                            styleElement.sheet.insertRule(rule, styleElement.sheet.cssRules.length);
+                        } catch (e) {
+                            console.warn("Error re-inserting rule: ", e);
+                        }
+                    }
+                } else {
+                    // Delete specified rules
+                    deletedRules = [];
+
+                    for (let sheet of document.styleSheets) {
+                        try {
+                            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+                                let rule = sheet.cssRules[i];
+                                if (targetSelectors.includes(rule.selectorText)) {
+                                    deletedRules.push(rule.cssText);
+                                    sheet.deleteRule(i);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("Error deleting rule: ", e);
+                        }
+                    }
+                }
+
+                stylesRemoved = !stylesRemoved;
+            }
             function elementMouseDown(event, el) {
                 event.stopPropagation()
                 closeContextMenu()
@@ -193,6 +240,13 @@
                 if(event.key === "Escape") {
                     deactivateSelected()
                     el.blur()
+                }
+            }
+            function addClass(className) {
+                if(activeElement && !activeElement.classList.contains("webBuilder-block")) {
+                    activeElement.classList.toggle(className)
+                    isSaved = false
+                    setActiveElement(activeElement)
                 }
             }
             function addElement(tagname) {
@@ -409,7 +463,6 @@
                                     bodyChildChild.addEventListener("contextmenu", rightClick)
                                 }
                                 bodyChildChild.addEventListener("mousedown", (event) => elementMouseDown(event, bodyChildChild))
-                                console.log(bodyChildChild)
                             }
                         })
                         if (bodyChild.tagName === "MAIN") {
@@ -432,39 +485,6 @@
                 const savedHTML = `<?= file_get_contents("views/index.php") ?>`;
                 loadWebsite(savedHTML);
             });
-
-            function transformElement(element) {
-                if (element.id === 'webBuilder-Body') {
-                    const body = document.createElement('body');
-                    while (element.firstChild) {
-                        body.appendChild(element.firstChild);
-                    }
-                    element.replaceWith(body);
-                    element = body;
-                } else if (element.id === 'webBuilder-Main') {
-                    const main = document.createElement('main');
-                    while (element.firstChild) {
-                        main.appendChild(element.firstChild);
-                    }
-                    // Copy over attributes
-                    Array.from(element.attributes).forEach(attr => {
-                        main.setAttribute(attr.name, attr.value);
-                    });
-                    element.replaceWith(main);
-                    element = main;
-                }
-
-                // Remove specified attributes and empty class
-                element.removeAttribute('contenteditable');
-                element.removeAttribute('onkeydown');
-                element.removeAttribute('draggable');
-                if (element.getAttribute('class') === '') {
-                    element.removeAttribute('class');
-                }
-
-                // Process child elements recursively
-                Array.from(element.children).forEach(child => transformElement(child));
-            }
             function elementToJson(element) {
                 const obj = {
                     tag: element.tagName.toLowerCase(),
