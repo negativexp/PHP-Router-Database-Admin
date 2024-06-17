@@ -261,7 +261,6 @@
                         el.src = document.getElementById("imgSrc").value
                     }
                     if(textElements.includes(tagname)) {
-                        el.setAttribute("contenteditable", "true")
                         el.setAttribute("onkeydown", "textKeyDown(event, this)")
                         el.addEventListener("paste", (event) => {
                             event.preventDefault();
@@ -305,11 +304,17 @@
                 })
             }
             function setActiveElement(el) {
+                if(activeElement) {
+                    if(textElements.includes(activeElement.tagName.toLowerCase())) {
+                        activeElement.removeAttribute("contenteditable")
+                    }
+                }
                 activeElement = el
                 if(!textElements.includes(el.tagName.toLowerCase())) {
                     displayTextOptions()
                 } else {
                     hideTextOptions()
+                    activeElement.setAttribute("contenteditable", "true")
                 }
                 setActiveClass()
                 activeElementSpan.innerText = el.tagName
@@ -350,46 +355,31 @@
                     deleteElement(activeElement)
                     activeElement = null
                 }
-                if(event.ctrlKey && event.key === 'c') {
-                    if(!textElements.includes(activeElement.tagName.toLowerCase())) {
-                        event.preventDefault()
-                        console.log("copy block")
-                        copyElement = activeElement.cloneNode(true)
+                if (event.ctrlKey && event.key === 'c') {
+                    if (!textElements.includes(activeElement.tagName.toLowerCase())) {
+                        event.preventDefault();
+                        console.log("copy block");
+                        copyElement = activeElement.cloneNode(true);
+                        copyElement.addEventListener("mousedown", (event) => elementMouseDown(event, copyElement));
                     }
                 }
-                if(event.ctrlKey && event.key === 'v') {
-                    //napicu zkopirovany picoviny nejdou
-                    if(copyElement) {
-                        if(!textElements.includes(activeElement.tagName.toLowerCase())) {
-                            event.preventDefault()
-                            console.log("paste block")
-                            if(activeElement) {
-                                copyElement.addEventListener("mousedown", (event) => elementMouseDown(event, copyElement))
-                                copyElement.childNodes.forEach(child => {
-                                    processAllElements(child, childEl => {
-                                        childEl.addEventListener("mousedown", (event) => elementMouseDown(event, childEl))
-                                    })
-                                })
-                                if(activeElement === webBuilderBody || activeElement === webBuilderMain) {
-                                    const wrapper = document.createElement("div")
-                                    wrapper.classList.add("webBuilder-block")
-                                    wrapper.appendChild(copyElement)
-                                    activeElement.appendChild(wrapper)
-                                } else {
-                                    activeElement.appendChild(copyElement)
-                                }
-                            }
-                            deactivateSelected()
-                            setActiveElement(copyElement)
-                            copyElement = activeElement.cloneNode(true)
+                if (event.ctrlKey && event.key === 'v') {
+                    if (copyElement && activeElement) {
+                        event.preventDefault();
+                        const newCopyElement = copyElement.cloneNode(true);
+                        if (newCopyElement.classList.contains("active")) {
+                            newCopyElement.classList.remove("active");
                         }
+                        activeElement.appendChild(newCopyElement);
+                        processAllElements(newCopyElement, copyElementChild => {
+                            copyElementChild.addEventListener("mousedown", (event) => elementMouseDown(event, copyElementChild));
+                        });
                     }
                 }
             })
             window.addEventListener('beforeunload', function (event) {
                 if(!isSaved) {
                     event.preventDefault()
-                    //chrome
                     event.returnValue = ''
                 }
             });
@@ -437,7 +427,6 @@
                     el.addEventListener("contextmenu", rightClick)
                 })
                 function isBeforeOrAfter(element, referenceElement) {
-                    // Function to check if the element is before the reference element
                     function isBefore(element, referenceElement) {
                         var prevSiblings = [];
                         var prevSibling = element.previousSibling;
@@ -450,8 +439,6 @@
 
                         return prevSiblings.includes(referenceElement);
                     }
-
-                    // Function to check if the element is after the reference element
                     function isAfter(element, referenceElement) {
                         var nextSiblings = [];
                         var nextSibling = element.nextSibling;
@@ -464,8 +451,6 @@
 
                         return nextSiblings.includes(referenceElement);
                     }
-
-                    // Check if element is before or after the reference element
                     return {
                         isBefore: isBefore(element, referenceElement),
                         isAfter: isAfter(element, referenceElement)
@@ -485,7 +470,7 @@
                         processAllElements(bodyChild, bodyChildChild => {
                             if(bodyChildChild.tagName !== "MAIN") {
                                 if(textElements.includes(bodyChildChild.tagName.toLowerCase())) {
-                                    bodyChildChild.setAttribute("contenteditable", "true")
+                                    //bodyChildChild.setAttribute("contenteditable", "true")
                                     bodyChildChild.setAttribute("onkeydown", "textKeyDown(event, this)")
                                     bodyChildChild.addEventListener("paste", (event) => {
                                         event.preventDefault();
