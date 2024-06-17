@@ -6,6 +6,19 @@ $db = new Database();
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
+<div id="popupForm" class="popupform">
+    <form method="post" action="/admin/websiteBuilder/createSite">
+        <h2>Přidat stránku</h2>
+        <label>
+            <span>Název stránky</span>
+            <input spellcheck="false" type="text" name="siteName" required>
+        </label>
+        <div class="options">
+            <a class="small button" onclick="MessageBox('popupForm')">Zavřít</a>
+            <input class="small button" type="submit">
+        </div>
+    </form>
+</div>
 <main>
     <header>
         <h1 class="big">Vyberte si stránku</h1>

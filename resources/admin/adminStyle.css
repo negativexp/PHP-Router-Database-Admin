@@ -252,10 +252,12 @@ main .wrapper {
     gap: var(--gap);
 }
 main ul {
-    list-style: none;
     display: flex;
     flex-flow: column;
     gap: var(--gap);
+}
+main ol {
+    padding-left: 20px;
 }
 main ul li {
     align-items: center;

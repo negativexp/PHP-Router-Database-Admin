@@ -4,9 +4,6 @@
     margin: 0;
     font-family: Georgia, serif;
 }
-body {
-background:white;
-}
 main {
 display:flex;
 flex-flow:column;

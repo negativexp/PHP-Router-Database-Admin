@@ -46,6 +46,7 @@ class Router {
         $this->post("/admin/websiteBuilder/editor", "actions/admin/websiteEditor/editor.php");
         $this->get('/admin/cssEditor', "views/admin/websiteBuilder/csseditor.php");
         $this->post('/admin/cssEditor', "actions/admin/websiteEditor/savecss.php");
+        $this->post('/admin/websiteBuilder/createSite', "actions/admin/websiteEditor/createSite.php");
         $this->get('/admin/web-settings', "views/admin/websiteBuilder/nastaveni.php");
     }
     private function checkNormalRoutes(): void {

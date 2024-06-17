@@ -69,10 +69,12 @@ $htmlString = jsonToHTML($data);
 $htmlEndString = '
 </html>
 ';
+
+// Ensure the viewName is set and sanitize it
+$viewName = isset($data["viewName"]) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $data["viewName"]) : 'default_view';
+
 // Save HTML string to file
-$site = fopen("views/index.php", "w");
-
-
+$site = fopen("views/{$viewName}.php", "w");
 fwrite($site, $headString);
 fwrite($site, $htmlString);
 fwrite($site, $htmlEndString);

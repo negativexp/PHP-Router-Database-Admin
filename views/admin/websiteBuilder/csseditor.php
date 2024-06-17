@@ -3,64 +3,32 @@
 <?php include_once("views/admin/components/head.php"); ?>
 <body>
 <?php include_once("views/admin/components/sidepanel.php"); ?>
-<style>
-    .tableOptions {
-        padding: 0 !important;
-    }
-</style>
-<div id="popupForm" class="popupform">
-    <form method="post" action="/admin/fileManager">
-        <h2>Přidat fotku</h2>
-        <label>
-            <span>Název cesty či webové adres</span>
-            <input spellcheck="false" type="text" id="imgSrc" required>
-        </label>
-        <div class="options">
-            <a class="small button" onclick="MessageBox('popupForm')">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
-        </div>
-    </form>
-</div>
-<div id="popupForm2" class="popupform">
-    <form method="post" action="/admin/fileManager">
-        <h2>Přidat vlastní HTML/JS/CSS</h2>
-        <textarea spellcheck="false" id="customHtml"></textarea>
-        <div class="options">
-            <a class="small button" onclick="MessageBox('popupForm2')">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
-        </div>
-    </form>
-</div>
-<div id="contextMenu" class="context-menu" style="display:none">
-    <p id="contextMenuActive"></p>
-    <p id="contextMenuClasses"></p>
-    <a class="button" onclick="deleteElement()">Smazat</a>
-</div>
 <main>
     <header>
         <h1 class="big">CSS editor</h1>
     </header>
     <div class="wrapper">
+        <form method="post" action="/admin/cssEditor">
+        <div class="tableOptions">
+            <input type="submit" value="Uložit" class="button">
+        </div>
             <section>
                 <article class="w100">
-                    <form method="post" action="/admin/cssEditor">
-                        <input type="submit" value="Uložit">
                     <?php
                     $content = file_get_contents("resources/style.css");
                     if($content) {
                         echo "
-  <div class='code-editor'>
-    <div class='row-numbers' id='rowNumbers'>
-      <p>1</p>
-    </div>
-    <textarea name='css' id='codeInput' spellcheck='false'>".htmlspecialchars($content)."</textarea>
-  </div>";
+                        <div class='code-editor'>
+                          <div class='row-numbers' id='rowNumbers'>
+                            <p>1</p>
+                          </div>
+                          <textarea name='css' id='codeInput' spellcheck='false'>".htmlspecialchars($content)."</textarea>
+                        </div>";
                     }
                     ?>
-                    </form>
                 </article>
                 <script>
-                    var codeInput = document.getElementById("codeInput");
+                    const codeInput = document.getElementById("codeInput");
                     const symbols = {
                         '[': ']',
                         '(': ')',
@@ -151,6 +119,14 @@
                             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                             xhr.send("css="+encodeURIComponent(document.getElementById("codeInput").value));
                         }
+                        if (event.key === "Tab") {
+                            event.preventDefault()
+                            const start = codeInput.selectionStart;
+                            const end = codeInput.selectionEnd;
+                            codeInput.value = codeInput.value.substring(0, start) + "\t" + codeInput.value.substring(end)
+                            codeInput.selectionStart = start + 1
+                            codeInput.selectionEnd = start + 1
+                        }
                     })
                     window.addEventListener('beforeunload', function (event) {
                         if(!isSaved) {
@@ -162,6 +138,7 @@
                     updateNumbers()
                 </script>
             </section>
+        </form>
     </div>
 </main>
 </body>

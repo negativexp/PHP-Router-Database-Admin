@@ -65,16 +65,6 @@
         </div>
     </form>
 </div>
-<div id="popupForm2" class="popupform">
-    <form method="post" action="/admin/fileManager">
-        <h2>Přidat vlastní HTML/JS/CSS</h2>
-        <textarea spellcheck="false" id="customHtml"></textarea>
-        <div class="options">
-            <a class="small button" onclick="MessageBox('popupForm2')">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('custom')">Přidat</a>
-        </div>
-    </form>
-</div>
 <div id="contextMenu" class="context-menu hidden">
     <div id="displayDeleteButton" class="hidden">
         <a class="button" onclick="deleteElement()">Smazat</a>
@@ -127,7 +117,7 @@
             const webBuilderMain = document.getElementById("webBuilder-Main")
             const contextMenu = document.getElementById("contextMenu")
             const webBuilder = document.getElementById("webBuilder")
-            const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5']
+            const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'a']
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
 
             let stylesRemoved = false;
@@ -245,6 +235,7 @@
                     deactivateSelected()
                     el.blur()
                 }
+                isSaved = false
             }
             function addClass(className) {
                 if(activeElement && !activeElement.classList.contains("webBuilder-block") && activeElement.id !== "webBuilder-Body") {
@@ -501,12 +492,17 @@
                 }
 
                 // Example usage: you can get the HTML content from an API or any other source
-                const savedHTML = `<?= file_get_contents("views/index.php") ?>`;
+                const savedHTML = `<?php
+                if(isset($viewName)) {
+                    print_r(file_get_contents("views/$viewName.php"), false);
+                }
+                ?>`
                 loadWebsite(savedHTML);
             });
             function elementToJson(element) {
                 const obj = {
                     tag: element.tagName.toLowerCase(),
+                    viewName: "<?= isset($viewName) ? $viewName : "..." ?>"
                 };
                 if (element.hasAttributes()) {
                     const attrs = element.attributes;
