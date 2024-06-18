@@ -34,20 +34,20 @@ function jsonToHTML($data) {
 
         // Add attributes except for those that need to be removed
         foreach ($data as $key => $value) {
-            if (!in_array($key, ['tag', 'children', 'text', 'contenteditable', 'onkeydown', 'draggable', 'viewName'])) {
+            if (!in_array($key, ['tag', 'children', 'innerHTML', 'contenteditable', 'onkeydown', 'draggable', 'viewName'])) {
                 $html .= ' ' . htmlspecialchars($key) . '="' . htmlspecialchars($value) . '"';
             }
         }
 
         $html .= '>';
 
-        // Add children if present
+        // Add children or innerHTML
         if (isset($data['children'])) {
             foreach ($data['children'] as $child) {
                 $html .= jsonToHTML($child);
             }
-        } elseif (isset($data['text'])) {
-            $html .= htmlspecialchars($data['text']);
+        } elseif (isset($data['innerHTML'])) {
+            $html .= $data['innerHTML'];
         }
 
         $html .= '</' . $data['tag'] . '>';

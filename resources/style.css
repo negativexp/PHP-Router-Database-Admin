@@ -14,6 +14,10 @@ padding-bottom:10px;
 p a {
     color: purple;
 }
+img {
+    background: red;
+    max-height: 200px;
+}
 header {
 background:pink;
 width:100%;

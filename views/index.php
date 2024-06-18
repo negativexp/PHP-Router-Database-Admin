@@ -8,6 +8,6 @@
 <link rel="stylesheet" href="resources/style.css">
 </head>
 <body id="webBuilder-Body">
-<body><header class=""><h1 class="">Hlavní nadpis</h1></header><main style="" class=""><section class=""><h2 class="">Section</h2><p class="">text)</p><p class="active"><a href="/about">vazne</a><a href="/about">vazne</a></p></section></main></body>
+<body><header class=""><h1 class="">Hlavní nadpis</h1></header><main class=""><section class="" style=""><h2 class="">Section</h2><p class="">Tady <a href="/about" onkeydown="textKeyDown(event, this)" draggable="false">link</a> bro</p><img src="https://picsum.photos/200" class="active" id="obrazek"></img></section></main></body>
 </body>
 </html>

@@ -61,7 +61,7 @@
         </label>
         <div class="options">
             <a class="small button" onclick="MessageBox('popupForm')">Zavřít</a>
-            <a class="small button" type="submit" onclick="addElement('img')">Přidat</a>
+            <a class="small button" type="submit" onclick="addElement('img'); MessageBox('popupForm')">Přidat</a>
         </div>
     </form>
 </div>
@@ -78,14 +78,44 @@
         </div>
     </form>
 </div>
+<div id="idForm" class="popupform">
+    <form method="post" action="/admin/fileManager">
+        <h2>Nastavit ID</h2>
+        <label>
+            <span>ID</span>
+            <input spellcheck="false" type="text" id="elementID" required>
+        </label>
+        <div class="options">
+            <a class="small button" onclick="MessageBox('idForm')">Zavřít</a>
+            <a class="small button" type="submit" onclick="setElementID()">Nastavit</a>
+        </div>
+    </form>
+</div>
+<div id="aHrefForm" class="popupform">
+    <form method="post" action="/admin/fileManager">
+        <h2>Nastavit HREF</h2>
+        <label>
+            <span>HREF</span>
+            <input spellcheck="false" type="text" id="linkPath" required>
+        </label>
+        <div class="options">
+            <a class="small button" onclick="MessageBox('aHrefForm')">Zavřít</a>
+            <a class="small button" type="button" onclick="">Nastavit</a>
+        </div>
+    </form>
+</div>
 <div id="contextMenu" class="context-menu hidden">
     <div id="displayDeleteButton" class="hidden">
         <a class="button" onclick="deleteElement()">Smazat</a>
     </div>
-    <a class="button" onclick="">nastavit ID</a>
-    <a class="button" onclick="">nastavit Třídy</a>
+    <a class="button" onclick="openIdForm()">Nastavit ID</a>
+    <a class="button" onclick="">Nastavit Třídy</a>
     <div id="displayImgSettings" class="hidden">
-        <a class="button" onclick="">nastavit src</a>
+        <a class="button" onclick="">Nastavit SRC</a>
+    </div>
+    <div id="displayASettings" class="hidden">
+        <a class="button" onclick="MessageBox('aHrefForm'); closeContextMenu()">Nastavit HREF</a>
+        <a class="button" onclick="MessageBox('aHrefForm'); closeContextMenu()">Nastavit Target</a>
     </div>
 </div>
 <div id="helperBox">
@@ -130,6 +160,7 @@
             const textOptions = document.getElementById("textOptions")
             const secondTextOptions = document.getElementById("secondTextOptions")
             const displayImgSettingsDiv = document.getElementById("displayImgSettings");
+            const displayASettingsDiv = document.getElementById("displayASettings");
             const displayDeleteButtonDiv = document.getElementById("displayDeleteButton")
             const activeElementSpan = document.getElementById("activeElementSpan")
             const activeElementStylesSpan = document.getElementById("activeElementStylesSpan")
@@ -193,14 +224,28 @@
                 event.stopPropagation()
                 closeContextMenu()
                 setActiveElement(el)
+                if(textElements.includes(activeElement.tagName.toLowerCase()))
+                    if(activeElement.innerText.length > 0)
+                        displaySecondTextOptions()
+            }
+            function openIdForm() {
+                console.log(activeElement)
+                if(activeElement.id)
+                    document.getElementById("elementID").value = activeElement.id
+                else document.getElementById("elementID").value = ""
+                MessageBox('idForm')
+                closeContextMenu()
             }
             const openContextMenu = () => {
-                if(activeElement.tagName === "img") {
+                if(activeElement.tagName === "IMG") {
                     displayImgSettingsDiv.classList.remove("hidden")
                 } else displayImgSettingsDiv.classList.add("hidden")
                 if(activeElement.tagName !== "DIV" && activeElement.id !== "webBuilder-Body") {
                     displayDeleteButtonDiv.classList.remove("hidden")
                 } else displayDeleteButtonDiv.classList.add("hidden")
+                if(activeElement.tagName === "A") {
+                    displayASettingsDiv.classList.remove("hidden")
+                } else displayASettingsDiv.classList.add("hidden")
                 contextMenu.classList.remove("hidden")
             }
             const displaySecondTextOptions = () => {
@@ -225,6 +270,14 @@
 
                     secondTextOptions.classList.remove('hidden');
                 }
+            }
+            function setElementID() {
+                MessageBox("idForm")
+                hideTextOptions()
+                hideSecondTextOptions()
+                activeElement.id = document.getElementById("elementID").value
+                document.getElementById("elementID").value = ""
+                setActiveElement(activeElement)
             }
             const hideSecondTextOptions = () => {secondTextOptions.classList.add("hidden")}
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
@@ -286,6 +339,11 @@
                     deactivateSelected()
                     el.blur()
                 }
+                if(el.innerText.length > 0)
+                    displaySecondTextOptions()
+                if(el.childElementCount === 1)
+                    if(el.childNodes[0].nodeName === "BR")
+                        el.remove()
                 isSaved = false
             }
             function addClass(className) {
@@ -383,18 +441,11 @@
                     }
                 }
                 activeElement = el
-                processAllElements(webBuilderBody, child => {
-                    if(textElements.includes(child.tagName.toLowerCase())) {
-                        if(child.innerText === "" && activeElement !== child) {
-                            child.remove()
-                        }
-                    }
-                })
                 if(!textElements.includes(el.tagName.toLowerCase())) {
                     displayTextOptions()
                     hideSecondTextOptions()
                 } else {
-                    displaySecondTextOptions()
+                    el.focus()
                     hideTextOptions()
                     activeElement.setAttribute("contenteditable", "true")
                 }
@@ -417,6 +468,8 @@
                 contextMenu.style.top = e.pageY + "px"
                 e.preventDefault();
                 openContextMenu()
+                hideTextOptions()
+                hideSecondTextOptions()
             }
             window.addEventListener("resize", () => {
                 closeContextMenu()
@@ -431,6 +484,8 @@
                 if(event.ctrlKey && event.key === 'd') {
                     event.preventDefault()
                     closeContextMenu()
+                    hideSecondTextOptions()
+                    activeElement.blur()
                     deactivateSelected()
                 }
                 if(event.key === "Delete" && activeElement) {
@@ -610,66 +665,40 @@
                 loadWebsite(savedHTML);
             });
             function elementToJson(element) {
-                const obj = {
-                    tag: element.tagName.toLowerCase()
-                };
+                let obj = {};
+                obj.tag = element.tagName.toLowerCase();
 
-                // Process attributes
-                if (element.hasAttributes()) {
-                    const attrs = element.attributes;
-                    for (let i = 0; i < attrs.length; i++) {
-                        obj[attrs[i].name] = attrs[i].value;
-                    }
-                }
+                // Add attributes
+                Array.from(element.attributes).forEach(attr => {
+                    obj[attr.name] = attr.value;
+                });
 
-                // Process child elements recursively
-                if (element.childElementCount > 0) {
-                    obj.children = Array.from(element.children).map(child => elementToJson(child));
+                // Add innerHTML for specific text elements
+                if (textElements.includes(obj.tag)) {
+                    obj.innerHTML = element.innerHTML;
                 } else {
-                    // If it's a text node, save its text content
-                    obj.text = element.textContent.trim();
-                }
-
-                // Special handling for <p> element with mixed content
-                if (element.tagName.toLowerCase() === 'p') {
-                    const childNodes = Array.from(element.childNodes);
-                    let textContent = '';
-
-                    childNodes.forEach(node => {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            // Concatenate text nodes directly into textContent
-                            textContent += node.textContent.trim();
-                        } else if (node.nodeType === Node.ELEMENT_NODE) {
-                            // Handle element nodes recursively
-                            obj.children = obj.children || [];
-                            obj.children.push(elementToJson(node));
-                        }
-                    });
-
-                    // Assign text content to obj.text if it exists
-                    if (textContent.length > 0) {
-                        obj.text = textContent;
+                    // Add children if not a text element
+                    if (element.children.length > 0) {
+                        obj.children = Array.from(element.children).map(child => elementToJson(child));
+                    } else {
+                        obj.innerHTML = element.innerHTML;
                     }
                 }
-
-                // Add viewName if needed
-                obj.viewName = "<?= $viewName ?>";
 
                 return obj;
             }
-
             function saveWebsite() {
-                const webBuilderElement = document.getElementById('webBuilder-Body');
-                const inputHTML = webBuilderElement.innerHTML;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(inputHTML, 'text/html');
+                const json = elementToJson(webBuilderBody);
+
+                // Add the view name
+                json.viewName = 'index';
+
                 var xhr = new XMLHttpRequest();
                 var url = "/admin/websiteBuilder/editor";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(JSON.stringify(elementToJson(doc.body), null, 2));
-                console.log(elementToJson(doc.body));
-                console.log("Saved:");
+                xhr.send(JSON.stringify(json, null, 2));
+                console.log(json)
             }
         </script>
     </div>
