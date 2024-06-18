@@ -11,7 +11,9 @@ flex-flow:column;
 h2 {
 padding-bottom:10px;
 }
-
+p a {
+    color: purple;
+}
 header {
 background:pink;
 width:100%;

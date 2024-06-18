@@ -366,7 +366,7 @@ main .code-editor textarea {
 main .code-editor textarea:focus {
     outline: none;
 }
-#textOptions {
+#textOptions, #secondTextOptions {
     margin-top: 5px;
     position: absolute;
     display: flex;
@@ -377,7 +377,7 @@ main .code-editor textarea:focus {
     border: 1px solid darkgray;
     z-index: 99;
 }
-#textOptions .button {
+#textOptions .button, #secondTextOptions .button {
     color: white;
     background: transparent;
     padding: 0;
@@ -386,7 +386,7 @@ main .code-editor textarea:focus {
 #contextMenu {
     z-index: 100;
 }
-#textOptions.hidden {
+#textOptions.hidden, #secondTextOptions.hidden {
     display: none;
 }
 .hidden {

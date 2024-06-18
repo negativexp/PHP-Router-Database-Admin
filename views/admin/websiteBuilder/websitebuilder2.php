@@ -65,6 +65,19 @@
         </div>
     </form>
 </div>
+<div id="linkForm" class="popupform">
+    <form method="post" action="/admin/fileManager">
+        <h2>Přidat odkaz</h2>
+        <label>
+            <span>Cesta</span>
+            <input spellcheck="false" type="text" id="linkPath" required>
+        </label>
+        <div class="options">
+            <a class="small button" onclick="MessageBox('linkForm')">Zavřít</a>
+            <a class="small button" type="button" onclick="submitLinkForm()">Přidat</a>
+        </div>
+    </form>
+</div>
 <div id="contextMenu" class="context-menu hidden">
     <div id="displayDeleteButton" class="hidden">
         <a class="button" onclick="deleteElement()">Smazat</a>
@@ -94,6 +107,12 @@
             <a class="small button" onclick="addClass(this.innerText)">w33</a>
             <a class="small button" onclick="addClass(this.innerText)">w25</a>
         </div>
+        <div id="secondTextOptions" class="hidden">
+            <a class="small button" onclick="MessageBox('linkForm'); hideSecondTextOptions();">Odkaz</a>
+            <a class="small button" onclick="addElement(this.innerText)">Bold</a>
+            <a class="small button" onclick="addElement(this.innerText)">Italic</a>
+            <a class="small button" onclick="addElement(this.innerText)">Crossed</a>
+        </div>
 
         <div id="webBuilder">
             <div id="webBuilder-Body">
@@ -108,6 +127,8 @@
             let activeElement = null;
             let isSaved = true;
             let copyElement = null
+            const textOptions = document.getElementById("textOptions")
+            const secondTextOptions = document.getElementById("secondTextOptions")
             const displayImgSettingsDiv = document.getElementById("displayImgSettings");
             const displayDeleteButtonDiv = document.getElementById("displayDeleteButton")
             const activeElementSpan = document.getElementById("activeElementSpan")
@@ -120,6 +141,7 @@
             const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'a']
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
 
+            let selectedText = null;
             let stylesRemoved = false;
             let deletedRules = [
                 '#webBuilder { }',
@@ -181,6 +203,30 @@
                 } else displayDeleteButtonDiv.classList.add("hidden")
                 contextMenu.classList.remove("hidden")
             }
+            const displaySecondTextOptions = () => {
+                if (activeElement) {
+                    const rect = activeElement.getBoundingClientRect();
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    const spaceAbove = rect.top;
+
+                    if (spaceBelow >= secondTextOptions.offsetHeight) {
+                        // There is enough space below the activeElement
+                        secondTextOptions.style.top = `${rect.bottom + window.scrollY}px`;
+                        secondTextOptions.style.left = `${rect.left + window.scrollX}px`;
+                    } else if (spaceAbove >= secondTextOptions.offsetHeight) {
+                        // There is not enough space below, but there is enough space above
+                        secondTextOptions.style.top = `${rect.top + window.scrollY - secondTextOptions.offsetHeight}px`;
+                        secondTextOptions.style.left = `${rect.left + window.scrollX}px`;
+                    } else {
+                        // Default to placing it below the activeElement if possible
+                        secondTextOptions.style.top = `${rect.bottom + window.scrollY}px`;
+                        secondTextOptions.style.left = `${rect.left + window.scrollX}px`;
+                    }
+
+                    secondTextOptions.classList.remove('hidden');
+                }
+            }
+            const hideSecondTextOptions = () => {secondTextOptions.classList.add("hidden")}
             const closeContextMenu = () => {contextMenu.classList.add("hidden")}
             const displayTextOptions = () => {
                 if (activeElement) {
@@ -221,6 +267,11 @@
                         setActiveElement(el.parentElement)
                         addElement("p")
                     } else {
+                        if(textElements.includes(el.tagName.toLowerCase())) {
+                            if(el.innerText === "") {
+                                el.remove()
+                            }
+                        }
                         setActiveElement(el.parentElement)
                         el.blur()
                     }
@@ -274,6 +325,37 @@
                     setActiveElement(el)
                 }
             }
+            var range = null;
+
+            function saveSelection() {
+                var selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    range = selection.getRangeAt(0);
+                    selectedText = selection.toString();
+                }
+            }
+
+            function showLinkForm() {
+                saveSelection();
+                MessageBox('linkForm');
+            }
+
+            function submitLinkForm() {
+                var url = document.getElementById('linkPath').value;
+                addLink(url);
+                MessageBox('linkForm'); // Close the form after submission
+            }
+
+            function addLink(url) {
+                if (selectedText && activeElement) {
+                    // Create an <a> element
+                    var linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', url);
+                    linkElement.innerText = selectedText;
+                    activeElement.innerHTML = activeElement.innerHTML.replace(selectedText, linkElement.outerHTML)
+                    console.log(linkElement.outerHTML)
+                }
+            }
             function deleteElement() {
                 if (activeElement.tagName !== "DIV" && activeElement.id !== "webBuilder-Body") {
                     activeElement.remove()
@@ -301,9 +383,18 @@
                     }
                 }
                 activeElement = el
+                processAllElements(webBuilderBody, child => {
+                    if(textElements.includes(child.tagName.toLowerCase())) {
+                        if(child.innerText === "" && activeElement !== child) {
+                            child.remove()
+                        }
+                    }
+                })
                 if(!textElements.includes(el.tagName.toLowerCase())) {
                     displayTextOptions()
+                    hideSecondTextOptions()
                 } else {
+                    displaySecondTextOptions()
                     hideTextOptions()
                     activeElement.setAttribute("contenteditable", "true")
                 }
@@ -385,6 +476,26 @@
                     });
                 });
             }
+
+            function getSelectedText() {
+                var text = "";
+                if (typeof window.getSelection != "undefined") {
+                    text = window.getSelection().toString();
+                } else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
+                    text = document.selection.createRange().text;
+                }
+                return text;
+            }
+
+            function doSomethingWithSelectedText() {
+                if (getSelectedText()) {
+                    selectedText = getSelectedText()
+                }
+            }
+
+            document.onmouseup = doSomethingWithSelectedText;
+            document.onkeyup = doSomethingWithSelectedText;
+
             document.addEventListener('DOMContentLoaded', () => {
                 // Use document.styleSheets[1] to target the second stylesheet
                 const sheet = document.styleSheets[1];
@@ -461,31 +572,30 @@
                         processAllElements(bodyChild, bodyChildChild => {
                             if(bodyChildChild.tagName !== "MAIN") {
                                 if(textElements.includes(bodyChildChild.tagName.toLowerCase())) {
-                                    //bodyChildChild.setAttribute("contenteditable", "true")
                                     bodyChildChild.setAttribute("onkeydown", "textKeyDown(event, this)")
                                     bodyChildChild.addEventListener("paste", (event) => {
                                         event.preventDefault();
                                         const text = (event.clipboardData || window.clipboardData).getData('text');
                                         document.execCommand("insertText", false, text);
-                                    })
+                                    });
                                 } else {
-                                    bodyChildChild.addEventListener("contextmenu", rightClick)
+                                    bodyChildChild.addEventListener("contextmenu", rightClick);
                                 }
-                                bodyChildChild.addEventListener("mousedown", (event) => elementMouseDown(event, bodyChildChild))
+                                bodyChildChild.addEventListener("mousedown", (event) => elementMouseDown(event, bodyChildChild));
                             }
-                        })
+                        });
                         if (bodyChild.tagName === "MAIN") {
                             Array.from(bodyChild.children).forEach(mainChild => {
                                 webBuilderMain.appendChild(mainChild);
                             });
-                            webBuilderMain.classList = bodyChild.classList
+                            webBuilderMain.className = bodyChild.className;
                         } else {
                             var result = isBeforeOrAfter(bodyChild, doc.body.querySelector("main"));
                             if(result.isAfter) {
-                                webBuilderBody.insertBefore(bodyChild, webBuilderMain)
+                                webBuilderBody.insertBefore(bodyChild, webBuilderMain);
                             }
                             if(result.isBefore) {
-                                webBuilderBody.appendChild(bodyChild)
+                                webBuilderBody.appendChild(bodyChild);
                             }
                         }
                     });
@@ -493,30 +603,61 @@
 
                 // Example usage: you can get the HTML content from an API or any other source
                 const savedHTML = `<?php
-                if(isset($viewName)) {
-                    print_r(file_get_contents("views/$viewName.php"), false);
+                if (isset($viewName)) {
+                    echo file_get_contents("views/{$viewName}.php");
                 }
-                ?>`
+                ?>`;
                 loadWebsite(savedHTML);
             });
             function elementToJson(element) {
                 const obj = {
-                    tag: element.tagName.toLowerCase(),
-                    viewName: "<?= isset($viewName) ? $viewName : "..." ?>"
+                    tag: element.tagName.toLowerCase()
                 };
+
+                // Process attributes
                 if (element.hasAttributes()) {
                     const attrs = element.attributes;
                     for (let i = 0; i < attrs.length; i++) {
                         obj[attrs[i].name] = attrs[i].value;
                     }
                 }
+
+                // Process child elements recursively
                 if (element.childElementCount > 0) {
                     obj.children = Array.from(element.children).map(child => elementToJson(child));
-                } else if (element.textContent.trim()) {
+                } else {
+                    // If it's a text node, save its text content
                     obj.text = element.textContent.trim();
                 }
+
+                // Special handling for <p> element with mixed content
+                if (element.tagName.toLowerCase() === 'p') {
+                    const childNodes = Array.from(element.childNodes);
+                    let textContent = '';
+
+                    childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            // Concatenate text nodes directly into textContent
+                            textContent += node.textContent.trim();
+                        } else if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Handle element nodes recursively
+                            obj.children = obj.children || [];
+                            obj.children.push(elementToJson(node));
+                        }
+                    });
+
+                    // Assign text content to obj.text if it exists
+                    if (textContent.length > 0) {
+                        obj.text = textContent;
+                    }
+                }
+
+                // Add viewName if needed
+                obj.viewName = "<?= $viewName ?>";
+
                 return obj;
             }
+
             function saveWebsite() {
                 const webBuilderElement = document.getElementById('webBuilder-Body');
                 const inputHTML = webBuilderElement.innerHTML;
@@ -527,7 +668,7 @@
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(JSON.stringify(elementToJson(doc.body), null, 2));
-                console.log(elementToJson(doc.body))
+                console.log(elementToJson(doc.body));
                 console.log("Saved:");
             }
         </script>
