@@ -438,6 +438,8 @@
                 if(activeElement) {
                     if(textElements.includes(activeElement.tagName.toLowerCase())) {
                         activeElement.removeAttribute("contenteditable")
+                        if(activeElement.innerText.length < 1)
+                            activeElement.remove()
                     }
                 }
                 activeElement = el
@@ -445,7 +447,9 @@
                     displayTextOptions()
                     hideSecondTextOptions()
                 } else {
-                    el.focus()
+                    setTimeout(function() {
+                        activeElement.focus();
+                    }, 0);
                     hideTextOptions()
                     activeElement.setAttribute("contenteditable", "true")
                 }
