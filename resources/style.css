@@ -2,7 +2,7 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    font-family: Georgia, serif;
+    font-family: Georgia, serif;d
 }
 main {
 display:flex;
@@ -15,8 +15,9 @@ p a {
     color: purple;
 }
 img {
-    background: red;
-    max-height: 200px;
+	margin-top:10px;
+	border-radius:10px;
+	max-height: 200px;
 }
 header {
 background:pink;

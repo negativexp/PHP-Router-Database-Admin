@@ -10,7 +10,7 @@
     <div class="wrapper">
         <form method="post" action="/admin/cssEditor">
         <div class="tableOptions">
-            <input type="submit" value="Uložit" class="button">
+            <a class="small button" onclick="saveCss()">Uložit</a>
         </div>
             <section>
                 <article class="w100">
@@ -109,15 +109,18 @@
                             });
                         }
                     });
+                    function saveCss() {
+                        isSaved = true
+                        var xhr = new XMLHttpRequest();
+                        var url = "/admin/cssEditor";
+                        xhr.open("POST", url, true);
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhr.send("css="+encodeURIComponent(document.getElementById("codeInput").value));
+                    }
                     document.addEventListener('keydown', function(event) {
                         if (event.ctrlKey && event.key === 's') {
                             event.preventDefault()
-                            isSaved = true
-                            var xhr = new XMLHttpRequest();
-                            var url = "/admin/cssEditor";
-                            xhr.open("POST", url, true);
-                            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                            xhr.send("css="+encodeURIComponent(document.getElementById("codeInput").value));
+                            saveCss()
                         }
                         if (event.key === "Tab") {
                             event.preventDefault()

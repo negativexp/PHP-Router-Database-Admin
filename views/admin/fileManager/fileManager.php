@@ -53,8 +53,8 @@ $db = new Database();
         } else echo "<p>Cesta: root</p>";
         ?>
     </header>
+    <form method="post" action="/admin/fileManager">
     <div class="wrapper">
-        <form method="post" action="/admin/fileManager">
             <div class="tableOptions">
                 <?php
                 if(isset($_GET["folder"])) {
@@ -87,49 +87,49 @@ $db = new Database();
                         </tr>
                         </thead>
                         <?php
-                            $imgSize = 25;
-                            $path = isset($_GET["folder"]) ? $_SERVER["DOCUMENT_ROOT"]."\\".$_GET["folder"] : $_SERVER["DOCUMENT_ROOT"];
-                            $folders = scandir($path);
-                            $files = [];
-                            foreach($folders as $folder) {
-                                $fullpath = $path."\\".$folder;
-                                if(is_file($fullpath)) {
-                                    $files[] = $folder;
-                                    $folders = array_diff($folders, [$folder]);
-                                } else {
-                                    if($folder != "." && $folder != "..") {
-                                        echo "<tr>";
-                                        echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
-                                        if(isset($_GET["folder"])) {
-                                            echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$_GET["folder"]}\\{$folder}'>{$folder}</a></div></td>";
-                                        } else echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$folder}'>{$folder}</a></div></td>";
-                                        echo "<td>Složka</td>";
-                                        echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
-                                        echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$folder) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Upravit</a></td>";
-                                        echo "</tr>";
-                                    }
+                        $imgSize = 25;
+                        $path = isset($_GET["folder"]) ? $_SERVER["DOCUMENT_ROOT"]."\\".$_GET["folder"] : $_SERVER["DOCUMENT_ROOT"];
+                        $folders = scandir($path);
+                        $files = [];
+                        foreach($folders as $folder) {
+                            $fullpath = $path."\\".$folder;
+                            if(is_file($fullpath)) {
+                                $files[] = $folder;
+                                $folders = array_diff($folders, [$folder]);
+                            } else {
+                                if($folder != "." && $folder != "..") {
+                                    echo "<tr>";
+                                    echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
+                                    if(isset($_GET["folder"])) {
+                                        echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$_GET["folder"]}\\{$folder}'>{$folder}</a></div></td>";
+                                    } else echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/folder.png' title='Folder'><a href='/admin/fileManager?folder={$folder}'>{$folder}</a></div></td>";
+                                    echo "<td>Složka</td>";
+                                    echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
+                                    echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$folder) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Upravit</a></td>";
+                                    echo "</tr>";
                                 }
                             }
-                            if(isset($files)) {
-                                foreach ($files as $file) {
-                                    $fullpath = $path."\\".$file;
-                                    if($file != "." && $file != "..") {
-                                        echo "<tr>";
-                                        echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
-                                        echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/file.png' title='File'><p>{$file}</p></div></td>";
-                                        echo "<td>".filesize($fullpath)." (bytes)</td>";
-                                        echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
-                                        echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$file) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Zobrazit</a></td>";
-                                        echo "</tr>";
-                                    }
+                        }
+                        if(isset($files)) {
+                            foreach ($files as $file) {
+                                $fullpath = $path."\\".$file;
+                                if($file != "." && $file != "..") {
+                                    echo "<tr>";
+                                    echo "<td><input type='checkbox' name='selected_files[]' value='$fullpath'></td>";
+                                    echo "<td class='center'><div class='wrapper'><img width='{$imgSize}' height='{$imgSize}' src='../resources/admin/file.png' title='File'><p>{$file}</p></div></td>";
+                                    echo "<td>".filesize($fullpath)." (bytes)</td>";
+                                    echo "<td>".date("H:i:s d/m/y",filemtime($fullpath))."</td>";
+                                    echo "<td><a class='button' href='/admin/fileManager/" . urlencode($path."\\".$file) . (isset($_GET["folder"]) ? "?backlink=".$_GET["folder"] : '') . "'>Zobrazit</a></td>";
+                                    echo "</tr>";
                                 }
                             }
+                        }
                         ?>
                     </table>
                 </article>
             </section>
-        </form>
-    </div>
+        </div>
+    </form>
 </main>
 </body>
 </html>

@@ -398,6 +398,9 @@ main .code-editor textarea:focus {
 #webBuilder .active {
     outline: 1px dashed red;
 }
+#webBuilder .admin-style {
+    padding-bottom: 20px;
+}
 #helperBox {
     font-size: 12px;
     position: absolute;

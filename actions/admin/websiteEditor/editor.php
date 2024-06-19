@@ -4,27 +4,29 @@
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-// Function to clean innerHTML by removing specific attributes and handling class 'active'
+// Function to clean innerHTML by removing specific attributes and handling class 'active' and 'admin-style'
 function cleanInnerHTML($html) {
     $doc = new DOMDocument('1.0', 'UTF-8');
     @$doc->loadHTML('<div>' . mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
     $xpath = new DOMXPath($doc);
-    foreach (['onmousedown', 'onkeydown', 'draggable'] as $attr) {
-        foreach ($xpath->query("//*[@$attr]") as $node) {
-            $node->removeAttribute($attr);
-        }
-    }
 
+    // Remove 'admin-style' from class list
     foreach ($xpath->query("//*[@class]") as $node) {
         $classes = explode(' ', $node->getAttribute('class'));
         $filteredClasses = array_filter($classes, function($class) {
-            return trim($class) !== 'active';
+            return trim($class) !== 'admin-style';
         });
         if (empty($filteredClasses)) {
             $node->removeAttribute('class');
         } else {
             $node->setAttribute('class', implode(' ', $filteredClasses));
+        }
+    }
+
+    foreach (['onmousedown', 'onkeydown', 'draggable'] as $attr) {
+        foreach ($xpath->query("//*[@$attr]") as $node) {
+            $node->removeAttribute($attr);
         }
     }
 
@@ -48,6 +50,19 @@ function jsonToHTML($data) {
     $html = '';
 
     if (isset($data['tag'])) {
+        // Remove 'admin-style' from class list
+        if (isset($data['class'])) {
+            $classes = explode(' ', $data['class']);
+            $filteredClasses = array_filter($classes, function($class) {
+                return trim($class) !== 'admin-style';
+            });
+            if (empty($filteredClasses)) {
+                unset($data['class']);
+            } else {
+                $data['class'] = implode(' ', $filteredClasses);
+            }
+        }
+
         // Transform specific tags
         if ($data['tag'] === 'div' && isset($data['id'])) {
             if ($data['id'] === 'webBuilder-Body') {
@@ -78,7 +93,7 @@ function jsonToHTML($data) {
                 if ($key === 'class') {
                     $classes = explode(' ', $value);
                     $filteredClasses = array_filter($classes, function($class) {
-                        return trim($class) !== 'active';
+                        return trim($class) !== 'active' && trim($class) !== 'admin-style';
                     });
                     if (empty($filteredClasses)) {
                         continue;

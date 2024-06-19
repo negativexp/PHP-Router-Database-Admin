@@ -183,7 +183,6 @@
             const webBuilder = document.getElementById("webBuilder")
             const textElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'a']
             const fixedElements = [document.getElementById("webBuilder-Body"), document.getElementById("webBuilder-Main")]
-
             let selectedText = null;
             let stylesRemoved = false;
             let deletedRules = [
@@ -193,7 +192,8 @@
                 '#webBuilder-Main::after { content: "main"; }',
                 '#webBuilder-Body::after { content: "body"; }',
                 '#webBuilder-Body::after, #webBuilder-Main::after { width: 100%; height: 20px; position: absolute; bottom: 0; left: 0; text-align: center; opacity: 0.3; }',
-                '#webBuilder div:empty + div::after { padding-bottom: 10px; content: "div"; opacity: 0.3; }'
+                '#webBuilder div:empty + div::after { padding-bottom: 10px; content: "div"; opacity: 0.3; }',
+                '#webBuilder .admin-style { padding-bottom: 20px; }'
             ];
             function toggleEditorStyle() {
                 const styleElement = document.getElementById('adminStyle');
@@ -204,11 +204,10 @@
                     '#webBuilder-Body, #webBuilder-Main',
                     '#webBuilder-Body::after',
                     '#webBuilder-Main::after',
-                    '#webBuilder div:empty + div::after'
+                    '#webBuilder div:empty + div::after',
+                    '#webBuilder .admin-style'
                 ];
-
                 if (stylesRemoved) {
-                    // Re-insert deleted rules
                     for (let rule of deletedRules) {
                         try {
                             styleElement.sheet.insertRule(rule, styleElement.sheet.cssRules.length);
@@ -231,7 +230,6 @@
                         }
                     }
                 }
-
                 stylesRemoved = !stylesRemoved;
             }
             function elementMouseDown(event, el) {
@@ -342,6 +340,7 @@
                         setActiveElement(el.parentElement)
                         el.blur()
                     }
+                    hideSecondTextOptions()
                 }
                 if(event.key === "Backspace") {
                     if(el.innerText.length < 1) {
@@ -353,8 +352,10 @@
                     deactivateSelected()
                     el.blur()
                 }
-                if(el.innerText.length > 0)
-                    displaySecondTextOptions()
+                if(textElements.includes(el.tagName.toLowerCase())) {
+                    if(el.innerText.length > 0)
+                        displaySecondTextOptions()
+                }
                 if(el.childElementCount === 1)
                     if(el.childNodes[0].nodeName === "BR")
                         el.remove()
@@ -373,6 +374,9 @@
                     const el = document.createElement(tagname)
                     if(tagname === "img") {
                         el.src = document.getElementById("imgSrc").value
+                    }
+                    if(tagname === "div") {
+                        el.classList.add("admin-style")
                     }
                     if(textElements.includes(tagname)) {
                         el.setAttribute("onkeydown", "textKeyDown(event, this)")
