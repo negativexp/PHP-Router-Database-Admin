@@ -91,6 +91,19 @@
         </div>
     </form>
 </div>
+<div id="classesForm" class="popupform">
+    <form method="post" action="/admin/fileManager">
+        <h2>Nastavit Třídy</h2>
+        <label>
+            <span>Třídy (prosím odělte čárkou, např. styl1,styl2)</span>
+            <input spellcheck="false" type="text" id="elementID" required>
+        </label>
+        <div class="options">
+            <a class="small button" onclick="MessageBox('classesForm')">Zavřít</a>
+            <a class="small button" type="submit" onclick="">Nastavit</a>
+        </div>
+    </form>
+</div>
 <div id="aHrefForm" class="popupform">
     <form method="post" action="/admin/fileManager">
         <h2>Nastavit HREF</h2>
@@ -105,17 +118,17 @@
     </form>
 </div>
 <div id="contextMenu" class="context-menu hidden">
-    <div id="displayDeleteButton" class="hidden">
-        <a class="button" onclick="deleteElement()">Smazat</a>
-    </div>
     <a class="button" onclick="openIdForm()">Nastavit ID</a>
-    <a class="button" onclick="">Nastavit Třídy</a>
+    <a class="button" onclick="MessageBox('classesForm'); closeContextMenu()">Nastavit Třídy</a>
     <div id="displayImgSettings" class="hidden">
         <a class="button" onclick="">Nastavit SRC</a>
     </div>
     <div id="displayASettings" class="hidden">
         <a class="button" onclick="MessageBox('aHrefForm'); closeContextMenu()">Nastavit HREF</a>
         <a class="button" onclick="MessageBox('aHrefForm'); closeContextMenu()">Nastavit Target</a>
+    </div>
+    <div id="displayDeleteButton" class="hidden">
+        <a class="button" onclick="deleteElement()">Smazat</a>
     </div>
 </div>
 <div id="helperBox">
@@ -139,9 +152,8 @@
         </div>
         <div id="secondTextOptions" class="hidden">
             <a class="small button" onclick="MessageBox('linkForm'); hideSecondTextOptions();">Odkaz</a>
-            <a class="small button" onclick="addElement(this.innerText)">Bold</a>
-            <a class="small button" onclick="addElement(this.innerText)">Italic</a>
-            <a class="small button" onclick="addElement(this.innerText)">Crossed</a>
+            <a class="small button" onclick="addStrong()">Bold</a>
+            <a class="small button" onclick="addItalic()">Italic</a>
         </div>
 
         <div id="webBuilder">
@@ -180,7 +192,8 @@
                 '#webBuilder-Body { padding-top: 20px; }',
                 '#webBuilder-Main::after { content: "main"; }',
                 '#webBuilder-Body::after { content: "body"; }',
-                '#webBuilder-Body::after, #webBuilder-Main::after { width: 100%; height: 20px; position: absolute; bottom: 0; left: 0; text-align: center; opacity: 0.3; }'
+                '#webBuilder-Body::after, #webBuilder-Main::after { width: 100%; height: 20px; position: absolute; bottom: 0; left: 0; text-align: center; opacity: 0.3; }',
+                '#webBuilder div:empty + div::after { padding-bottom: 10px; content: "div"; opacity: 0.3; }'
             ];
             function toggleEditorStyle() {
                 const styleElement = document.getElementById('adminStyle');
@@ -190,7 +203,8 @@
                     '#webBuilder-Main',
                     '#webBuilder-Body, #webBuilder-Main',
                     '#webBuilder-Body::after',
-                    '#webBuilder-Main::after'
+                    '#webBuilder-Main::after',
+                    '#webBuilder div:empty + div::after'
                 ];
 
                 if (stylesRemoved) {
@@ -383,35 +397,51 @@
                     setActiveElement(el)
                 }
             }
-            var range = null;
 
+            let range = null;
             function saveSelection() {
-                var selection = window.getSelection();
+                let selection = window.getSelection();
                 if (selection.rangeCount > 0) {
                     range = selection.getRangeAt(0);
                     selectedText = selection.toString();
+                    console.log(selectedText)
                 }
             }
 
-            function showLinkForm() {
-                saveSelection();
+            function submitLinkForm() {
+                let url = document.getElementById('linkPath').value;
+                addLink(url);
                 MessageBox('linkForm');
             }
 
-            function submitLinkForm() {
-                var url = document.getElementById('linkPath').value;
-                addLink(url);
-                MessageBox('linkForm'); // Close the form after submission
+            function addStrong() {
+                if(selectedText && activeElement) {
+                    const strong = document.createElement('strong');
+                    strong.innerText = selectedText;
+                    strong.setAttribute("onmousedown", "elementMouseDown(event, this)")
+                    strong.setAttribute("onkeydown", "textKeyDown(event, this)")
+                    activeElement.innerHTML = activeElement.innerHTML.replace(selectedText, strong.outerHTML)
+                }
+            }
+
+            function addItalic() {
+                if(selectedText && activeElement) {
+                    const italic = document.createElement('i');
+                    italic.innerText = selectedText;
+                    italic.setAttribute("onmousedown", "elementMouseDown(event, this)")
+                    italic.setAttribute("onkeydown", "textKeyDown(event, this)")
+                    activeElement.innerHTML = activeElement.innerHTML.replace(selectedText, italic.outerHTML)
+                }
             }
 
             function addLink(url) {
                 if (selectedText && activeElement) {
-                    // Create an <a> element
-                    var linkElement = document.createElement('a');
+                    const linkElement = document.createElement('a');
                     linkElement.setAttribute('href', url);
                     linkElement.innerText = selectedText;
+                    linkElement.setAttribute("onmousedown", "elementMouseDown(event, this)")
+                    linkElement.setAttribute("onkeydown", "textKeyDown(event, this)")
                     activeElement.innerHTML = activeElement.innerHTML.replace(selectedText, linkElement.outerHTML)
-                    console.log(linkElement.outerHTML)
                 }
             }
             function deleteElement() {
@@ -477,7 +507,8 @@
             }
             window.addEventListener("resize", () => {
                 closeContextMenu()
-                displayTextOptions()
+                hideSecondTextOptions()
+                hideTextOptions()
             })
             document.addEventListener('keydown', function(event) {
                 if (event.ctrlKey && event.key === 's') {
@@ -629,7 +660,7 @@
                     const bodyContent = Array.from(doc.body.children);
                     bodyContent.forEach(bodyChild => {
                         processAllElements(bodyChild, bodyChildChild => {
-                            if(bodyChildChild.tagName !== "MAIN") {
+                            if(bodyChildChild.tagName !== "MAIN") {;
                                 if(textElements.includes(bodyChildChild.tagName.toLowerCase())) {
                                     bodyChildChild.setAttribute("onkeydown", "textKeyDown(event, this)")
                                     bodyChildChild.addEventListener("paste", (event) => {

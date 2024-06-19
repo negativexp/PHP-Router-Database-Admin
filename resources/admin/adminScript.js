@@ -12,6 +12,9 @@ function mobilenav() {
 function MessageBox(id) {
     const message = document.getElementById(id)
     message.classList.toggle("z-top")
+    closeContextMenu()
+    hideTextOptions()
+    hideSecondTextOptions()
 }
 
 function subnav(subNavId, acko) {

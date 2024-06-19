@@ -60,6 +60,9 @@ input[type="checkbox"] {
 .popupform table input {
     width: 100%;
 }
+.popupform input {
+    width: 100%;
+}
 form textarea {
     min-width: 100%;
 }
@@ -420,6 +423,11 @@ main .code-editor textarea:focus {
 
 #webBuilder {
     padding: 1px;
+}
+#webBuilder div:empty + div::after {
+    padding-bottom: 10px;
+    content: "div";
+    opacity: 0.3;
 }
 #webBuilder-Body, #webBuilder-Main {
     padding-bottom: 20px;

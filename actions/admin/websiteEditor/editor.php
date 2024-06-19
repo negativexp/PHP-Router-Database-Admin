@@ -4,6 +4,45 @@
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
+// Function to clean innerHTML by removing specific attributes and handling class 'active'
+function cleanInnerHTML($html) {
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    @$doc->loadHTML('<div>' . mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $xpath = new DOMXPath($doc);
+    foreach (['onmousedown', 'onkeydown', 'draggable'] as $attr) {
+        foreach ($xpath->query("//*[@$attr]") as $node) {
+            $node->removeAttribute($attr);
+        }
+    }
+
+    foreach ($xpath->query("//*[@class]") as $node) {
+        $classes = explode(' ', $node->getAttribute('class'));
+        $filteredClasses = array_filter($classes, function($class) {
+            return trim($class) !== 'active';
+        });
+        if (empty($filteredClasses)) {
+            $node->removeAttribute('class');
+        } else {
+            $node->setAttribute('class', implode(' ', $filteredClasses));
+        }
+    }
+
+    foreach ($xpath->query("//*[@style]") as $node) {
+        if (empty(trim($node->getAttribute('style')))) {
+            $node->removeAttribute('style');
+        }
+    }
+
+    // Extract inner content of the temporary div
+    $innerHTML = '';
+    foreach ($doc->documentElement->childNodes as $child) {
+        $innerHTML .= $doc->saveHTML($child);
+    }
+
+    return $innerHTML;
+}
+
 // Function to convert JSON to HTML string with specific transformations
 function jsonToHTML($data) {
     $html = '';
@@ -30,12 +69,27 @@ function jsonToHTML($data) {
             return $html;
         }
 
-        $html .= '<' . $data['tag'];
+        $html .= '<' . htmlspecialchars($data['tag'], ENT_QUOTES, 'UTF-8');
 
-        // Add attributes except for those that need to be removed
+        // Add attributes except for those that need to be removed or are empty
         foreach ($data as $key => $value) {
-            if (!in_array($key, ['tag', 'children', 'innerHTML', 'contenteditable', 'onkeydown', 'draggable', 'viewName'])) {
-                $html .= ' ' . htmlspecialchars($key) . '="' . htmlspecialchars($value) . '"';
+            if (!in_array($key, ['tag', 'children', 'innerHTML', 'contenteditable', 'onkeydown', 'onmousedown', 'draggable', 'viewName']) && $value !== '') {
+                // Handle class attribute
+                if ($key === 'class') {
+                    $classes = explode(' ', $value);
+                    $filteredClasses = array_filter($classes, function($class) {
+                        return trim($class) !== 'active';
+                    });
+                    if (empty($filteredClasses)) {
+                        continue;
+                    }
+                    $value = implode(' ', $filteredClasses);
+                }
+                // Exclude empty class and style attributes
+                if (($key === 'class' || $key === 'style') && empty(trim($value))) {
+                    continue;
+                }
+                $html .= ' ' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"';
             }
         }
 
@@ -47,10 +101,10 @@ function jsonToHTML($data) {
                 $html .= jsonToHTML($child);
             }
         } elseif (isset($data['innerHTML'])) {
-            $html .= $data['innerHTML'];
+            $html .= cleanInnerHTML($data['innerHTML']);
         }
 
-        $html .= '</' . $data['tag'] . '>';
+        $html .= '</' . htmlspecialchars($data['tag'], ENT_QUOTES, 'UTF-8') . '>';
     }
 
     return $html;
@@ -84,4 +138,3 @@ fwrite($site, $headString);
 fwrite($site, $htmlString);
 fwrite($site, $htmlEndString);
 fclose($site);
-?>
