@@ -23,6 +23,7 @@ class Router {
         $this->get("/admin/logs", "views/admin/logs.php");
         $this->post("/admin/router/addRoute", "actions/admin/router/addRoute.php");
         $this->post("/admin/router/removeRoute", "actions/admin/router/removeRoute.php");
+        $this->post("/admin/router/editRoute", "actions/admin/router/editRoute.php");
         $this->post("/admin/router/addBlockedFolder", "actions/admin/router/addBlockedFolder.php");
         $this->post("/admin/router/removeBlockedFolder", "actions/admin/router/removeBlockedFolder.php");
         $this->post("/admin/router/addAllowedFileType", "actions/admin/router/addAllowedFileType.php");

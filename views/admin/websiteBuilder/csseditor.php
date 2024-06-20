@@ -95,7 +95,7 @@
                             }
                         }
                     });
-                    let isSaved = false;
+                    let isSaved = true;
                     codeInput.addEventListener("keydown", (e) => {
                         if(e.key === "ArrowDown" || e.key === "ArrowUp") {
                             sleep(20).then(() => {
@@ -108,6 +108,7 @@
                                 }
                             });
                         }
+                        isSaved = false
                     });
                     function saveCss() {
                         isSaved = true

@@ -2,7 +2,7 @@
 <html lang="en">
 <?php include_once("views/admin/components/head.php"); ?>
 <body id="websiteBuilderBody">
-<div class="sidepanel">
+<div class="sidepanel" id="webBuilder-Sidepanel">
     <div class="button" onclick="mobilenav()">
         <img class="icon" src="../imgs/nav.svg">
     </div>
@@ -16,41 +16,31 @@
             return "";
         }
         ?>
+        <a class="small" onclick="toggleSidePanel()" id="hideSidePanelButton">Schovat</a>
         <a class="small" href="/admin/websiteBuilder">Zpátky</a>
         <a class="small" onclick="saveWebsite()">Uložit stránku</a>
-        <a class="small" onclick="toggleEditorStyle()">Deaktivace admin stylu</a>
-        <a class="small" onclick="subnav('sub-nav1', this)">Elementy</a>
-        <div class="sub-nav" id="sub-nav1">
-            <a class="small" onclick="addElement('header')">header</a>
-            <a class="small" onclick="addElement('section')">section</a>
-            <a class="small" onclick="addElement('article')">article</a>
-            <a class="small" onclick="MessageBox('popupForm')">img</a>
-            <a class="small" onclick="addElement('div')">div</a>
-            <a class="small" onclick="addElement('footer')">footer</a>
-            <a class="small" onclick="addElement('a')">a</a>
-        </div>
-        <a class="small" onclick="subnav('sub-nav2', this)">Třídy</a>
-        <div class="sub-nav" id="sub-nav2">
-            <a class="small" onclick="addClass('column')">column</a>
-            <a class="small" onclick="addClass('row')">row</a>
-            <a class="small" onclick="addClass('vhCen')">vhCen</a>
-            <a class="small" onclick="addClass('w25')">w25</a>
-            <a class="small" onclick="addClass('w50')">w50</a>
-            <a class="small" onclick="addClass('w75')">w75</a>
-            <a class="small" onclick="addClass('w100')">w100</a>
-        </div>
-        <a class="logout small button">Odhlásit se</a>
-    </nav>
-    <div class="profile">
-        <div class="wrapper">
-            <img class="icon" src="../imgs/typek.jpg">
-            <div class="info">
-                <p class="medium">Matyáš Pavel Schuller</p>
-                <p class="small">Administrátor</p>
+        <a class="small" onclick="toggleEditorStyle()">Vyp./Zap. styl</a>
+        <div class="boxes">
+            <div class="box" onclick="addElement('header')">
+                <span>header</span>
+            </div>
+            <div class="box" onclick="addElement('section')">
+                <span>section</span>
+            </div>
+            <div class="box" onclick="addElement('article')">
+                <span>article</span>
+            </div>
+            <div class="box" onclick="MessageBox('popupForm')">
+                <span>img</span>
+            </div>
+            <div class="box" onclick="addElement('div')">
+                <span>div</span>
+            </div>
+            <div class="box" onclick="addElement('footer')">
+                <span>footer</span>
             </div>
         </div>
-        <a class="button" href="/admin/logout">Odhlásit se</a>
-    </div>
+    </nav>
 </div>
 <div id="popupForm" class="popupform">
     <form method="post" action="/admin/fileManager">
@@ -449,7 +439,7 @@
                 }
             }
             function deleteElement() {
-                if (activeElement.tagName !== "DIV" && activeElement.id !== "webBuilder-Body") {
+                if (activeElement.id !== "webBuilder-Main" && activeElement.id !== "webBuilder-Body") {
                     activeElement.remove()
                     deactivateSelected()
                     closeContextMenu()
@@ -528,6 +518,8 @@
                     deactivateSelected()
                 }
                 if(event.key === "Delete" && activeElement) {
+                    console.log("delete mrdkooo")
+                    console.log(activeElement)
                     deleteElement(activeElement)
                     activeElement = null
                 }
@@ -677,6 +669,9 @@
                                 }
                                 bodyChildChild.addEventListener("mousedown", (event) => elementMouseDown(event, bodyChildChild));
                             }
+                            if(bodyChildChild.tagName === "DIV") {
+                                bodyChildChild.classList.add("admin-style")
+                            }
                         });
                         if (bodyChild.tagName === "MAIN") {
                             Array.from(bodyChild.children).forEach(mainChild => {
@@ -738,6 +733,15 @@
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(JSON.stringify(json, null, 2));
                 console.log(json)
+            }
+            function toggleSidePanel() {
+                const sidePanel = document.getElementById("webBuilder-Sidepanel")
+                sidePanel.classList.toggle("roll")
+                if(sidePanel.classList.contains("roll")) {
+                    document.getElementById("hideSidePanelButton").innerText = "Otevřít"
+                } else {
+                    document.getElementById("hideSidePanelButton").innerText = "Schovat"
+                }
             }
         </script>
     </div>

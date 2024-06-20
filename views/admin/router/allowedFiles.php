@@ -53,12 +53,16 @@ if(isset($db)) {
         echo "<td>{$folder['id']}</td>";
         echo "<td>{$folder['filetype']}</td>";
         echo "<td>{$folder['mimetype']}</td>";
-        echo "<td>
+        if($folder['filetype'] !== "js" && $folder['filetype'] !== "css" && $folder['filetype'] !== "png") {
+            echo "<td>
                 <form method='post' action='/admin/router/removeAllowedFileType'>
                     <input type='hidden' name='id' value='{$folder["id"]}'>
                     <input class='small' type='submit' value='Delete'>
                 </form>
               </td>";
+        } else {
+            echo "<td></td>";
+        }
         echo "</tr>";
     }
     echo "</table>";

@@ -151,13 +151,16 @@ a.button, input[type="submit"] {
     justify-content: center;
     padding: 10px;
     font-size: 16px;
+    text-decoration: underline;
 }
 a.button:hover, input[type="submit"]:hover {
     background-color: #a5a5a5;
     cursor: pointer;
 }
-.fit {
+tbody .fit {
     width: fit-content;
+    display: flex;
+    flex-flow: row;
 }
 .sidepanel {
     background-color: #343a40;
@@ -276,7 +279,7 @@ main table {
     table-layout: auto;
     width: 100%;
 }
-main table .fit {
+main table thead .fit {
     width: 1%;
     white-space: nowrap;
 }
@@ -400,6 +403,15 @@ main .code-editor textarea:focus {
 }
 #webBuilder .admin-style {
     padding-bottom: 20px;
+    position: relative;
+}
+#webBuilder .admin-style::before {
+    content: "div";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.3;
 }
 #helperBox {
     font-size: 12px;
@@ -449,6 +461,44 @@ main .code-editor textarea:focus {
     left: 0;
     text-align: center;
     opacity: 0.3;
+}
+
+#webBuilder-Sidepanel {
+    padding: 5px;
+    overflow: hidden;
+    width: 200px;
+    position: absolute;
+    z-index: 9999;
+    max-height: calc(100vh - 20px);
+    margin: 10px;
+    backdrop-filter: blur(4px);
+    background: rgba(52, 58, 64, 0.7);
+}
+#webBuilder-Sidepanel * {
+    color: white;
+}
+#webBuilder-Sidepanel.roll {
+    max-height: 47px;
+    max-width: 75px;
+}
+#webBuilder-Sidepanel nav a {
+    flex: 1;
+}
+#webBuilder-Sidepanel .boxes {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#webBuilder-Sidepanel .box {
+    font-size: 16px;
+    padding: 5px 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background: dimgray;
+}
+#webBuilder-Sidepanel .box:hover {
+    cursor: pointer;
 }
 
 
