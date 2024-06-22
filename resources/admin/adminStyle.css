@@ -473,6 +473,7 @@ main .code-editor textarea:focus {
     margin: 10px;
     backdrop-filter: blur(4px);
     background: rgba(52, 58, 64, 0.7);
+    right: 0;
 }
 #webBuilder-Sidepanel * {
     color: white;
@@ -497,7 +498,7 @@ main .code-editor textarea:focus {
     border-radius: 5px;
     background: dimgray;
 }
-#webBuilder-Sidepanel .box:hover {
+#webBuilder-Sidepanel span:hover {
     cursor: pointer;
 }
 

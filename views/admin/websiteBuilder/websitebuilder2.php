@@ -40,6 +40,37 @@
                 <span>footer</span>
             </div>
         </div>
+        <div class="boxes">
+            <div onclick="addClass('column')">
+                <span>column</span>
+            </div>
+            <div onclick="addClass('row')">
+                <span>row</span>
+            </div>
+            <div onclick="addClass('vhCen')">
+                <span>vhCen</span>
+            </div>
+            <div onclick="addClass('vCen')">
+                <span>vCen</span>
+            </div>
+            <div onclick="addClass('hCen')">
+                <span>hCen</span>
+            </div>
+
+            <div onclick="addClass('w100')">
+                <span>w100</span>
+            </div>
+            <div onclick="addClass('w75')">
+                <span>w75</span>
+            </div>
+            <div onclick="addClass('w50')">
+                <span>w50</span>
+            </div>
+            <div onclick="addClass('w25')">
+                <span>w25</span>
+            </div>
+
+        </div>
     </nav>
 </div>
 <div id="popupForm" class="popupform">
@@ -135,10 +166,6 @@
             <a class="small button" onclick="addElement(this.innerText)">h3</a>
             <a class="small button" onclick="addElement(this.innerText)">h4</a>
             <a class="small button" onclick="addElement(this.innerText)">h5</a>
-            <a class="small button" onclick="addClass(this.innerText)">w100</a>
-            <a class="small button" onclick="addClass(this.innerText)">w50</a>
-            <a class="small button" onclick="addClass(this.innerText)">w33</a>
-            <a class="small button" onclick="addClass(this.innerText)">w25</a>
         </div>
         <div id="secondTextOptions" class="hidden">
             <a class="small button" onclick="MessageBox('linkForm'); hideSecondTextOptions();">Odkaz</a>
@@ -362,8 +389,12 @@
                 isSaved = false;
                 if(activeElement) {
                     const el = document.createElement(tagname)
-                    if(tagname === "img") {
-                        el.src = document.getElementById("imgSrc").value
+                    if (tagname === "img") {
+                        let imgSrc = document.getElementById("imgSrc").value;
+                        if (imgSrc.includes("resources")) {
+                            imgSrc = "../../" + imgSrc;
+                        }
+                        el.src = imgSrc;
                     }
                     if(tagname === "div") {
                         el.classList.add("admin-style")
@@ -656,7 +687,7 @@
                     const bodyContent = Array.from(doc.body.children);
                     bodyContent.forEach(bodyChild => {
                         processAllElements(bodyChild, bodyChildChild => {
-                            if(bodyChildChild.tagName !== "MAIN") {;
+                            if(bodyChildChild.tagName !== "MAIN") {
                                 if(textElements.includes(bodyChildChild.tagName.toLowerCase())) {
                                     bodyChildChild.setAttribute("onkeydown", "textKeyDown(event, this)")
                                     bodyChildChild.addEventListener("paste", (event) => {
@@ -731,8 +762,22 @@
                 var url = "/admin/websiteBuilder/editor";
                 xhr.open("POST", url, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            console.log("Request sent successfully");
+                            console.log("Response:", xhr.responseText);
+                        } else {
+                            console.log("Request failed with status:", xhr.status);
+                            console.log("Response:", xhr.responseText);
+                        }
+                    }
+                };
+
                 xhr.send(JSON.stringify(json, null, 2));
-                console.log(json)
+                console.log(json);
+                console.log("Request sent");
             }
             function toggleSidePanel() {
                 const sidePanel = document.getElementById("webBuilder-Sidepanel")

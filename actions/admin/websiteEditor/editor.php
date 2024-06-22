@@ -108,7 +108,7 @@ function jsonToHTML($data) {
             }
         }
 
-        $html .= '>';
+        $html .= ">";
 
         // Add children or innerHTML
         if (isset($data['children'])) {
