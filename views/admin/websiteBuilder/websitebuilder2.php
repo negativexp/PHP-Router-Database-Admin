@@ -212,6 +212,8 @@
                 '#webBuilder div:empty + div::after { padding-bottom: 10px; content: "div"; opacity: 0.3; }',
                 '#webBuilder .admin-style { padding-bottom: 20px; }'
             ];
+            let divVisible = true
+            let savedAdminStyleEls = []
             function toggleEditorStyle() {
                 const styleElement = document.getElementById('adminStyle');
                 const targetSelectors = [
@@ -248,6 +250,20 @@
                     }
                 }
                 stylesRemoved = !stylesRemoved;
+
+                const els = document.querySelectorAll(".admin-style")
+                if(divVisible) {
+                    els.forEach(child => {
+                        child.classList.remove("admin-style")
+                        savedAdminStyleEls.push(child)
+                    })
+                    divVisible = false
+                } else {
+                    savedAdminStyleEls.forEach(child => {
+                        child.classList.add("admin-style")
+                    })
+                    divVisible = true
+                }
             }
             function elementMouseDown(event, el) {
                 event.stopPropagation()
@@ -258,7 +274,6 @@
                         displaySecondTextOptions()
             }
             function openIdForm() {
-                console.log(activeElement)
                 if(activeElement.id)
                     document.getElementById("elementID").value = activeElement.id
                 else document.getElementById("elementID").value = ""
